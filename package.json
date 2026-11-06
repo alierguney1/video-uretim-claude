@@ -1,0 +1,12 @@
+{
+  "name": "video-uretim-claude",
+  "private": true,
+  "type": "module",
+  "description": "Kodla animasyon: draw(t) sözleşmesi, denetim, kontak sayfası ve kare kare MP4 render.",
+  "scripts": {
+    "check": "node tools/check.mjs",
+    "contact": "node tools/contact.mjs",
+    "render": "node tools/render.mjs"
+  },
+  "engines": { "node": ">=18" }
+}

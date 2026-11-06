@@ -1,0 +1,369 @@
+<!doctype html>
+<!--
+  ŞABLON — MOTION_RULES.md sözleşmesine uyan boş ama çalışan iskelet.
+  Yeni animasyon: bu dosyayı animasyonlar/<ad>.html olarak kopyala,
+  CONFIG / SCENES / SOUNDS / draw* fonksiyonlarını değiştir.
+
+  Sözleşme:
+    window.__duration      toplam süre (sn)
+    window.__fps           kare hızı
+    window.__size          {width, height} mantıksal çözünürlük
+    window.__scenes        [{name, start, end}]  (kontak sayfası bunu okur)
+    window.__setTime(t)    t anını çizer
+    window.__ready         font vb. yüklenince çözülen Promise
+    window.__renderAudio() SOUNDS'u OfflineAudioContext ile WAV'a (base64) çevirir
+  URL:
+    ?t=3.2      o anı çiz ve dur
+    ?guides=1   güvenli alan çizgilerini göster
+    ?render=1   araçlar için: HUD yok, canvas tam mantıksal boyutta
+-->
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Animasyon</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=block" rel="stylesheet">
+<style>
+  html, body { margin: 0; height: 100%; background: #0d0d0d; }
+  body { display: grid; place-items: center; overflow: hidden; }
+  canvas { display: block; }
+  #hud { position: fixed; left: 12px; bottom: 10px; font: 12px/1.4 ui-monospace, monospace;
+         color: #bbb; background: rgba(0,0,0,.55); padding: 4px 8px; border-radius: 4px; user-select: none; }
+  body.render #hud { display: none; }
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div id="hud">tıkla: oynat/duraklat · ←/→ kare · shift+←/→ 1 sn</div>
+<script>
+'use strict';
+
+// ───────────────────────── CONFIG ─────────────────────────
+const CONFIG = {
+  width: 1080, height: 1920,   // dikey: 1080x1920 · yatay: 1920x1080
+  fps: 60,
+  duration: 10,
+  seed: 20261106,
+  fonts: ['800 10px Inter', '600 10px Inter', '400 10px Inter'],
+};
+const FONT = 'Inter, system-ui, sans-serif';
+
+// Palet: tek vurgu rengi.
+const C = { bg: '#F2EEE6', ink: '#151515', mute: '#8A857C', accent: '#E4572E' };
+
+// Sahneler: her sahnenin tek işi var. Süreler önce onaylanır, sonra kodlanır.
+const SCENES = [
+  { name: 'kanca',   start: 0.0, end: 2.6 },
+  { name: 'büyüme',  start: 2.6, end: 6.6 },
+  { name: 'sonuç',   start: 6.6, end: 9.0 },
+  { name: 'döngü',   start: 9.0, end: 10.0 },
+];
+
+// Ses olayları: her ses ekranda görünen bir olaya bağlı. Hem canlı oynatma
+// hem de render (OfflineAudioContext) bu listeyi kullanır.
+const SOUNDS = [];
+
+// ──────────────────────── YARDIMCILAR ────────────────────────
+const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+const lerp = (a, b, k) => a + (b - a) * k;
+/** t'nin [a,b] aralığındaki ilerlemesi, 0..1 */
+const prog = (t, a, b) => clamp((t - a) / (b - a));
+
+// Easing işe göre seçilir (hepsine aynı eğri verilmez):
+const ease = {
+  linear: k => k,
+  outCubic: k => 1 - Math.pow(1 - k, 3),          // yazı girişi, ögelerin yerleşmesi
+  inOutCubic: k => k < .5 ? 4*k*k*k : 1 - Math.pow(-2*k + 2, 3) / 2, // kamera
+  outExpo: k => k === 1 ? 1 : 1 - Math.pow(2, -10 * k),             // hızlı vuruş, sayaç
+  inOutSine: k => -(Math.cos(Math.PI * k) - 1) / 2,                 // nefes, döngü
+  // Sıkı yay: kritik sönümlü, taşma yok, k=1'de tam 1. Arayüzde öge yerleşmesi.
+  spring: k => k >= 1 ? 1 : (1 - (1 + 8 * k) * Math.exp(-8 * k)) / (1 - 9 * Math.exp(-8)),
+  // Küçük taşma (~%1). SADECE etkileşim anı (tık, basma). Her şeye verilmez.
+  outBackSoft: k => { const c = 0.6; return 1 + (c + 1) * Math.pow(k - 1, 3) + c * Math.pow(k - 1, 2); },
+};
+
+/** mulberry32 — tek rastgelelik kaynağı. Math.random yasak. */
+function mulberry32(a) {
+  return function () {
+    a |= 0; a = a + 0x6D2B79F5 | 0;
+    let t = Math.imul(a ^ a >>> 15, 1 | a);
+    t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+    return ((t ^ t >>> 14) >>> 0) / 4294967296;
+  };
+}
+/** Aynı (seed, i) her zaman aynı sayıyı verir: kareden bağımsız rastgelelik. */
+const rand = (i, salt = 0) => mulberry32(CONFIG.seed ^ (i * 2654435761) ^ (salt * 40503))();
+
+function sceneAt(t) {
+  for (let i = 0; i < SCENES.length; i++) if (t < SCENES[i].end) return { i, ...SCENES[i] };
+  return { i: SCENES.length - 1, ...SCENES[SCENES.length - 1] };
+}
+
+const fmt = (x, d = 2) => x.toLocaleString('tr-TR', { minimumFractionDigits: d, maximumFractionDigits: d });
+
+// ─────────────────────── KANVAS KURULUMU ───────────────────────
+const params = new URLSearchParams(location.search);
+const RENDER = params.has('render');
+const GUIDES = params.has('guides');
+if (RENDER) document.body.classList.add('render');
+
+const canvas = document.getElementById('c');
+const ctx = canvas.getContext('2d');
+const W = CONFIG.width, H = CONFIG.height;
+// Render'da DPR = deviceScaleFactor (render --scale 2 → 2160x3840). Önizlemede ekran DPR'ı.
+const DPR = Math.max(1, window.devicePixelRatio || 1);
+canvas.width = Math.round(W * DPR);
+canvas.height = Math.round(H * DPR);
+
+function fit() {
+  if (RENDER) { canvas.style.width = W + 'px'; canvas.style.height = H + 'px'; return; }
+  const s = Math.min(innerWidth / W, innerHeight / H);
+  canvas.style.width = W * s + 'px'; canvas.style.height = H * s + 'px';
+}
+addEventListener('resize', fit); fit();
+
+// ─────────────────────── ÇİZİM: draw(t) ───────────────────────
+// Kurallar: t dışında hiçbir şeye bağlı değil, önceki kareden durum taşımaz.
+
+// Örnek içerik: "Her gün %1 daha iyi → 1 yılda 37,8 kat." (1.01^365, gerçek hesap)
+const DAYS = 365;
+const growth = d => Math.pow(1.01, d);
+const decay = d => Math.pow(0.99, d);
+const dayAt = t => Math.round(DAYS * ease.inOutCubic(prog(t, 2.9, 6.2)));
+
+// Ay işaretleri: her biri göründüğünde bir "tık" sesi.
+const MONTHS = ['Oca','Şub','Mar','Nis','May','Haz','Tem','Ağu','Eyl','Eki','Kas','Ara'];
+const monthTime = m => {           // dayAt'in tersi: m. ay sonuna ne zaman varılır
+  const target = (m + 1) * DAYS / 12;
+  let lo = 2.9, hi = 6.2;
+  for (let k = 0; k < 40; k++) { const mid = (lo + hi) / 2; (dayAt(mid) < target ? lo = mid : hi = mid); }
+  return hi;
+};
+MONTHS.forEach((_, m) => SOUNDS.push({ t: monthTime(m), type: 'tick', gain: .25 + m * .02 }));
+SOUNDS.push({ t: 7.0, type: 'thump', gain: .9 });   // 37,8x açılışı (öncesinde 400 ms durgunluk)
+SOUNDS.push({ t: 8.0, type: 'tick', gain: .3, freq: 900 }); // karşılaştırma satırı
+
+// Güvenli alan (dikey): üst %12, alt %20, sağ %12
+const SAFE = { x0: W * .08, x1: W * .88, y0: H * .12, y1: H * .80 };
+
+// "Tek kap": vurgu bloğu tüm sahneler boyunca kesilmeden şekil değiştirir.
+function blockState(t) {
+  const base = { x: SAFE.x0, y: SAFE.y1 - 60, w: 120, h: 60 };       // döngünün başı/sonu
+  if (t < 2.9) {                                                     // kanca: 0. karede zaten hareketli
+    const k = ease.inOutSine((t % 1.3) / 1.3);
+    return { ...base, h: lerp(60, 110, Math.sin(k * Math.PI)), y: SAFE.y1 - lerp(60, 110, Math.sin(k * Math.PI)) };
+  }
+  if (t < 6.6) {                                                     // büyüme: log ölçekli çubuk
+    const g = growth(dayAt(t));
+    const h = lerp(60, SAFE.y1 - SAFE.y0 - 520, Math.log(g) / Math.log(growth(DAYS)));
+    return { x: SAFE.x0, y: SAFE.y1 - h, w: 120, h };
+  }
+  if (t < 9.0) {                                                     // sonuç: çubuk, rakamın altına çizgi olur
+    const k = ease.spring(prog(t, 6.9, 7.5));
+    const hFull = SAFE.y1 - SAFE.y0 - 520;
+    return { x: SAFE.x0, y: lerp(SAFE.y1 - hFull, SAFE.y0 + 560, k), w: lerp(120, SAFE.x1 - SAFE.x0, k), h: lerp(hFull, 18, k) };
+  }
+  const k = ease.inOutCubic(prog(t, 9.0, 10.0));                     // döngü: başa dön
+  return { x: SAFE.x0, y: lerp(SAFE.y0 + 560, base.y, k), w: lerp(SAFE.x1 - SAFE.x0, base.w, k), h: lerp(18, base.h, k) };
+}
+
+function text(str, x, y, size, weight = 800, color = C.ink, alpha = 1) {
+  if (alpha <= 0) return;
+  ctx.globalAlpha = alpha;
+  ctx.fillStyle = color;
+  ctx.font = `${weight} ${size}px ${FONT}`;
+  ctx.fillText(str, x, y);
+  ctx.globalAlpha = 1;
+}
+/**
+ * Tabular rakam: canvas'ta font-variant-numeric yok, bu yüzden her rakam '0' genişliğinde
+ * sabit hücreye çizilir. Değişen sayaçlar titremez.
+ */
+function textTab(str, x, y, size, weight = 800, color = C.ink, alpha = 1) {
+  if (alpha <= 0) return;
+  ctx.globalAlpha = alpha; ctx.fillStyle = color;
+  ctx.font = `${weight} ${size}px ${FONT}`;
+  const cell = ctx.measureText('0').width;
+  let cx = x;
+  for (const ch of str) {
+    const w = ctx.measureText(ch).width;
+    if (ch >= '0' && ch <= '9') { ctx.fillText(ch, cx + (cell - w) / 2, y); cx += cell; }
+    else { ctx.fillText(ch, cx, y); cx += w; }
+  }
+  ctx.globalAlpha = 1;
+}
+/** Maskenin altından aşağıdan yukarı kayarak giren satır. */
+function revealLine(str, x, y, size, k, weight = 800, color = C.ink) {
+  if (k <= 0) return;
+  ctx.save();
+  ctx.beginPath(); ctx.rect(x - 10, y - size * 1.05, W, size * 1.35); ctx.clip();
+  text(str, x, y + (1 - ease.outCubic(k)) * size * 1.2, size, weight, color);
+  ctx.restore();
+}
+
+function draw(t) {
+  t = clamp(t, 0, CONFIG.duration);
+  ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+  ctx.fillStyle = C.bg; ctx.fillRect(0, 0, W, H);
+  ctx.textBaseline = 'alphabetic';
+
+  const L = SAFE.x0, big = W * .12, mid = W * .075;
+  const top = SAFE.y0 + 40;   // üst güvenli çizgiden nefes payı
+
+  // Başlık: kanca ve döngü sonunda aynı yerde → son kare ilk kareye bağlanır.
+  const hookOut = ease.outCubic(prog(t, 2.6, 3.0));
+  const hookIn = ease.outCubic(prog(t, 9.2, 9.8));
+  const hookA = t < 9 ? 1 - hookOut : hookIn;
+  text('Her gün', L, top + big, big, 800, C.ink, hookA);
+  text('%1 daha iyi.', L, top + big * 2.1, big, 800, C.accent, hookA);
+
+  // Büyüme sahnesi: sayaç + gün
+  if (t >= 2.6 && t < 7.0) {
+    const a = ease.outCubic(prog(t, 2.6, 3.0)) * (1 - prog(t, 6.6, 6.9));
+    const d = dayAt(t);
+    textTab(`${d}. gün`, L, top + mid, mid, 600, C.mute, a);
+    textTab(`${fmt(growth(d))}x`, L, top + mid + big * 1.15, big * 1.15, 800, C.ink, a);
+    // Tek ay etiketi çubuğun tepesini takip eder (12 küçük etiket okunmaz; dikeyde min %7 genişlik)
+    const m = MONTHS.findIndex((_, i) => t < monthTime(i));
+    const label = MONTHS[m < 0 ? 11 : m];
+    const barTop = blockState(t).y;
+    text(label, L + 160, Math.min(barTop + W * .075 * .8, SAFE.y1 - 12), W * .075, 600, C.mute, a);
+  }
+
+  // Sonuç: 400 ms durgunluk (6.6–7.0) sonra büyük rakam
+  if (t >= 6.9 && t < 9.3) {
+    const out = 1 - prog(t, 9.0, 9.3);
+    revealLine('1 yılda', L, top + mid * 1.2, mid, prog(t, 6.9, 7.3), 600, C.mute);
+    revealLine(`${fmt(growth(DAYS), 1)}x`, L, top + mid * 1.2 + big * 1.9, big * 1.9, prog(t, 7.0, 7.45) * out);
+    revealLine(`%1 kötü: ${fmt(decay(DAYS), 2)}x`, L, top + 720, mid, prog(t, 8.0, 8.35) * out, 600, C.mute);
+  }
+
+  // Tek kap
+  const b = blockState(t);
+  ctx.fillStyle = C.accent;
+  ctx.beginPath(); ctx.roundRect(b.x, b.y, Math.max(0, b.w), Math.max(0, b.h), Math.max(0, Math.min(12, b.h / 2, b.w / 2))); ctx.fill();
+
+  if (GUIDES) drawGuides();
+}
+
+function drawGuides() {
+  ctx.save();
+  ctx.fillStyle = 'rgba(255,0,80,.12)';
+  ctx.fillRect(0, 0, W, SAFE.y0); ctx.fillRect(0, SAFE.y1, W, H - SAFE.y1); ctx.fillRect(SAFE.x1, 0, W - SAFE.x1, H);
+  ctx.strokeStyle = 'rgba(255,0,80,.6)'; ctx.setLineDash([12, 10]); ctx.lineWidth = 2;
+  ctx.strokeRect(SAFE.x0, SAFE.y0, SAFE.x1 - SAFE.x0, SAFE.y1 - SAFE.y0);
+  ctx.restore();
+}
+
+// ─────────────────────────── SES ───────────────────────────
+function synth(ac, s, dest) {
+  const t0 = s.t, g = ac.createGain();
+  g.connect(dest);
+  if (s.type === 'tick') {
+    const o = ac.createOscillator(); o.type = 'sine'; o.frequency.value = s.freq || 1600;
+    g.gain.setValueAtTime(0, t0); g.gain.linearRampToValueAtTime(s.gain, t0 + .004);
+    g.gain.exponentialRampToValueAtTime(1e-4, t0 + .07);
+    o.connect(g); o.start(t0); o.stop(t0 + .08);
+  } else if (s.type === 'thump') {
+    const o = ac.createOscillator(); o.type = 'sine';
+    o.frequency.setValueAtTime(140, t0); o.frequency.exponentialRampToValueAtTime(42, t0 + .35);
+    g.gain.setValueAtTime(0, t0); g.gain.linearRampToValueAtTime(s.gain, t0 + .01);
+    g.gain.exponentialRampToValueAtTime(1e-4, t0 + .6);
+    o.connect(g); o.start(t0); o.stop(t0 + .65);
+  } else if (s.type === 'whoosh') {
+    const len = Math.floor(ac.sampleRate * (s.dur || .4)), buf = ac.createBuffer(1, len, ac.sampleRate);
+    const ch = buf.getChannelData(0), r = mulberry32(CONFIG.seed + Math.round(t0 * 1000));
+    for (let i = 0; i < len; i++) ch[i] = r() * 2 - 1;
+    const src = ac.createBufferSource(); src.buffer = buf;
+    const f = ac.createBiquadFilter(); f.type = 'bandpass'; f.Q.value = 1.2;
+    f.frequency.setValueAtTime(400, t0); f.frequency.exponentialRampToValueAtTime(3000, t0 + (s.dur || .4));
+    g.gain.setValueAtTime(0, t0); g.gain.linearRampToValueAtTime(s.gain, t0 + (s.dur || .4) * .4);
+    g.gain.linearRampToValueAtTime(0, t0 + (s.dur || .4));
+    src.connect(f); f.connect(g); src.start(t0);
+  }
+}
+
+window.__renderAudio = async function () {
+  if (!SOUNDS.length) return null;
+  const sr = 48000, ac = new OfflineAudioContext(2, Math.ceil(sr * CONFIG.duration), sr);
+  const master = ac.createGain(); master.gain.value = .8; master.connect(ac.destination);
+  SOUNDS.forEach(s => synth(ac, s, master));
+  const buf = await ac.startRendering();
+  return wavBase64(buf);
+};
+
+function wavBase64(buf) {
+  const ch = buf.numberOfChannels, n = buf.length, bytes = 44 + n * ch * 2;
+  const v = new DataView(new ArrayBuffer(bytes));
+  const str = (o, s) => [...s].forEach((c, i) => v.setUint8(o + i, c.charCodeAt(0)));
+  str(0, 'RIFF'); v.setUint32(4, bytes - 8, true); str(8, 'WAVE'); str(12, 'fmt ');
+  v.setUint32(16, 16, true); v.setUint16(20, 1, true); v.setUint16(22, ch, true);
+  v.setUint32(24, buf.sampleRate, true); v.setUint32(28, buf.sampleRate * ch * 2, true);
+  v.setUint16(32, ch * 2, true); v.setUint16(34, 16, true); str(36, 'data'); v.setUint32(40, n * ch * 2, true);
+  const data = [...Array(ch)].map((_, c) => buf.getChannelData(c));
+  let o = 44;
+  for (let i = 0; i < n; i++) for (let c = 0; c < ch; c++, o += 2)
+    v.setInt16(o, Math.max(-1, Math.min(1, data[c][i])) * 0x7fff, true);
+  const u8 = new Uint8Array(v.buffer); let s = '';
+  for (let i = 0; i < u8.length; i += 0x8000) s += String.fromCharCode.apply(null, u8.subarray(i, i + 0x8000));
+  return btoa(s);
+}
+
+// ───────────────────── SÖZLEŞME + OYNATICI ─────────────────────
+let current = 0;
+window.__duration = CONFIG.duration;
+window.__fps = CONFIG.fps;
+window.__size = { width: W, height: H };
+window.__scenes = SCENES;
+window.__setTime = t => { current = t; draw(t); };
+// Google Fonts Türkçe harfleri (İ Ş Ğ ı ş ğ) ayrı "latin-ext" dosyasında sunar; örnek metin
+// vermeden load() çağrılırsa o dosya ilk kullanımda geç gelir ve ilk kare yanlış fontla çizilir.
+const GLYPHS = 'AaİıŞşĞğÜüÖöÇç0123456789%.,:x→–';
+window.__ready = Promise.all(CONFIG.fonts.map(f => document.fonts.load(f, GLYPHS).catch(() => null)))
+  .then(() => document.fonts.ready);
+
+let playing = false, startWall = 0, ac = null;
+function play() {
+  playing = true;
+  startWall = performance.now() - current * 1000;
+  if (!ac) ac = new AudioContext();
+  ac.resume();
+  const base = ac.currentTime - current;
+  const out = ac.createGain(); out.gain.value = .8; out.connect(ac.destination);
+  SOUNDS.filter(s => s.t >= current).forEach(s => synth(ac, { ...s, t: base + s.t }, out));
+  play.out = out;
+  requestAnimationFrame(loop);
+}
+function pause() { playing = false; if (play.out) play.out.disconnect(); }
+function loop(now) {
+  if (!playing) return;
+  let t = (now - startWall) / 1000;
+  if (t >= CONFIG.duration) { pause(); current = 0; play(); return; }   // döngü
+  window.__setTime(t);
+  hud();
+  requestAnimationFrame(loop);
+}
+function hud() {
+  const el = document.getElementById('hud');
+  el.textContent = `${current.toFixed(2)} sn · kare ${Math.round(current * CONFIG.fps)} · ${sceneAt(current).name}` +
+    (playing ? '' : '  (tıkla: oynat · ←/→ kare)');
+}
+function step(dt) { pause(); window.__setTime(clamp(current + dt, 0, CONFIG.duration)); hud(); }
+
+window.__ready.then(() => {
+  const qt = params.get('t');
+  if (qt !== null) { window.__setTime(parseFloat(qt) || 0); hud(); return; }   // tek kare, dur
+  window.__setTime(0); hud();
+  if (RENDER) return;
+  canvas.addEventListener('click', () => playing ? pause() : play());
+  addEventListener('keydown', e => {
+    if (e.key === ' ') { e.preventDefault(); playing ? pause() : play(); }
+    if (e.key === 'ArrowRight') step(e.shiftKey ? 1 : 1 / CONFIG.fps);
+    if (e.key === 'ArrowLeft') step(e.shiftKey ? -1 : -1 / CONFIG.fps);
+  });
+});
+</script>
+</body>
+</html>
