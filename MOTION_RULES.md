@@ -46,6 +46,7 @@ Algoritmanın ölçtüğü şey 3–5 arası; "AI ile yapılmış" olması ne ö
   | Görsel paradoks | İmkânsız görünen bir hareket ya da şekil |
   | "Ya …olursa?" | "Dünya dönmeyi bıraksa ne olur?" |
   | Yarım hareket | Tamamlanmak üzere duran bir şey: göz bitişini bekler |
+  | Tahmin et | "Grönland gerçekte Türkiye'nin kaç katı?" Cevaptan önce 600 ms durgunluk. Yorum ve gönderme getirir. |
 
 **Orta: neden kalsınlar?**
 * **Açık döngü.** Kancada vaat edilen sonuç en büyük ana kadar saklanır. Yolda her **3–5 sn'de (V) bir ara ödül** gelsin: yeni sayı, yeni ölçek, yeni "aaa".
