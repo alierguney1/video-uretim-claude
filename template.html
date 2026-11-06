@@ -9,6 +9,7 @@
     window.__fps           kare hızı
     window.__size          {width, height} mantıksal çözünürlük
     window.__scenes        [{name, start, end}]  (kontak sayfası bunu okur)
+    window.__cover         kapak karesinin zamanı (render cover.png çıkarır)
     window.__setTime(t)    t anını çizer
     window.__ready         font vb. yüklenince çözülen Promise
     window.__renderAudio() SOUNDS'u OfflineAudioContext ile WAV'a (base64) çevirir
@@ -46,6 +47,7 @@ const CONFIG = {
   fps: 60,
   duration: 10,
   seed: 20261106,
+  cover: 0.0,                  // kapak karesi (sn): soruyu/şoku tek başına taşımalı
   fonts: ['800 10px Inter', '600 10px Inter', '400 10px Inter'],
 };
 const FONT = 'Inter, system-ui, sans-serif';
@@ -317,6 +319,7 @@ window.__duration = CONFIG.duration;
 window.__fps = CONFIG.fps;
 window.__size = { width: W, height: H };
 window.__scenes = SCENES;
+window.__cover = CONFIG.cover;
 window.__setTime = t => { current = t; draw(t); };
 // Google Fonts Türkçe harfleri (İ Ş Ğ ı ş ğ) ayrı "latin-ext" dosyasında sunar; örnek metin
 // vermeden load() çağrılırsa o dosya ilk kullanımda geç gelir ve ilk kare yanlış fontla çizilir.

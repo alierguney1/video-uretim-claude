@@ -77,6 +77,24 @@ if (meta.hasSetTime && meta.duration > 0) try {
   if (f0.equals(f03)) warn('İlk 0.3 sn tamamen durağan. Dikey videolarda ilk kare kapaktır: 0. saniyede hareket olsun.');
   else ok('ilk 0.3 sn içinde hareket var');
 
+  // Ölü zaman: 10 fps örnekle, 0.7 sn'den uzun tamamen aynı kalan aralıkları bul
+  const step = 0.1, frames = [];
+  for (let t = 0; t <= d + 1e-9; t += step) frames.push(await frameAt(page, meta, Math.min(t, d)));
+  const dead = [];
+  let runStart = 0;
+  for (let i = 1; i <= frames.length; i++) {
+    if (i < frames.length && frames[i].equals(frames[i - 1])) continue;
+    const len = (i - 1 - runStart) * step;
+    if (len > 0.7 + 1e-6) dead.push(`${(runStart * step).toFixed(1)}–${((i - 1) * step).toFixed(1)} sn`);
+    runStart = i;
+  }
+  if (dead.length) warn(`Ölü zaman (>0.7 sn durağan): ${dead.join(', ')}. Bilinçli durgunluk değilse hareket ya da ara ödül ekle.`);
+  else ok('ölü zaman yok (>0.7 sn durağan an bulunmadı)');
+
+  const cover = await page.evaluate(() => window.__cover);
+  if (typeof cover !== 'number') warn('window.__cover yok: render kapak için 0. kareyi kullanacak.');
+  else ok(`kapak karesi ${cover} sn`);
+
   // Boş kare: sıkıştırılmış PNG çok küçükse ekran büyük ihtimalle düz renk
   const tiny = T.filter((t, i) => fwd[i].length < 4000).map(fmtT);
   if (tiny.length) warn(`Neredeyse boş görünen kareler: ${tiny.join(', ')}`);

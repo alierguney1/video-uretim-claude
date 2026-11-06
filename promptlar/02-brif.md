@@ -1,4 +1,4 @@
-# Brif: 7 parça + farklılık satırı
+# Brif
 
 Her yeni animasyonda önce brif yazılır ve `animasyonlar/<ad>.brief.md` olarak kaydedilir.
 Kısa prompt sürpriz üretir, uzun prompt kontrol üretir. Keşif aşamasında kısa yaz,
@@ -11,7 +11,11 @@ ne istediğini bulunca uzun yaz.
 5. **Sanat yönü:** Arka plan, palet + tek vurgu rengi, en fazla 2 yazı tipi, doku.
 6. **Hareket dili:** Hareketin anlamı, sabit kurallar (ör. sağa = ilerleme, büyüme = önem).
 7. **Yasaklar:** MOTION_RULES.md + bu işe özel olanlar.
-8. **Farklılık (bu repoya özel):** Bu videoyu son 5 videodan ayıran şey: kanca türü, yapı, palet, ses.
+8. **Kanca türü:** MOTION_RULES.md §2 kataloğundan biri. Aynı tür art arda en fazla 2 kez.
+9. **Ara ödüller:** Açık döngü boyunca her 3–5 sn'de gelen küçük "aaa"ların listesi ve saniyeleri.
+10. **Gönderilme sebebi:** "Bunu kime, neden gönderir?" Tek cümle. Yazılamıyorsa fikir zayıf.
+11. **Farklılık:** Son 5 videodan kanca türü ve yapı olarak nasıl ayrılıyor.
+12. **Yayın paketi:** kapak saniyesi, başlık, açıklama, 3–5 etiket, AI etiketi (gerekli mi), kaynak.
 
 ## Tam iskelet
 
@@ -31,7 +35,11 @@ SAHNELER:
 SANAT YÖNÜ: [arka plan], [palet + tek vurgu rengi], [yazı tipi], [doku], referans: [varsa].
 HAREKET DİLİ: [3 kural, her sahnede tutarlı].
 YASAKLAR: MOTION_RULES.md + [bu işe özel].
+KANCA TÜRÜ: [sayı şoku / yanlış inanış / sonuçtan başla / görsel paradoks / ya …olursa / yarım hareket]
+ARA ÖDÜLLER: [sn: ne] · [sn: ne] · …
+GÖNDERİLME SEBEBİ: [kime, neden]
 FARKLILIK: [son videolardan farkı].
+PAKET: kapak [sn] · başlık [...] · açıklama [...] · etiketler [...] · AI etiketi [evet/hayır, neden] · kaynak [...]
 
 Önce kod yazma. Sahne listesini, her sahnenin süresini ve sahneler arası geçişin
 hangi nesne üzerinden olacağını göster. Onayımdan sonra kodla.
@@ -44,8 +52,8 @@ Konu: [bir cümle]
 İzleyici videodan çıkınca şunu hatırlasın: [bir cümle]
 Platform: [Shorts / Reels / TikTok / yatay]
 
-Brifi sen doldur (8 parça). Kararlarını tek satırla gerekçelendir.
-animasyonlar/ klasöründeki son brifleri oku ve farklılık satırını ona göre yaz.
+Brifi sen doldur (12 parça). Kararlarını tek satırla gerekçelendir.
+animasyonlar/ klasöründeki son brifleri ve yayinlar.csv'yi oku; kanca türünü ve farklılık satırını ona göre seç.
 Kod yazma; brifi göster, ben düzelteyim, onaydan sonra kodla.
 ```
 

@@ -6,9 +6,10 @@ her piksel kodla çizilir. Her işte **[MOTION_RULES.md](MOTION_RULES.md)** geç
 ## İş akışı (sırayı atlama)
 
 1. **Brif.** Kullanıcı sadece konu verdiyse [promptlar/02-brif.md](promptlar/02-brif.md)'deki
-   7 parçayı sen doldur, kararları tek satırla gerekçelendir. Brifi
-   `animasyonlar/<ad>.brief.md` olarak kaydet. "Bu videoyu öncekilerden ayıran şey" satırı zorunlu:
-   `animasyonlar/` içindeki son brifleri oku, aynı kanca/yapı/paleti tekrar etme.
+   12 parçayı sen doldur, kararları tek satırla gerekçelendir. Brifi
+   `animasyonlar/<ad>.brief.md` olarak kaydet. Kanca türü, ara ödüller, gönderilme sebebi ve
+   farklılık satırları zorunlu: `animasyonlar/` içindeki son brifleri ve `yayinlar.csv`'yi oku,
+   aynı kanca türünü art arda 2'den fazla kullanma. `STYLE.md` varsa sabit kimliğe uy.
 2. **Sahne listesi + süreler + geçiş nesneleri.** Göster, **onay al**. Onaydan önce kod yazma.
 3. **Kod.** `template.html` dosyasını `animasyonlar/<ad>.html` olarak kopyala. `CONFIG`, `SCENES`,
    `SOUNDS` ve çizim fonksiyonlarını değiştir. Sözleşme kısmına (en alttaki blok) dokunma.
@@ -18,8 +19,11 @@ her piksel kodla çizilir. Her işte **[MOTION_RULES.md](MOTION_RULES.md)** geç
    dışı öge, kopuk geçiş, ölü zaman ara. Bulduklarını saniye + kare numarasıyla yaz, düzelt, tekrarla.
 6. **Cilalama.** İlk sürüm taslaktır: [promptlar/10-cilalama.md](promptlar/10-cilalama.md)'deki
    direktör turunu uygula (en fazla 3 tur, hedef her başlıkta 8+).
-7. **Render.** `npm run render -- animasyonlar/<ad>.html` → `out/<ad>/<ad>.mp4`.
+7. **Render.** `npm run render -- animasyonlar/<ad>.html` → `out/<ad>/<ad>.mp4` + `cover.png`.
    Müzik/seslendirme dosyası varsa `--audio dosya.mp3`.
+8. **Kayıt.** `yayinlar.csv`'ye satır ekle (metrikler boş). Kullanıcı 48 saat / 7 gün metriklerini
+   verince doldur. Her 10 satırda bir kanca türü / süre / yapı karşılaştırması yap ve
+   MOTION_RULES.md'deki (V) değerlerini güncellemeyi öner.
 
 "Kod çalışıyor" ile "görüntü doğru" aynı şey değil. Kontak sayfasına bakmadan "bitti" deme.
 

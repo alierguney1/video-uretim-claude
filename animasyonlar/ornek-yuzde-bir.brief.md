@@ -11,5 +11,9 @@
 - **Sanat yönü:** Kırık beyaz #F2EEE6, mürekkep #151515, tek vurgu #E4572E. Inter (tek aile). Sola hizalı.
 - **Hareket dili:** Yukarı = büyüme, tek kap (vurgu bloğu hiç kesilmez), ses = ay geçişi / büyük açılış.
 - **Yasaklar:** MOTION_RULES.md.
+- **Kanca türü:** sayı şoku (sonuç rakamı saklı, vaat ekranda).
+- **Ara ödüller:** 4.6 sn "7,24x" (yarı yolda bile 7 kat) · 6.2 sn "37,78x" · 8.0 sn "%1 kötü: 0,03x" (ters yön).
+- **Gönderilme sebebi:** Yeni bir alışkanlığa başlayan arkadaşa "bak, küçük adım bile değer" diye.
 - **Farklılık:** İlk video; referans nokta.
+- **Paket:** kapak 0 sn · başlık "Her gün %1 daha iyi olursan 1 yılda ne olur?" · açıklama "1,01^365 = 37,8. 0,99^365 = 0,03. Bileşik büyümenin iki yönü." · etiketler #matematik #alışkanlık #bileşikbüyüme · AI etiketi: hayır (gerçekçi sentetik içerik yok) · kaynak: hesap, kodda.
 - **Gerçek hesap:** 1.01^365 = 37,78 · 0.99^365 = 0,0255 (kodda hesaplanıyor).
