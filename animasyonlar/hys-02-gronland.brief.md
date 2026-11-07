@@ -1,6 +1,6 @@
-# hys-01-gronland — brif
+# hys-02-gronland — brif (taslak)
 
-Seri: Harita Yalan Söyler · Bölüm 1
+Seri: Harita Yalan Söyler · Bölüm 2 (aday; süre 30 sn+ olacak şekilde yeniden planlanacak)
 
 - **Rol:** Harita anlatıcısı ve bilgi tasarımcısı.
 - **Hedef:** İzleyici şunu hatırlamalı: dünya haritası kutuplara yaklaştıkça her şeyi şişirir; Grönland Türkiye'nin 27 katı değil, 2,8 katı.

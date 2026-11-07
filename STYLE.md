@@ -37,7 +37,8 @@ harita doğal olarak başladığı yere döner (döngü).
 
 ## Ses
 
-- **Seslendirme:** Gemini 3.8 Flash TTS, Türkçe. Ses: tek ses sabit (ilk bölümde Charon / Sadaltager denenip biri seçilir). Stil: "sakin, meraklı, bir sırrı anlatır gibi".
+- **Seslendirme:** Gemini 3.8 Flash TTS, Türkçe. Ses: **Charon** (sabit). Stil: "enerjik ve merak uyandıran, hızlı tempolu, önemli kelimeleri vurgulayan, izleyiciye meydan okur gibi". Üretimden sonra `atempo=1.12` (perde değişmeden %12 hız).
+- **Süre:** 30–45 sn; 4–6 ara ödül.
 - Her cümle ayrı üretilir; sahne süreleri cümle sürelerinden hesaplanır.
 - **Ses imzası:** gerçek ortaya çıktığında iki notalı yumuşak "ping" (sentez). Altında çok alçak drone (−14 LUFS'u tutturmak için sürekli doku).
 
