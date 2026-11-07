@@ -53,13 +53,23 @@ await Promise.all(pages.map(async (p, w) => {
 }));
 process.stdout.write(`\r  ${total}/${total} kare · ${((Date.now() - started) / 1000).toFixed(1)} sn\n`);
 
-// Ses
-let audio = null;
-if (args.audio) audio = path.resolve(args.audio);
-else if (!args['no-audio'] && meta.hasAudio) {
+// Ses: --audio (seslendirme/müzik) ve sayfanın sentez sesleri (SOUNDS) varsa ikisi karıştırılır.
+// --no-synth sadece --audio'yu, --no-audio hiç ses kullanmaz.
+let audio = null, synthWav = null;
+if (!args['no-audio'] && !args['no-synth'] && meta.hasAudio) {
   const b64 = await main.page.evaluate(() => window.__renderAudio());
-  if (b64) { audio = path.join(dir, 'audio.wav'); fs.writeFileSync(audio, Buffer.from(b64, 'base64')); }
+  if (b64) { synthWav = path.join(dir, 'synth.wav'); fs.writeFileSync(synthWav, Buffer.from(b64, 'base64')); }
 }
+if (args.audio && !args['no-audio']) {
+  const ext = path.resolve(args.audio);
+  if (synthWav) {
+    audio = path.join(dir, 'audio.wav');
+    const m = spawnSync('ffmpeg', ['-y', '-loglevel', 'error', '-i', ext, '-i', synthWav, '-filter_complex',
+      '[0:a]aformat=sample_rates=48000:channel_layouts=stereo[v];[1:a]aformat=sample_rates=48000:channel_layouts=stereo[s];' +
+      '[v][s]amix=inputs=2:normalize=0:duration=longest[a]', '-map', '[a]', audio], { stdio: 'inherit' });
+    if (m.status !== 0) { console.error('Ses karıştırılamadı.'); process.exit(1); }
+  } else audio = ext;
+} else audio = synthWav;
 // Kapak karesi
 const coverT = await main.page.evaluate(() => typeof window.__cover === 'number' ? window.__cover : 0);
 fs.writeFileSync(path.join(dir, 'cover.png'), await frameAt(main.page, meta, coverT));

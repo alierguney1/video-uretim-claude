@@ -205,7 +205,12 @@ function revealLine(str, x, y, size, k, weight = 800, color = C.ink) {
   ctx.restore();
 }
 
+// Her kare temiz çizim durumuyla başlar: lineCap, dash, hizalama vb. önceki kareden taşınmaz.
 function draw(t) {
+  ctx.save();
+  try { drawFrame(t); } finally { ctx.restore(); }
+}
+function drawFrame(t) {
   t = clamp(t, 0, CONFIG.duration);
   ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
   ctx.fillStyle = C.bg; ctx.fillRect(0, 0, W, H);

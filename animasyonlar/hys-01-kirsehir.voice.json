@@ -1,0 +1,50 @@
+{
+  "voice": "Charon",
+  "style": "enerjik ve merak uyandıran, hızlı tempolu, önemli kelimeleri vurgulayan, izleyiciye meydan okur gibi",
+  "tempo": 1.12,
+  "lead": 0.15,
+  "gap": 0.3,
+  "tail": 2.2,
+  "lines": [
+    {
+      "id": "l1",
+      "text": "Kırşehir, gerçekten DÜNYANIN MERKEZİ mi?",
+      "holdAfter": 0.4,
+      "caption": "Kırşehir, gerçekten dünyanın merkezi mi?"
+    },
+    {
+      "id": "l2",
+      "text": "Bin dokuz yüz yetmiş üçte bir fizikçi, dünyadaki bütün karaların merkezini bilgisayarla hesapladı.",
+      "caption": "1973'te bir fizikçi, dünyadaki bütün karaların merkezini bilgisayarla hesapladı."
+    },
+    {
+      "id": "l3",
+      "text": "Sonuç: otuz dokuz kuzey, otuz dört doğu. Kırşehir'in hemen yanı!",
+      "caption": "Sonuç: 39° kuzey, 34° doğu. Kırşehir'in hemen yanı!"
+    },
+    {
+      "id": "l4",
+      "text": "İşin ilginci: hesabı isteyen kurum, merkezin Kutsal Topraklar'da çıkmasını umuyordu."
+    },
+    {
+      "id": "l5",
+      "text": "İki bin üçte başka bir hesap, noktayı Çorum İskilip'e taşıdı.",
+      "caption": "2003'te başka bir hesap, noktayı Çorum İskilip'e taşıdı."
+    },
+    {
+      "id": "l6",
+      "text": "Biz de bugünün haritasıyla hesapladık. Her kara parçasını, büyüklüğüyle tarttık.",
+      "holdAfter": 2.6
+    },
+    {
+      "id": "l7",
+      "text": "Bizim noktamız... <short pause> ROMANYA'da çıktı!",
+      "pauseBefore": 0.3,
+      "caption": "Bizim noktamız… Romanya'da çıktı!"
+    },
+    {
+      "id": "l8",
+      "text": "Yani tek bir merkez yok: yöntem değişince nokta kayıyor. Ama üç hesabın üçü de Karadeniz'in çevresinde."
+    }
+  ]
+}

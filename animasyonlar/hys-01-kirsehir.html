@@ -1,0 +1,607 @@
+<!doctype html>
+<!--
+  Harita Yalan Söyler · Bölüm 1 — "Kırşehir gerçekten dünyanın merkezi mi?"
+  Brif: hys-01-kirsehir.brief.md · Stil: ../STYLE.md · Kurallar: ../MOTION_RULES.md
+  Seslendirme zamanları VO bloğunda; `npm run tts -- animasyonlar/hys-01-kirsehir.voice.json` günceller.
+
+  "Bizim hesap" sahnesi gerçek hesaptır: Natural Earth 1:50m kara verisi 0,25° ızgarada rasterlenir,
+  her kara hücresi alanıyla (cos enlem) tartılır, 3B ağırlık merkezi yüzeye izdüşürülür. Kırşehir'den
+  genişleyen halka içindeki hücrelerin ağırlık merkezi her karede yeniden hesaplanır; halka tüm dünyayı
+  kapladığında nokta nihai sonuca oturur.
+-->
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dünyanın Merkezi</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@600;800&family=IBM+Plex+Mono:wght@500&display=block" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/d3-array@3.2.4/dist/d3-array.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/d3-geo@3.1.1/dist/d3-geo.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/topojson-client@3.1.0/dist/topojson-client.min.js"></script>
+<style>
+  html, body { margin: 0; height: 100%; background: #0b141b; }
+  body { display: grid; place-items: center; overflow: hidden; }
+  canvas { display: block; }
+  #hud { position: fixed; left: 12px; bottom: 10px; font: 12px/1.4 ui-monospace, monospace;
+         color: #bbb; background: rgba(0,0,0,.55); padding: 4px 8px; border-radius: 4px; user-select: none; }
+  body.render #hud { display: none; }
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div id="hud">yükleniyor…</div>
+<audio id="vo" src="../ses/hys-01-kirsehir/voice.wav" preload="auto"></audio>
+<script>
+'use strict';
+
+/*VO:BEGIN*/ const VO = {"duration":38.18,"lines":[{"id":"l1","start":0.15,"end":2.203,"text":"Kırşehir, gerçekten dünyanın merkezi mi?"},{"id":"l2","start":2.903,"end":7.565,"text":"1973'te bir fizikçi, dünyadaki bütün karaların merkezini bilgisayarla hesapladı."},{"id":"l3","start":7.865,"end":11.9,"text":"Sonuç: 39° kuzey, 34° doğu. Kırşehir'in hemen yanı!"},{"id":"l4","start":12.2,"end":16.512,"text":"İşin ilginci: hesabı isteyen kurum, merkezin Kutsal Topraklar'da çıkmasını umuyordu."},{"id":"l5","start":16.812,"end":20.16,"text":"2003'te başka bir hesap, noktayı Çorum İskilip'e taşıdı."},{"id":"l6","start":20.46,"end":24.524,"text":"Biz de bugünün haritasıyla hesapladık. Her kara parçasını, büyüklüğüyle tarttık."},{"id":"l7","start":27.724,"end":29.548,"text":"Bizim noktamız… Romanya'da çıktı!"},{"id":"l8","start":29.848,"end":35.981,"text":"Yani tek bir merkez yok: yöntem değişince nokta kayıyor. Ama üç hesabın üçü de Karadeniz'in çevresinde."}]}; /*VO:END*/
+const L = VO.lines;
+const at = (i, k = 'start') => L[i] ? L[i][k] : 0;
+
+// ───────────────────────── CONFIG ─────────────────────────
+const CONFIG = {
+  width: 1080, height: 1920, fps: 60,
+  duration: VO.duration,
+  seed: 1973,
+  cover: 0.0,
+  fonts: ['800 10px Inter', '600 10px Inter', '500 10px "IBM Plex Mono"'],
+};
+const SANS = 'Inter, system-ui, sans-serif', MONO = '"IBM Plex Mono", ui-monospace, monospace';
+const C = { ocean: '#0F1C26', land: '#E8E2D4', text: '#F4F1EA', mute: '#8FA1AD', accent: '#FF6B2C', grid: 'rgba(232,226,212,.10)' };
+
+// Noktalar (koordinatlar kaynaklı, bkz. brif)
+const P = {
+  woods:    [34.0, 39.0],                    // Woods 1973: 39°00′K 34°00′D
+  isenberg: [34 + 34 / 60, 40 + 52 / 60],    // Isenberg 2003 / Google: 40°52′K 34°34′D
+  kirsehir: [34.1709, 39.1425],
+  iskilip:  [34.4728, 40.7353],
+  kudus:    [35.2137, 31.7683],
+  kostence: [28.6348, 44.1598],
+};
+
+// Sahneler seslendirmeden türetilir
+const T = {
+  s1973: at(1), coord: at(2), twist: at(3), s2003: at(4), calc: at(5),
+  sweep0: at(5) + 1.4, sweep1: at(6) - 0.5, reveal: at(6) + 0.95, final: at(7), finalEnd: at(7, 'end'),
+};
+const SCENES = [
+  { name: 'kanca',      start: 0,          end: T.s1973 },
+  { name: '1973',       start: T.s1973,    end: T.twist },
+  { name: 'twist',      start: T.twist,    end: T.s2003 },
+  { name: '2003',       start: T.s2003,    end: T.calc },
+  { name: 'bizim hesap',start: T.calc,     end: at(6) },
+  { name: 'gerçek',     start: at(6),      end: T.final },
+  { name: 'sonuç',      start: T.final,    end: T.finalEnd + .3 },
+  { name: 'döngü',      start: T.finalEnd + .3, end: CONFIG.duration },
+];
+const SOUNDS = [];
+
+// ──────────────────────── YARDIMCILAR ────────────────────────
+const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+const lerp = (a, b, k) => a + (b - a) * k;
+const prog = (t, a, b) => b <= a ? (t >= b ? 1 : 0) : clamp((t - a) / (b - a));
+const ease = {
+  outCubic: k => 1 - Math.pow(1 - k, 3),
+  inOutCubic: k => k < .5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2,
+  inOutSine: k => -(Math.cos(Math.PI * k) - 1) / 2,
+  inQuad: k => k * k,
+};
+const sceneAt = t => SCENES.find(s => t < s.end) || SCENES[SCENES.length - 1];
+const RAD = Math.PI / 180, R_EARTH = 6371.0088;
+const km = (a, b) => d3.geoDistance(a, b) * R_EARTH;
+const fmtDeg = (v, d = 2) => Math.abs(v).toLocaleString('tr-TR', { minimumFractionDigits: d, maximumFractionDigits: d });
+const fmtKm = v => Math.round(v).toLocaleString('tr-TR');
+
+// ─────────────────────── KANVAS ───────────────────────
+const params = new URLSearchParams(location.search);
+const RENDER = params.has('render'), GUIDES = params.has('guides');
+if (RENDER) document.body.classList.add('render');
+const canvas = document.getElementById('c'), ctx = canvas.getContext('2d');
+const W = CONFIG.width, H = CONFIG.height;
+const DPR = Math.max(1, window.devicePixelRatio || 1);
+canvas.width = Math.round(W * DPR); canvas.height = Math.round(H * DPR);
+function fit() {
+  if (RENDER) { canvas.style.width = W + 'px'; canvas.style.height = H + 'px'; return; }
+  const s = Math.min(innerWidth / W, innerHeight / H);
+  canvas.style.width = W * s + 'px'; canvas.style.height = H * s + 'px';
+}
+addEventListener('resize', fit); fit();
+
+const SAFE = { x0: W * .08, x1: W * .88, y0: H * .12, y1: H * .80 };
+const GLOBE = { cx: W * .5, cy: H * .53, r: W * .42 };
+
+// ─────────────────────── VERİ ───────────────────────
+let LAND, LAND110, BORDERS, BORDERS110, DOTS, CUM, FINAL, SPHERE = { type: 'Sphere' }, GRAT;
+
+async function loadData() {
+  const base = 'https://cdn.jsdelivr.net/npm/world-atlas@2.0.2/';
+  const [land, countries, land110, countries110] = await Promise.all(['land-50m.json', 'countries-50m.json', 'land-110m.json', 'countries-110m.json'].map(f => fetch(base + f).then(r => r.json())));
+  LAND = topojson.feature(land, land.objects.land);
+  BORDERS = topojson.mesh(countries, countries.objects.countries, (a, b) => a !== b);
+  // Uzak görünümde (ölçek < 1.6) 1:110m yeterli ve çok daha hızlı
+  LAND110 = topojson.feature(land110, land110.objects.land);
+  BORDERS110 = topojson.mesh(countries110, countries110.objects.countries, (a, b) => a !== b);
+  GRAT = d3.geoGraticule10();
+
+  // Kara maskesi: 0,25° eşdikdörtgen raster
+  const RW = 1440, RH = 720, off = document.createElement('canvas');
+  off.width = RW; off.height = RH;
+  const o = off.getContext('2d');
+  const eq = d3.geoEquirectangular().scale(RW / (2 * Math.PI)).translate([RW / 2, RH / 2]);
+  o.fillStyle = '#000'; o.beginPath(); d3.geoPath(eq, o)(LAND); o.fill();
+  const px = o.getImageData(0, 0, RW, RH).data;
+
+  // Kara hücreleri: konum, ağırlık (cos enlem), 3B birim vektör, Woods'a uzaklık
+  const cells = [];
+  for (let j = 0; j < RH; j++) {
+    const lat = 90 - (j + .5) * 180 / RH, cl = Math.cos(lat * RAD), sl = Math.sin(lat * RAD);
+    for (let i = 0; i < RW; i++) {
+      if (px[(j * RW + i) * 4 + 3] < 128) continue;
+      const lon = -180 + (i + .5) * 360 / RW;
+      cells.push({ lon, lat, w: cl, x: cl * Math.cos(lon * RAD), y: cl * Math.sin(lon * RAD), z: sl,
+        d: d3.geoDistance(P.woods, [lon, lat]) / RAD, vis: (i % 4 === 2 && j % 4 === 2) });
+    }
+  }
+  cells.sort((a, b) => a.d - b.d);
+  // Kümülatif ağırlıklı toplamlar: halka yarıçapı r iken ağırlık merkezi = CUM[n(r)]
+  CUM = new Float64Array((cells.length + 1) * 4);
+  for (let k = 0; k < cells.length; k++) {
+    const c = cells[k], b = k * 4, n = b + 4;
+    CUM[n] = CUM[b] + c.w * c.x; CUM[n + 1] = CUM[b + 1] + c.w * c.y;
+    CUM[n + 2] = CUM[b + 2] + c.w * c.z; CUM[n + 3] = CUM[b + 3] + c.w;
+  }
+  DOTS = cells;
+  FINAL = centroidUpTo(cells.length);
+}
+
+/** İlk n hücrenin (Woods'a en yakın n) ağırlık merkezi, [lon, lat] */
+function centroidUpTo(n) {
+  if (n <= 0) return P.woods.slice();
+  const b = n * 4, X = CUM[b], Y = CUM[b + 1], Z = CUM[b + 2];
+  return [Math.atan2(Y, X) / RAD, Math.atan2(Z, Math.hypot(X, Y)) / RAD];
+}
+function countWithin(r) {             // ikili arama: d <= r olan hücre sayısı
+  let lo = 0, hi = DOTS.length;
+  while (lo < hi) { const m = (lo + hi) >> 1; DOTS[m].d <= r ? lo = m + 1 : hi = m; }
+  return lo;
+}
+
+// ─────────────────────── KAMERA ───────────────────────
+// [t, lon, lat, ölçek]; aralarda inOutCubic ve büyük daire üzerinden geçiş
+function cameraKeys() {
+  return [
+    [0,               22,   30,   1.00],
+    [T.s1973,         34,   39,   1.25],
+    [T.coord,         34,   39,   3.40],
+    [T.twist,         34,   39,   3.60],
+    [T.twist + 1.6,   34.5, 35.6, 2.60],
+    [T.s2003,         34.5, 35.6, 2.60],
+    [T.s2003 + 1.2,   34.3, 39.9, 3.40],
+    [T.calc,          34.3, 39.9, 3.40],
+    [T.sweep0,        31,   41,   1.70],
+    [T.sweep1,        30,   42,   1.90],
+    [at(6),           30,   42,   1.90],
+    [at(6) + .8,      28.7, 44.6, 3.60],
+    [T.final,         28.7, 44.6, 3.60],
+    [T.final + 1.5,   32.6, 41.6, 3.30],
+    [T.finalEnd + .3, 32.6, 41.6, 3.30],
+    [CONFIG.duration, 22,   30,   1.00],
+  ];
+}
+function camera(t) {
+  const K = cameraKeys();
+  let i = 0; while (i < K.length - 2 && t >= K[i + 1][0]) i++;
+  const a = K[i], b = K[i + 1], k = ease.inOutCubic(prog(t, a[0], b[0]));
+  const c = d3.geoInterpolate([a[1], a[2]], [b[1], b[2]])(k);
+  // Ölçek logaritmik aralıkta: yakınlaşma hızı sabit hissettirir
+  return { lon: c[0], lat: c[1], k: Math.exp(lerp(Math.log(a[3]), Math.log(b[3]), k)) };
+}
+function projection(cam) {
+  return d3.geoOrthographic().translate([GLOBE.cx, GLOBE.cy]).scale(GLOBE.r * cam.k)
+    .rotate([-cam.lon, -cam.lat]).clipAngle(90).precision(.3);
+}
+const visible = (cam, p) => d3.geoDistance([cam.lon, cam.lat], p) < Math.PI / 2 - .02;
+
+// ─────────────────────── METİN ───────────────────────
+function text(str, x, y, size, { font = SANS, weight = 800, color = C.text, alpha = 1, align = 'left' } = {}) {
+  if (alpha <= 0.001) return 0;
+  ctx.globalAlpha = alpha; ctx.fillStyle = color; ctx.textAlign = align;
+  ctx.font = `${weight} ${size}px ${font}`; ctx.fillText(str, x, y);
+  const w = ctx.measureText(str).width; ctx.globalAlpha = 1; ctx.textAlign = 'left';
+  return w;
+}
+/** Haritadaki etiket: koyu zeminli, güvenli alana sıkıştırılmış */
+function label(str, x, y, { size = 46, font = MONO, weight = 500, color = C.text, alpha = 1, dx = 28, dy = -24 } = {}) {
+  if (alpha <= 0.001) return;
+  ctx.font = `${weight} ${size}px ${font}`;
+  const w = ctx.measureText(str).width, padX = 14, h = size * 1.25;
+  let lx = x + dx, ly = y + dy;
+  if (lx + w + padX > SAFE.x1) lx = x - dx - w;                 // sağa sığmıyorsa sola
+  lx = clamp(lx, SAFE.x0, SAFE.x1 - w - padX);
+  ly = clamp(ly, SAFE.y0 + 260 + h, SAFE.y1 - 230);
+  ctx.globalAlpha = alpha * .92; ctx.fillStyle = C.ocean;
+  ctx.beginPath(); ctx.roundRect(lx - padX, ly - size * .95, w + padX * 2, h, 10); ctx.fill();
+  ctx.globalAlpha = alpha; ctx.fillStyle = color; ctx.fillText(str, lx, ly);
+  ctx.globalAlpha = 1;
+}
+
+// Altyazı: kelime kelime, aktif kelime vurgulu (karakter oranıyla tahmini zamanlama)
+const CAP = { size: 54, lineH: 70, maxW: SAFE.x1 - SAFE.x0, y: SAFE.y1 - 168 };
+let CHUNKS = [];
+function buildCaptions() {
+  ctx.font = `600 ${CAP.size}px ${SANS}`;
+  const sp = ctx.measureText(' ').width;
+  CHUNKS = [];
+  L.forEach((l, li) => {
+    if (li === 0) return;                                      // ilk cümle başlıkta yazıyor
+    const words = l.text.split(' ');
+    const total = l.text.length, dur = l.end - l.start;
+    let lines = [[]], lw = 0, chunkWords = [], acc = 0;
+    const flush = () => {
+      if (!chunkWords.length) return;
+      const chars = chunkWords.reduce((s, w) => s + w.word.length + 1, 0);
+      CHUNKS.push({ li, words: chunkWords, lines: lines.filter(x => x.length) });
+      chunkWords = []; lines = [[]]; lw = 0;
+    };
+    for (const word of words) {
+      const w = ctx.measureText(word).width;
+      if (lw && lw + sp + w > CAP.maxW) {
+        if (lines.length === 2) flush(); else { lines.push([]); lw = 0; }
+      }
+      const t0 = l.start + dur * acc / total; acc += word.length + 1;
+      const item = { word, w, t0, t1: l.start + dur * acc / total };
+      lines[lines.length - 1].push(item); chunkWords.push(item);
+      lw += (lw ? sp : 0) + w;
+    }
+    flush();
+  });
+  CHUNKS.forEach((c, i) => {
+    c.start = c.words[0].t0 - .08;
+    const next = CHUNKS[i + 1];
+    c.end = next && next.li === c.li ? next.words[0].t0 - .08 : L[c.li].end + .35;
+  });
+}
+function drawCaption(t) {
+  const c = CHUNKS.find(c => t >= c.start && t < c.end);
+  if (!c) return;
+  // Aynı cümlenin parçaları arasında sönme yok; sadece cümle başı ve sonu yumuşak
+  const i = CHUNKS.indexOf(c), first = !CHUNKS[i - 1] || CHUNKS[i - 1].li !== c.li, last = !CHUNKS[i + 1] || CHUNKS[i + 1].li !== c.li;
+  const a = Math.min(first ? prog(t, c.start, c.start + .12) : 1, last ? 1 - prog(t, c.end - .12, c.end) : 1);
+  ctx.font = `600 ${CAP.size}px ${SANS}`;
+  const sp = ctx.measureText(' ').width;
+  const y0 = CAP.y - (c.lines.length - 1) * CAP.lineH;
+  // okunabilirlik için yumuşak koyu zemin
+  ctx.globalAlpha = .9 * a; ctx.fillStyle = C.ocean;
+  ctx.beginPath(); ctx.roundRect(SAFE.x0 - 22, y0 - CAP.size - 6, CAP.maxW + 44, c.lines.length * CAP.lineH + 30, 18); ctx.fill();
+  c.lines.forEach((line, li) => {
+    let x = SAFE.x0;
+    for (const w of line) {
+      const active = t >= w.t0 && t < w.t1 + .05, said = t >= w.t0;
+      text(w.word, x, y0 + li * CAP.lineH, CAP.size, { weight: 600, alpha: a * (said ? 1 : .55), color: active ? C.accent : C.text });
+      x += w.w + sp;
+    }
+  });
+}
+
+// ─────────────────────── ÇİZİM ───────────────────────
+function pin(pr, cam, p, { color = C.land, r = 13, alpha = 1, pulse = 0 } = {}) {
+  if (alpha <= .001 || !visible(cam, p)) return null;
+  const [x, y] = pr(p);
+  if (pulse > 0) {
+    ctx.globalAlpha = alpha * (1 - pulse) * .7; ctx.strokeStyle = color; ctx.lineWidth = 4;
+    ctx.beginPath(); ctx.arc(x, y, r + pulse * 46, 0, 2 * Math.PI); ctx.stroke();
+  }
+  ctx.globalAlpha = alpha; ctx.fillStyle = C.ocean;
+  ctx.beginPath(); ctx.arc(x, y, r + 5, 0, 2 * Math.PI); ctx.fill();
+  ctx.fillStyle = color; ctx.beginPath(); ctx.arc(x, y, r, 0, 2 * Math.PI); ctx.fill();
+  ctx.globalAlpha = 1;
+  return [x, y];
+}
+/** Büyük daire yayı, ilerleme k ile çizilir */
+function arc(path, a, b, k, { color = C.land, width = 5, dash = null, alpha = 1 } = {}) {
+  if (k <= 0 || alpha <= .001) return;
+  const ip = d3.geoInterpolate(a, b), n = 48, coords = [];
+  for (let i = 0; i <= n; i++) coords.push(ip(k * i / n));
+  ctx.globalAlpha = alpha; ctx.strokeStyle = color; ctx.lineWidth = width; ctx.setLineDash(dash || []);
+  ctx.lineCap = 'round'; ctx.beginPath(); path({ type: 'LineString', coordinates: coords }); ctx.stroke();
+  ctx.setLineDash([]); ctx.globalAlpha = 1;
+}
+
+// Her kare temiz çizim durumuyla başlar: lineCap, dash, hizalama vb. önceki kareden taşınmaz.
+function draw(t) {
+  ctx.save();
+  try { drawFrame(t); } finally { ctx.restore(); }
+}
+function drawFrame(t) {
+  t = clamp(t, 0, CONFIG.duration);
+  ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+  ctx.fillStyle = '#0B141B'; ctx.fillRect(0, 0, W, H);
+
+  const cam = camera(t), pr = projection(cam), path = d3.geoPath(pr, ctx);
+  const sweepK = ease.inOutSine(prog(t, T.sweep0, T.sweep1));
+  const inCalc = t >= T.sweep0 - .6 && t < T.final + 1.2;
+  const calcA = Math.min(prog(t, T.sweep0 - .6, T.sweep0), 1 - prog(t, T.final, T.final + 1.2));
+
+  // Küre
+  ctx.fillStyle = C.ocean; ctx.beginPath(); path(SPHERE); ctx.fill();
+  ctx.strokeStyle = C.grid; ctx.lineWidth = 1.5; ctx.beginPath(); path(GRAT); ctx.stroke();
+  ctx.globalAlpha = 1 - .62 * calcA;
+  const fine = cam.k >= 1.6;
+  ctx.fillStyle = C.land; ctx.beginPath(); path(fine ? LAND : LAND110); ctx.fill();
+  ctx.strokeStyle = 'rgba(15,28,38,.6)'; ctx.lineWidth = 1.2; ctx.beginPath(); path(fine ? BORDERS : BORDERS110); ctx.stroke();
+  ctx.globalAlpha = 1;
+  ctx.strokeStyle = 'rgba(232,226,212,.25)'; ctx.lineWidth = 2; ctx.beginPath(); path(SPHERE); ctx.stroke();
+
+  // ── Bizim hesap: genişleyen halka + tartılan kara noktaları ──
+  let calc = null;
+  if (inCalc) {
+    const r = 180 * sweepK;
+    const n = countWithin(r);
+    calc = centroidUpTo(n);
+    const front = [cam.lon, cam.lat];
+    ctx.fillStyle = C.land;
+    for (let i = 0; i < n; i++) {
+      const c = DOTS[i];
+      if (!c.vis) continue;
+      if (d3.geoDistance(front, [c.lon, c.lat]) > Math.PI / 2 - .03) continue;
+      const fresh = clamp(1 - (r - c.d) / 6);                         // halkaya yeni girenler parlak
+      const [x, y] = pr([c.lon, c.lat]);
+      ctx.globalAlpha = calcA * (.55 + .45 * fresh);
+      const s = (2.2 + 3.2 * c.w) * Math.sqrt(cam.k / 1.9);           // nokta boyu = ağırlık (cos enlem)
+      ctx.fillRect(x - s / 2, y - s / 2, s, s);
+    }
+    ctx.globalAlpha = 1;
+    if (sweepK > 0 && sweepK < 1) {
+      ctx.globalAlpha = calcA * .8; ctx.strokeStyle = C.land; ctx.lineWidth = 3; ctx.setLineDash([10, 10]);
+      ctx.beginPath(); path(d3.geoCircle().center(P.woods).radius(Math.max(.01, r)).precision(2)()); ctx.stroke();
+      ctx.setLineDash([]); ctx.globalAlpha = 1;
+    }
+  }
+
+  // ── İşaretler ──
+  const pulse = (t * .8) % 1;
+  const woodsA = Math.min(prog(t, T.coord - .3, T.coord + .2), 1 - prog(t, T.finalEnd + .5, T.finalEnd + 1.3));
+  const kirA = 1;                                                   // Kırşehir hep var (döngünün nesnesi)
+
+  // Kudüs: umulan (twist)
+  const kudA = Math.min(prog(t, T.twist + .8, T.twist + 1.4), 1 - prog(t, T.s2003 + .2, T.s2003 + .8));
+  if (kudA > 0) {
+    // Çift çizgi: kıyıdaki halka hem karada hem denizde görünsün
+    const ring = d3.geoCircle().center(P.kudus).radius(1.3)();
+    ctx.globalAlpha = kudA; ctx.setLineDash([14, 10]);
+    ctx.strokeStyle = C.ocean; ctx.lineWidth = 10; ctx.beginPath(); path(ring); ctx.stroke();
+    ctx.strokeStyle = C.text; ctx.lineWidth = 4; ctx.beginPath(); path(ring); ctx.stroke();
+    ctx.setLineDash([]); ctx.globalAlpha = 1;
+    const kk = ease.outCubic(prog(t, T.twist + 1.2, T.twist + 2.2));
+    arc(path, P.woods, P.kudus, kk, { color: C.ocean, width: 9, dash: [10, 12], alpha: kudA });
+    arc(path, P.woods, P.kudus, kk, { color: C.text, width: 3.5, dash: [10, 12], alpha: kudA });
+    if (visible(cam, P.kudus)) { const [x, y] = pr(P.kudus); label('Kutsal Topraklar', x, y, { alpha: kudA, dx: -221, dy: 96 }); }
+  }
+
+  // 2003: Woods → Isenberg çizgisi
+  const isK = ease.inOutCubic(prog(t, T.s2003 + 1.2, T.s2003 + 2.6));
+  const isA = Math.min(prog(t, T.s2003 + 1.0, T.s2003 + 1.3), 1 - prog(t, T.finalEnd + .5, T.finalEnd + 1.3));
+  if (isA > 0) {
+    arc(path, P.woods, P.isenberg, isK, { color: C.land, width: 5, alpha: isA * (1 - .5 * calcA) });
+    const head = d3.geoInterpolate(P.woods, P.isenberg)(isK);
+    pin(pr, cam, head, { color: C.land, r: 12, alpha: isA });
+    if (isK >= 1 && visible(cam, P.isenberg)) {
+      const [x, y] = pr(P.isenberg);
+      const la = Math.min(prog(t, T.s2003 + 2.6, T.s2003 + 2.9), 1 - prog(t, T.calc + .6, T.calc + 1.0));
+      label('2003 · Çorum İskilip', x, y, { alpha: la, size: 44 });
+      label(`${fmtKm(km(P.woods, P.isenberg))} km`, x, y, { alpha: la, size: 44, dy: 44 });
+    }
+  }
+
+  // Woods 1973
+  const wp = pin(pr, cam, P.woods, { color: C.land, r: 13, alpha: woodsA * (1 - .5 * calcA) });
+  if (wp) {
+    const la = Math.min(prog(t, T.coord + .2, T.coord + .5), 1 - prog(t, T.twist + .6, T.twist + 1.0));
+    label('39°00′K 34°00′D', wp[0], wp[1], { alpha: la, dy: 110, dx: -200 });
+    label(`Kırşehir'e ${fmtKm(km(P.woods, P.kirsehir))} km`, wp[0], wp[1], { alpha: la, dy: 170, dx: -200, color: C.mute, size: 42 });
+  }
+
+  // Kırşehir (döngünün nesnesi, sürekli nabız → 0. karede hareket)
+  const kp = pin(pr, cam, P.kirsehir, { color: C.text, r: 9, alpha: kirA * (1 - .6 * calcA), pulse });
+  if (kp) {
+    const la = Math.min(prog(t, T.s1973 + .8, T.s1973 + 1.2), 1 - prog(t, T.twist + .6, T.twist + 1.0));
+    label('Kırşehir', kp[0], kp[1], { font: SANS, weight: 600, alpha: la, dx: 30, dy: -30 });
+  }
+
+  // Bizim nokta (vurgu = gerçek)
+  const ourA = Math.min(prog(t, T.sweep0 - .2, T.sweep0 + .2), 1 - prog(t, T.finalEnd + .5, T.finalEnd + 1.3));
+  const ours = calc || FINAL;
+  const revealK = prog(t, T.reveal, T.reveal + .5);
+  const op = pin(pr, cam, ours, { color: C.accent, r: 15, alpha: ourA, pulse: t > T.reveal ? (t * .8) % 1 : 0 });
+  if (op && t >= T.reveal) {
+    label(`${fmtDeg(FINAL[1], 1)}°K ${fmtDeg(FINAL[0], 1)}°D`, op[0], op[1], { alpha: revealK * (1 - prog(t, T.final + .6, T.final + 1.0)), color: C.accent, dy: 120, dx: -160 });
+    label(`Köstence'nin ${fmtKm(km(FINAL, P.kostence))} km kuzeyi`, op[0], op[1], { alpha: revealK * (1 - prog(t, T.final + .6, T.final + 1.0)), color: C.mute, size: 42, dy: 180, dx: -160 });
+  }
+
+  // Sonuç çemberi
+  const ringK = ease.inOutCubic(prog(t, T.final + 1.3, T.final + 2.4));
+  const ringA = 1 - prog(t, T.finalEnd + .5, T.finalEnd + 1.3);
+  if (ringK > 0 && ringA > 0) {
+    const ctr = RING.center, coords = d3.geoCircle().center(ctr).radius(RING.r).precision(1)().coordinates[0];
+    const n = Math.max(2, Math.round(coords.length * ringK));
+    ctx.globalAlpha = ringA; ctx.strokeStyle = C.accent; ctx.lineWidth = 5; ctx.lineCap = 'round';
+    ctx.beginPath(); path({ type: 'LineString', coordinates: coords.slice(0, n) }); ctx.stroke();
+    ctx.globalAlpha = 1;
+    if (visible(cam, P.karadeniz)) {
+      const [x, y] = pr(P.karadeniz);
+      text('Karadeniz', x, y + 14, 46, { font: SANS, weight: 600, color: C.land, alpha: ringA * prog(t, T.final + 1.8, T.final + 2.3), align: 'center' });
+    }
+  }
+
+  // Üst bant: başlık her zaman koyu zeminde okunur
+  const band = ctx.createLinearGradient(0, SAFE.y0 + 250, 0, SAFE.y0 + 340);
+  band.addColorStop(0, 'rgba(11,20,27,0.94)'); band.addColorStop(1, 'rgba(11,20,27,0)');
+  ctx.fillStyle = 'rgba(11,20,27,0.94)'; ctx.fillRect(0, 0, W, SAFE.y0 + 250);
+  ctx.fillStyle = band; ctx.fillRect(0, SAFE.y0 + 250, W, 90);
+  drawHeader(t, calc);
+  drawCaption(t);
+  if (GUIDES) drawGuides();
+}
+
+// Üç noktayı çevreleyen çember (küre üzerinde)
+const RING = {}; P.karadeniz = [35.2, 43.3];
+function computeRing() {
+  const pts = [P.woods, P.isenberg, FINAL];
+  const v = pts.map(([lo, la]) => [Math.cos(la * RAD) * Math.cos(lo * RAD), Math.cos(la * RAD) * Math.sin(lo * RAD), Math.sin(la * RAD)]);
+  const s = v.reduce((a, b) => a.map((x, i) => x + b[i]), [0, 0, 0]);
+  RING.center = [Math.atan2(s[1], s[0]) / RAD, Math.atan2(s[2], Math.hypot(s[0], s[1])) / RAD];
+  RING.r = Math.max(...pts.map(p => d3.geoDistance(RING.center, p) / RAD)) + 1.6;
+}
+
+// Üst başlık alanı
+function drawHeader(t, calc) {
+  const x = SAFE.x0, y = SAFE.y0 + 40;
+  // Kanca ve döngü: aynı başlık, aynı yerde
+  const hookA = t < CONFIG.duration - 3 ? 1 - prog(t, T.s1973 - .3, T.s1973 + .1) : prog(t, CONFIG.duration - 1.4, CONFIG.duration - .6);
+  text('Kırşehir,', x, y + 96, 96, { alpha: hookA });
+  text('dünyanın merkezi mi?', x, y + 206, 84, { alpha: hookA, color: C.land });
+
+  const sec = (str, a, b, sub) => {
+    const al = Math.min(prog(t, a, a + .3), 1 - prog(t, b - .3, b));
+    text(str, x, y + 80, 76, { alpha: al });
+    if (sub) text(sub, x, y + 150, 50, { weight: 600, color: C.mute, alpha: al });
+  };
+  sec('1973', T.s1973 + .1, T.twist + .2, 'Fizikçi Andrew Woods');
+  sec('Ama…', T.twist + .1, T.s2003 + .2, 'umulan yer başkaydı');
+  sec('2003', T.s2003 + .1, T.calc + .2, 'Holger Isenberg');
+
+  // Bizim hesap: canlı sayaç
+  const ca = Math.min(prog(t, T.calc + .1, T.calc + .4), 1 - prog(t, T.final - .2, T.final + .1));
+  if (ca > 0) {
+    const pnt = calc || FINAL;
+    const done = t >= T.reveal;
+    text(done ? 'ROMANYA' : 'Bizim hesap', x, y + 80, done ? 96 : 76, { alpha: ca, color: done ? C.accent : C.text });
+    text(`${fmtDeg(pnt[1])}°K  ${fmtDeg(pnt[0])}°D`, x, y + 154, 50, { font: MONO, weight: 500, alpha: ca * (done ? .0 : 1), color: C.text });
+    text(`Kırşehir'e ${fmtKm(km(pnt, P.kirsehir)).padStart(3, ' ')} km`, x, y + 154 + (done ? 0 : 62), 50, { font: MONO, weight: 500, alpha: ca, color: done ? C.text : C.mute });
+  }
+  // Sonuç
+  const f1 = Math.min(prog(t, T.final + .1, T.final + .4), 1 - prog(t, T.final + 2.3, T.final + 2.6));
+  const f2 = Math.min(prog(t, T.final + 2.4, T.final + 2.7), 1 - prog(t, T.finalEnd + .5, T.finalEnd + 1.0));
+  text('Tek bir merkez yok.', x, y + 80, 76, { alpha: f1 });
+  text('Üçü de', x, y + 80, 76, { alpha: f2 });
+  text('Karadeniz’in çevresinde.', x, y + 166, 70, { alpha: f2, color: C.accent });
+}
+
+function drawGuides() {
+  ctx.save(); ctx.fillStyle = 'rgba(255,0,80,.12)';
+  ctx.fillRect(0, 0, W, SAFE.y0); ctx.fillRect(0, SAFE.y1, W, H - SAFE.y1); ctx.fillRect(SAFE.x1, 0, W - SAFE.x1, H);
+  ctx.restore();
+}
+
+// ─────────────────────────── SES ───────────────────────────
+function buildSounds() {
+  SOUNDS.length = 0;
+  SOUNDS.push({ t: 0, type: 'drone', dur: CONFIG.duration, gain: .025 });
+  SOUNDS.push({ t: T.coord + .2, type: 'ping', gain: .35 });            // 1973 koordinatı
+  SOUNDS.push({ t: T.s2003 + 2.6, type: 'ping', gain: .30, f: 784 });   // İskilip'e varış
+  SOUNDS.push({ t: T.sweep0, type: 'whoosh', dur: T.sweep1 - T.sweep0, gain: .06 });
+  SOUNDS.push({ t: T.reveal, type: 'ping2', gain: .55 });               // ROMANYA
+  SOUNDS.push({ t: T.final + 2.4, type: 'ping', gain: .30, f: 659 });   // Karadeniz çemberi
+}
+function synth(ac, s, dest) {
+  const t0 = s.t, g = ac.createGain(); g.connect(dest);
+  const tone = (f, at, dur, gain, type = 'sine') => {
+    const o = ac.createOscillator(), e = ac.createGain(); o.type = type; o.frequency.value = f;
+    e.gain.setValueAtTime(0, at); e.gain.linearRampToValueAtTime(gain, at + .008);
+    e.gain.exponentialRampToValueAtTime(1e-4, at + dur);
+    o.connect(e); e.connect(g); o.start(at); o.stop(at + dur + .05);
+  };
+  if (s.type === 'ping') { tone(s.f || 880, t0, .9, s.gain); tone((s.f || 880) * 2, t0, .35, s.gain * .25); }
+  else if (s.type === 'ping2') { tone(659, t0, 1.1, s.gain); tone(988, t0 + .14, 1.3, s.gain * .9); tone(1976, t0 + .14, .4, s.gain * .2); }
+  else if (s.type === 'drone') {
+    const lp = ac.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 520; lp.connect(g);
+    [[110, 'triangle', 1], [164.81, 'sine', .6], [220.5, 'sine', .25]].forEach(([f, ty, m]) => {
+      const o = ac.createOscillator(); o.type = ty; o.frequency.value = f; o.connect(lp); o.start(t0); o.stop(t0 + s.dur); });
+    g.gain.setValueAtTime(s.gain, t0); g.gain.setValueAtTime(s.gain, t0 + s.dur - .05); g.gain.linearRampToValueAtTime(0, t0 + s.dur);
+  } else if (s.type === 'whoosh') {
+    const len = Math.floor(ac.sampleRate * s.dur), buf = ac.createBuffer(1, len, ac.sampleRate);
+    const ch = buf.getChannelData(0); let seed = CONFIG.seed;
+    for (let i = 0; i < len; i++) { seed = (seed * 1664525 + 1013904223) >>> 0; ch[i] = seed / 2147483648 - 1; }
+    const src = ac.createBufferSource(); src.buffer = buf;
+    const f = ac.createBiquadFilter(); f.type = 'bandpass'; f.Q.value = 2;
+    f.frequency.setValueAtTime(300, t0); f.frequency.exponentialRampToValueAtTime(2400, t0 + s.dur);
+    g.gain.setValueAtTime(0, t0); g.gain.linearRampToValueAtTime(s.gain, t0 + s.dur * .8); g.gain.linearRampToValueAtTime(0, t0 + s.dur);
+    src.connect(f); f.connect(g); src.start(t0);
+  }
+}
+window.__renderAudio = async function () {
+  if (!SOUNDS.length) return null;
+  const sr = 48000, ac = new OfflineAudioContext(2, Math.ceil(sr * CONFIG.duration), sr);
+  const master = ac.createGain(); master.gain.value = .8; master.connect(ac.destination);
+  SOUNDS.forEach(s => synth(ac, s, master));
+  return wavBase64(await ac.startRendering());
+};
+function wavBase64(buf) {
+  const ch = buf.numberOfChannels, n = buf.length, bytes = 44 + n * ch * 2;
+  const v = new DataView(new ArrayBuffer(bytes));
+  const str = (o, s) => [...s].forEach((c, i) => v.setUint8(o + i, c.charCodeAt(0)));
+  str(0, 'RIFF'); v.setUint32(4, bytes - 8, true); str(8, 'WAVE'); str(12, 'fmt ');
+  v.setUint32(16, 16, true); v.setUint16(20, 1, true); v.setUint16(22, ch, true);
+  v.setUint32(24, buf.sampleRate, true); v.setUint32(28, buf.sampleRate * ch * 2, true);
+  v.setUint16(32, ch * 2, true); v.setUint16(34, 16, true); str(36, 'data'); v.setUint32(40, n * ch * 2, true);
+  const data = [...Array(ch)].map((_, c) => buf.getChannelData(c));
+  let o = 44;
+  for (let i = 0; i < n; i++) for (let c = 0; c < ch; c++, o += 2) v.setInt16(o, Math.max(-1, Math.min(1, data[c][i])) * 0x7fff, true);
+  const u8 = new Uint8Array(v.buffer); let s = '';
+  for (let i = 0; i < u8.length; i += 0x8000) s += String.fromCharCode.apply(null, u8.subarray(i, i + 0x8000));
+  return btoa(s);
+}
+
+// ───────────────────── SÖZLEŞME + OYNATICI ─────────────────────
+let current = 0;
+window.__duration = CONFIG.duration;
+window.__fps = CONFIG.fps;
+window.__size = { width: W, height: H };
+window.__scenes = SCENES;
+window.__cover = CONFIG.cover;
+window.__setTime = t => { current = t; draw(t); };
+const GLYPHS = 'AaİıŞşĞğÜüÖöÇç0123456789%.,:°′…’';
+window.__ready = Promise.all([
+  ...CONFIG.fonts.map(f => document.fonts.load(f, GLYPHS).catch(() => null)),
+  loadData(),
+]).then(() => document.fonts.ready).then(() => { computeRing(); buildCaptions(); buildSounds(); });
+
+const voEl = document.getElementById('vo');
+let playing = false, startWall = 0, ac = null;
+function play() {
+  playing = true; startWall = performance.now() - current * 1000;
+  if (!ac) ac = new AudioContext(); ac.resume();
+  const base = ac.currentTime - current, out = ac.createGain(); out.gain.value = .8; out.connect(ac.destination);
+  SOUNDS.forEach(s => { if (s.t + (s.dur || 0) >= current) synth(ac, { ...s, t: Math.max(base + s.t, ac.currentTime) }, out); });
+  play.out = out;
+  try { voEl.currentTime = current; voEl.play(); } catch (e) {}
+  requestAnimationFrame(loop);
+}
+function pause() { playing = false; if (play.out) play.out.disconnect(); try { voEl.pause(); } catch (e) {} }
+function loop(now) {
+  if (!playing) return;
+  const t = (now - startWall) / 1000;
+  if (t >= CONFIG.duration) { pause(); current = 0; play(); return; }
+  window.__setTime(t); hud(); requestAnimationFrame(loop);
+}
+function hud() {
+  document.getElementById('hud').textContent = `${current.toFixed(2)} sn · kare ${Math.round(current * CONFIG.fps)} · ${sceneAt(current).name}` + (playing ? '' : '  (tıkla: oynat · ←/→ kare)');
+}
+function step(dt) { pause(); window.__setTime(clamp(current + dt, 0, CONFIG.duration)); hud(); }
+window.__ready.then(() => {
+  const qt = params.get('t');
+  if (qt !== null) { window.__setTime(parseFloat(qt) || 0); hud(); return; }
+  window.__setTime(0); hud();
+  if (RENDER) return;
+  canvas.addEventListener('click', () => playing ? pause() : play());
+  addEventListener('keydown', e => {
+    if (e.key === ' ') { e.preventDefault(); playing ? pause() : play(); }
+    if (e.key === 'ArrowRight') step(e.shiftKey ? 1 : 1 / CONFIG.fps);
+    if (e.key === 'ArrowLeft') step(e.shiftKey ? -1 : -1 / CONFIG.fps);
+  });
+});
+</script>
+</body>
+</html>

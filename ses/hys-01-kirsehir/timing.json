@@ -1,0 +1,53 @@
+{
+  "duration": 38.18,
+  "lines": [
+    {
+      "id": "l1",
+      "start": 0.15,
+      "end": 2.203,
+      "text": "Kırşehir, gerçekten dünyanın merkezi mi?"
+    },
+    {
+      "id": "l2",
+      "start": 2.903,
+      "end": 7.565,
+      "text": "1973'te bir fizikçi, dünyadaki bütün karaların merkezini bilgisayarla hesapladı."
+    },
+    {
+      "id": "l3",
+      "start": 7.865,
+      "end": 11.9,
+      "text": "Sonuç: 39° kuzey, 34° doğu. Kırşehir'in hemen yanı!"
+    },
+    {
+      "id": "l4",
+      "start": 12.2,
+      "end": 16.512,
+      "text": "İşin ilginci: hesabı isteyen kurum, merkezin Kutsal Topraklar'da çıkmasını umuyordu."
+    },
+    {
+      "id": "l5",
+      "start": 16.812,
+      "end": 20.16,
+      "text": "2003'te başka bir hesap, noktayı Çorum İskilip'e taşıdı."
+    },
+    {
+      "id": "l6",
+      "start": 20.46,
+      "end": 24.524,
+      "text": "Biz de bugünün haritasıyla hesapladık. Her kara parçasını, büyüklüğüyle tarttık."
+    },
+    {
+      "id": "l7",
+      "start": 27.724,
+      "end": 29.548,
+      "text": "Bizim noktamız… Romanya'da çıktı!"
+    },
+    {
+      "id": "l8",
+      "start": 29.848,
+      "end": 35.981,
+      "text": "Yani tek bir merkez yok: yöntem değişince nokta kayıyor. Ama üç hesabın üçü de Karadeniz'in çevresinde."
+    }
+  ]
+}

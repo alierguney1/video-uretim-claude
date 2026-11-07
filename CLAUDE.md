@@ -37,6 +37,9 @@ her piksel kodla çizilir. Her işte **[MOTION_RULES.md](MOTION_RULES.md)** geç
 - **Easing taşması:** Yaylı/geri tepen eğriler boyut ve yarıçapı negatife düşürebilir.
   `roundRect` negatif yarıçapta hata fırlatır; boyutları `Math.max(0, …)` ile sınırla.
   `check` tüm kareleri çizerek bunu yakalar.
+- **Canvas durumu da durumdur:** `lineCap`, `setLineDash`, `textAlign`, `globalAlpha` bir karede ayarlanıp
+  bırakılırsa sonraki kareye taşınır ve aynı `t` farklı kare verir. Şablondaki `draw()` her kareyi
+  `ctx.save()/restore()` içinde çizer; bu yapıyı koru. `check`'in `?t=` satırı bunu yakalar.
 - **Durum:** Her şey `t`'den hesaplanır. Bir olayın "ne zaman olduğunu" bilmek gerekiyorsa
   (ör. ses tıkı) zamanı ters hesapla (`monthTime` örneği), kare kare sayaç tutma.
 - **Ses:** `SOUNDS` dizisine `{t, type, gain}` ekle. Aynı liste canlı oynatmada Web Audio ile,
