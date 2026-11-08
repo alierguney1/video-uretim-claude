@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kayıp Gün</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@600;800&family=IBM+Plex+Mono:wght@500&display=block" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/d3-array@3.2.4/dist/d3-array.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/d3-geo@3.1.1/dist/d3-geo.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/topojson-client@3.1.0/dist/topojson-client.min.js"></script>
+<style>
+  html, body { margin: 0; height: 100%; background: #0b141b; }
+  body { display: grid; place-items: center; overflow: hidden; }
+  canvas { display: block; }
+  #hud { position: fixed; left: 12px; bottom: 10px; font: 12px/1.4 ui-monospace, monospace;
+         color: #bbb; background: rgba(0,0,0,.55); padding: 4px 8px; border-radius: 4px; user-select: none; }
+  body.render #hud { display: none; }
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div id="hud">yükleniyor…</div>
+<audio id="vo" src="../ses/hys-08-samoa/voice.wav" preload="auto"></audio>
+<script src="../lib/harita-motoru.js"></script>
+<script>
+'use strict';
+// Harita Yalan Söyler · Bölüm 8 — "Takvimden bir günü silen ülke" (Samoa, 30 Aralık 2011)
+// Brif: hys-08-samoa.brief.md. 29.12.2011 Perşembe, 31.12.2011 Cumartesi (kodla doğrulandı).
+// Tarih çizgisinin Samoa çevresindeki konumu YAKLAŞIKTIR (ekranda yazar): 2011 öncesi Samoa ile Tonga
+// arasında, sonrası Samoa ile Amerikan Samoası arasında.
+
+/*VO:BEGIN*/ const VO = {"duration":38.71,"lines":[{"id":"l1","start":0.15,"end":3.931,"text":"Bu ülkede 30 Aralık 2011 diye bir gün hiç yaşanmadı."},{"id":"l2","start":4.231,"end":8.6,"text":"Samoa 29 Aralık Perşembe gecesi yattı, 31 Aralık Cumartesi uyandı."},{"id":"l3","start":9.3,"end":12.454,"text":"Neden? Tarih değiştirme çizgisinin yanlış tarafındaydı."},{"id":"l4","start":12.754,"end":19.756,"text":"En büyük ticaret ortakları Avustralya ve Yeni Zelanda'nın neredeyse bir gün gerisindeydi: Auckland'dan 23 saat."},{"id":"l5","start":20.056,"end":23.521,"text":"Onlar pazartesi işe başlarken, Samoa'da hâlâ pazar günüydü."},{"id":"l6","start":23.821,"end":27.865,"text":"Çözüm: çizginin öbür tarafına geçmek ve takvimden bir günü silmek."},{"id":"l7","start":28.665,"end":34.125,"text":"İşin ilginci, ilk kez değildi: 1892'de Amerika'yla ticaret için ters yöne geçmişti."},{"id":"l8","start":34.425,"end":36.506,"text":"Sen olsan, o kayıp günde ne yapardın?"}]}; /*VO:END*/
+const { C, SANS, MONO, W, SAFE, ctx, clamp, lerp, prog, win, ease, fmtNum, text, label, pin, line, greatCircle, baseMap, fillFeature, heading } = HYS;
+
+const SAMOA = [-172.1, -13.75], ASAMOA = [-170.7, -14.3], AKL = [174.76, -36.85];
+const OLD = -173.6, NEW = -171.4;
+let WSM;
+
+function lineLon(t, T, DUR) {
+  if (t < T.mv0) return OLD;
+  if (t < T.h0) return lerp(OLD, NEW, ease.inOutCubic(prog(t, T.mv0, T.mv1)));
+  if (t < T.h1) return lerp(NEW, NEW, 0);                                   // 1892 öncesi: Samoa batı (Asya) tarafında
+  if (t < T.h2) return lerp(NEW, OLD, ease.inOutCubic(prog(t, T.h1, T.h1 + 1.2)));   // 1892: doğuya katıldı
+  if (t < DUR - 1.5) return lerp(OLD, NEW, ease.inOutCubic(prog(t, T.h2, T.h2 + 1.2))); // 2011: geri
+  return lerp(NEW, OLD, ease.inOutCubic(prog(t, DUR - 1.5, DUR - .5)));    // döngü
+}
+
+function dateStrip(t, T, DUR, A) {
+  if (A <= .001) return;
+  const cells = [['Çar', '28'], ['Per', '29'], ['Cum', '30'], ['Cmt', '31']];
+  const cut = Math.min(ease.inOutCubic(prog(t, T.cut, T.cut + .8)), 1 - prog(t, DUR - 1.5, DUR - .7));
+  const y = 600, h = 120, gap = 14, full = 200;
+  const widths = cells.map((_, i) => i === 2 ? full * (1 - cut) : full);
+  const total = widths.reduce((a, b) => a + b, 0) + gap * (cells.length - 1);
+  let x = W / 2 - total / 2;
+  cells.forEach(([d, n], i) => {
+    const w = widths[i];
+    if (w > 2) {
+      const lost = i === 2;
+      ctx.save(); ctx.globalAlpha = A * (lost ? (1 - cut) : 1);
+      ctx.fillStyle = lost ? C.ocean : C.land; ctx.strokeStyle = lost ? C.accent : C.ocean; ctx.lineWidth = 4;
+      ctx.beginPath(); ctx.roundRect(x, y, w, h, 14); ctx.fill(); ctx.stroke();
+      ctx.beginPath(); ctx.rect(x, y, w, h); ctx.clip();
+      text(d, x + w / 2, y + 44, 34, { font: MONO, weight: 500, color: lost ? C.accent : C.ocean, align: 'center', alpha: A * (lost ? 1 - cut : 1) });
+      text(n, x + w / 2, y + 102, 56, { color: lost ? C.accent : C.ocean, align: 'center', alpha: A * (lost ? 1 - cut : 1) });
+      if (lost) {                                                               // üstü çizili
+        const s = ease.outCubic(prog(t, T.strike, T.strike + .4)) || (t > DUR - 1 ? 1 : 0);
+        ctx.strokeStyle = C.accent; ctx.lineWidth = 6; ctx.beginPath(); ctx.moveTo(x + 18, y + h - 18); ctx.lineTo(x + 18 + (w - 36) * Math.max(s, t < .01 ? 1 : 0), y + 18 + (h - 36) * (1 - Math.max(s, t < .01 ? 1 : 0))); ctx.stroke();
+      }
+      ctx.restore();
+    }
+    x += w + gap;
+  });
+}
+
+function weekStrips(t, T, A) {
+  if (A <= .001) return;
+  const days = ['Pzt', 'Sal', 'Çar', 'Per', 'Cum', 'Cmt', 'Paz'];
+  const x0 = 300, cw = 92, y1 = 600, y2 = 700, h = 76;
+  const off = lerp(-23 / 24, 0, ease.inOutCubic(prog(t, T.align0, T.align1)));   // NZ, Samoa'dan 23 saat ileride
+  const hiMon = win(t, T.mon - .1, T.align1 + .6, .3);
+  const row = (y, name, shift, hiIdx) => {
+    text(name, SAFE.x0, y + 52, 40, { weight: 600, alpha: A, color: C.text });
+    ctx.save(); ctx.beginPath(); ctx.rect(x0 - 2, y - 4, 7 * cw + 4, h + 8); ctx.clip();
+    for (let i = -1; i < 8; i++) {
+      const x = x0 + (i + shift) * cw, d = ((i % 7) + 7) % 7, work = d < 5;
+      ctx.globalAlpha = A; ctx.fillStyle = d === hiIdx && hiMon > 0 ? C.accent : (work ? '#B4A78C' : '#5E6A72');
+      ctx.beginPath(); ctx.roundRect(x + 3, y, cw - 6, h, 10); ctx.fill();
+      text(days[d], x + cw / 2, y + 50, 30, { font: MONO, weight: 500, align: 'center', alpha: A, color: C.ocean });
+    }
+    ctx.restore();
+  };
+  row(y1, 'Samoa', 0, 6);                 // Samoa'da pazar
+  row(y2, 'Y. Zelanda', off, 0);          // Yeni Zelanda'da pazartesi
+}
+
+HYS.run({
+  vo: VO, cover: 0, seed: 8,
+  init(D) { WSM = D.country('Samoa'); },
+  times: (L, at, DUR) => ({
+    strike: .9, cut: at(5) + 2.4, mv0: at(5) + .3, mv1: at(5) + 1.8,
+    mon: at(4) + .2, align0: at(5) + .3, align1: at(5) + 1.8,
+    h0: at(6), h1: at(6) + 1.9, h2: at(6) + 3.6, DUR,
+  }),
+  scenes: (T, at, DUR) => [
+    { name: 'kanca', start: 0, end: at(1) }, { name: 'gece', start: at(1), end: at(2) }, { name: 'neden', start: at(2), end: at(3) },
+    { name: '23 saat', start: at(3), end: at(4) }, { name: 'pazartesi', start: at(4), end: at(5) }, { name: 'çözüm', start: at(5), end: at(6) },
+    { name: '1892', start: at(6), end: at(7) }, { name: 'soru', start: at(7), end: at(7, 'end') + .2 }, { name: 'döngü', start: at(7, 'end') + .2, end: DUR },
+  ],
+  keys: (T, at, DUR) => [
+    [0, -180, -24, 2.0], [at(1), -178, -22, 2.2], [at(2), -173, -15, 7], [at(3), -173, -15, 7], [at(3) + 1.6, -180, -26, 2.2],
+    [at(5), -178, -24, 2.4], [at(5) + 1.0, -172.6, -14.8, 8], [at(6), -172.6, -14.8, 8], [at(6) + 1.2, -160, -8, 1.6],
+    [at(7), -165, -12, 2.2], [at(7, 'end') + .2, -172.6, -14.8, 4], [DUR, -180, -24, 2.0],
+  ],
+  draw(t, g) {
+    const { path, pr, cam, T, DUR, at } = g;
+    baseMap(path, { fine: cam.k > 1.9 });
+    fillFeature(path, WSM, { color: C.accent, stroke: C.ocean, width: 2 });
+    const vis = p => HYS.visible(cam, p) ? pr(p) : null;
+
+    // tarih değiştirme çizgisi (yaklaşık, yerel)
+    const lon = lineLon(t, T, DUR);
+    line(path, Array.from({ length: 41 }, (_, i) => [lon, 2 - 30 * i / 40]), { color: C.text, width: 5, dash: [16, 12], outline: true });
+    const lt = vis([lon, -20]);
+    if (lt) label('tarih değiştirme çizgisi (yaklaşık)', lt[0], lt[1], { size: 34, alpha: cam.k > 3 ? 1 : 0, dx: -200, dy: -10, color: C.mute });
+
+    // Samoa ve komşular
+    const sp = vis(SAMOA);
+    pin(sp, { color: C.accent, r: 12, pulse: (t * 1.1) % 1 });
+    if (sp) label('Samoa', sp[0], sp[1], { font: SANS, weight: 600, dx: 30, dy: 60 });
+    const ap = vis(ASAMOA);
+    if (ap) label('Amerikan Samoası', ap[0], ap[1], { font: SANS, weight: 600, size: 38, alpha: (cam.k > 5 ? 1 : 0) * win(t, at(5) + 1.0, at(6) + .6, .3), dx: 30, dy: 110, color: C.mute });
+    // Auckland bağlantısı
+    const akA = win(t, at(3) + .8, at(5) + .2, .4);
+    if (akA > 0) {
+      line(path, greatCircle(SAMOA, AKL, ease.inOutCubic(prog(t, at(3) + .8, at(3) + 2.2))), { color: C.accent, width: 5, outline: true, alpha: akA });
+      const ak = vis(AKL);
+      pin(ak, { color: C.text, r: 11, alpha: akA });
+      if (ak) label('Auckland · +23 sa', ak[0], ak[1], { alpha: akA, dx: -120, dy: 70 });
+    }
+    // 1892 / 2011 etiketleri çizgi hareketinde
+    const yr = t >= T.h0 && t < T.h1 ? '1892 öncesi' : t >= T.h1 && t < T.h2 ? '1892' : t >= T.h2 && t < at(7) ? '2011' : null;
+    if (yr && lt) label(yr, lt[0], lt[1], { alpha: win(t, T.h0, at(7), .3), dx: 30, dy: 80, color: C.accent });
+
+    // ekran katmanları
+    dateStrip(t, T, DUR, Math.max(win(t, 0, at(3) - .1, .3) + (t < .3 ? 1 : 0), win(t, at(5) + .9, at(6) + .2, .3), prog(t, DUR - 1.4, DUR - .6)));
+    weekStrips(t, T, win(t, at(4) - .4, at(5) + .9, .3));
+  },
+  header(t, g) {
+    const { T, DUR, at } = g;
+    const hookA = t < DUR - 3 ? 1 - prog(t, at(1) - .3, at(1) + .1) : prog(t, DUR - 1.4, DUR - .6);
+    heading('Bu ülkede bir gün', hookA, { size: 76 });
+    text('hiç yaşanmadı.', SAFE.x0, SAFE.y0 + 40 + 80 + 86, 76, { alpha: hookA, color: C.land });
+    heading('Per 29 → Cmt 31', win(t, at(1) - .1, at(2) + .1), { size: 72, sub: 'Aralık 2011, Samoa' });
+    heading('Yanlış taraf', win(t, at(2) - .1, at(3) + .1), { sub: 'tarih değiştirme çizgisinin' });
+    const aA = win(t, at(3) - .1, at(4) + .1);
+    heading('Auckland’dan', aA, { size: 64 });
+    text('−23 saat', SAFE.x0, SAFE.y0 + 40 + 80 + 100, 100, { font: MONO, weight: 500, alpha: aA, color: C.accent });
+    heading('Pazartesi ≠ Pazar', win(t, at(4) - .1, at(5) + .1), { sub: 'iş haftası bir gün kayık' });
+    const cA = win(t, at(5) - .1, at(6) + .1);
+    heading('Çözüm:', cA, { size: 64 });
+    text('bir gün sil.', SAFE.x0, SAFE.y0 + 40 + 80 + 90, 84, { alpha: cA, color: C.accent });
+    heading('1892', win(t, at(6) - .1, at(7) + .1), { sub: 'ters yöne, Amerika’yla ticaret için' });
+    heading('Sen olsan?', win(t, at(7) - .1, at(7, 'end') + .6), { sub: 'o kayıp günde ne yapardın' });
+  },
+  sounds: (T) => [
+    { t: T.strike, type: 'ping', gain: .35, f: 523 },
+    { t: T.mon, type: 'tick', gain: .3, f: 1300 },
+    { t: T.align1, type: 'ping', gain: .3, f: 659 },
+    { t: T.cut, type: 'ping2', gain: .5 },
+    { t: T.h1 + 1.2, type: 'tick', gain: .3, f: 1100 },
+    { t: T.h2 + 1.2, type: 'tick', gain: .3, f: 1500 },
+  ],
+});
+</script>
+</body>
+</html>

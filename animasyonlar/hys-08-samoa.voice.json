@@ -1,0 +1,15 @@
+{
+  "voice": "Charon",
+  "style": "enerjik ve merak uyandıran, hızlı tempolu, önemli kelimeleri vurgulayan, izleyiciye meydan okur gibi",
+  "tempo": 1.12, "lead": 0.15, "gap": 0.3, "tail": 2.2,
+  "lines": [
+    { "id": "l1", "text": "Bu ülkede, otuz Aralık iki bin on bir diye bir gün HİÇ yaşanmadı.", "caption": "Bu ülkede 30 Aralık 2011 diye bir gün hiç yaşanmadı." },
+    { "id": "l2", "text": "Samoa, yirmi dokuz Aralık Perşembe gecesi yattı; otuz bir Aralık Cumartesi uyandı.", "caption": "Samoa 29 Aralık Perşembe gecesi yattı, 31 Aralık Cumartesi uyandı.", "holdAfter": 0.4 },
+    { "id": "l3", "text": "Neden? Tarih değiştirme çizgisinin YANLIŞ tarafındaydı.", "caption": "Neden? Tarih değiştirme çizgisinin yanlış tarafındaydı." },
+    { "id": "l4", "text": "En büyük ticaret ortakları Avustralya ve Yeni Zelanda'nın neredeyse bir gün gerisindeydi: Auckland'dan tam yirmi üç saat.", "caption": "En büyük ticaret ortakları Avustralya ve Yeni Zelanda'nın neredeyse bir gün gerisindeydi: Auckland'dan 23 saat." },
+    { "id": "l5", "text": "Onlar pazartesi işe başlarken, Samoa'da hâlâ pazar günüydü." },
+    { "id": "l6", "text": "Çözüm: çizginin öbür tarafına geçmek, ve takvimden bir günü SİLMEK.", "caption": "Çözüm: çizginin öbür tarafına geçmek ve takvimden bir günü silmek.", "holdAfter": 0.5 },
+    { "id": "l7", "text": "İşin ilginci, ilk kez değildi: bin sekiz yüz doksan ikide, Amerika'yla ticaret için ters yöne geçmişti.", "caption": "İşin ilginci, ilk kez değildi: 1892'de Amerika'yla ticaret için ters yöne geçmişti." },
+    { "id": "l8", "text": "Sen olsan, o kayıp günde ne yapardın?" }
+  ]
+}
