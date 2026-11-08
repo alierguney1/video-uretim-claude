@@ -1,0 +1,15 @@
+{
+  "voice": "Charon",
+  "style": "enerjik ve merak uyandıran, hızlı tempolu, önemli kelimeleri vurgulayan, izleyiciye meydan okur gibi",
+  "tempo": 1.12, "lead": 0.15, "gap": 0.3, "tail": 2.4,
+  "lines": [
+    { "id": "l1", "text": "Bu haritada Grönland, Türkiye'nin tam YİRMİ YEDİ katı.", "caption": "Bu haritada Grönland, Türkiye'nin tam 27 katı.", "holdAfter": 0.2 },
+    { "id": "l2", "text": "Sence gerçekte kaç katı?", "holdAfter": 0.7 },
+    { "id": "l3", "text": "Grönland'ı kutuptan alıp, Türkiye'nin üstüne taşıyalım.", "holdAfter": 2.2 },
+    { "id": "l4", "text": "Gerçekte sadece İKİ VİRGÜL SEKİZ katı!", "caption": "Gerçekte sadece 2,8 katı!", "pauseBefore": 0.3, "holdAfter": 0.4 },
+    { "id": "l5", "text": "Çünkü okulda gördüğümüz bu harita, kutuplara yaklaştıkça her şeyi şişiriyor. Bu dairelerin hepsi, aslında aynı büyüklükte." },
+    { "id": "l6", "text": "Peki ya Afrika? Haritada neredeyse Grönland kadar görünüyor." },
+    { "id": "l7", "text": "Oysa Afrika'ya, neredeyse ON DÖRT Grönland sığar.", "caption": "Oysa Afrika'ya neredeyse 14 Grönland sığar.", "holdAfter": 0.6 },
+    { "id": "l8", "text": "Harita yalan söyler; çünkü yuvarlak bir dünyayı, düz bir kâğıda sığdırmak zorunda." }
+  ]
+}

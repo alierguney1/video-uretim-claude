@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Grönland Kaç Kat</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@600;800&family=IBM+Plex+Mono:wght@500&display=block" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/d3-array@3.2.4/dist/d3-array.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/d3-geo@3.1.1/dist/d3-geo.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/topojson-client@3.1.0/dist/topojson-client.min.js"></script>
+<style>
+  html, body { margin: 0; height: 100%; background: #0b141b; }
+  body { display: grid; place-items: center; overflow: hidden; }
+  canvas { display: block; }
+  #hud { position: fixed; left: 12px; bottom: 10px; font: 12px/1.4 ui-monospace, monospace;
+         color: #bbb; background: rgba(0,0,0,.55); padding: 4px 8px; border-radius: 4px; user-select: none; }
+  body.render #hud { display: none; }
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div id="hud">yükleniyor…</div>
+<audio id="vo" src="../ses/hys-02-gronland/voice.wav" preload="auto"></audio>
+<script src="../lib/harita-motoru.js"></script>
+<script>
+'use strict';
+// Harita Yalan Söyler · Bölüm 2 — "Grönland gerçekte Türkiye'nin kaç katı?"
+// Brif: hys-02-gronland.brief.md. Grönland'ın gerçek şekli küre üzerinde döndürülerek taşınır
+// (d3.geoRotation) ve her karede Mercator'a yeniden izdüşürülür: küçülme elle değil, projeksiyondan gelir.
+// Ekrandaki oranlar her karede alanlardan hesaplanır.
+
+/*VO:BEGIN*/ const VO = {"duration":35.42,"lines":[{"id":"l1","start":0.15,"end":3.525,"text":"Bu haritada Grönland, Türkiye'nin tam 27 katı."},{"id":"l2","start":4.025,"end":5.298,"text":"Sence gerçekte kaç katı?"},{"id":"l3","start":6.298,"end":9.049,"text":"Grönland'ı kutuptan alıp, Türkiye'nin üstüne taşıyalım."},{"id":"l4","start":11.849,"end":14.042,"text":"Gerçekte sadece 2,8 katı!"},{"id":"l5","start":14.742,"end":21.245,"text":"Çünkü okulda gördüğümüz bu harita, kutuplara yaklaştıkça her şeyi şişiriyor. Bu dairelerin hepsi, aslında aynı büyüklükte."},{"id":"l6","start":21.545,"end":24.805,"text":"Peki ya Afrika? Haritada neredeyse Grönland kadar görünüyor."},{"id":"l7","start":25.105,"end":27.881,"text":"Oysa Afrika'ya neredeyse 14 Grönland sığar."},{"id":"l8","start":28.781,"end":33.02,"text":"Harita yalan söyler; çünkü yuvarlak bir dünyayı, düz bir kâğıda sığdırmak zorunda."}]}; /*VO:END*/
+const { C, SANS, MONO, W, SAFE, ctx, clamp, lerp, prog, win, ease, fmtNum, text, label, pin, fillFeature, baseMap, heading } = HYS;
+
+const AFRICA_NAMES = new Set(['Algeria','Angola','Benin','Botswana','Burkina Faso','Burundi','Cameroon','Cabo Verde','Central African Rep.','Chad','Comoros','Congo','Dem. Rep. Congo',"Côte d'Ivoire",'Djibouti','Egypt','Eq. Guinea','Eritrea','eSwatini','Ethiopia','Gabon','Gambia','Ghana','Guinea','Guinea-Bissau','Kenya','Lesotho','Liberia','Libya','Madagascar','Malawi','Mali','Mauritania','Mauritius','Morocco','Mozambique','Namibia','Niger','Nigeria','Rwanda','São Tomé and Principe','Senegal','Seychelles','Sierra Leone','Somalia','Somaliland','South Africa','S. Sudan','Sudan','Tanzania','Togo','Tunisia','Uganda','W. Sahara','Zambia','Zimbabwe']);
+let GL, TR, AF, G0, TRC, AFC, R = {};
+const refPath = d3.geoPath(d3.geoMercator());           // oranlar için sabit Mercator
+const areaM = f => refPath.area(f);
+const R2 = 6371.0088 ** 2;
+
+/** Özelliği küre üzerinde döndürerek merkezini `to` noktasına taşı */
+function moved(f, to) {
+  const r1 = d3.geoRotation([-G0[0], -G0[1]]), r2 = d3.geoRotation([-to[0], -to[1]]);
+  const map = c => typeof c[0] === 'number' ? r2.invert(r1(c)) : c.map(map);
+  return { type: 'Feature', geometry: { type: f.geometry.type, coordinates: map(f.geometry.coordinates) } };
+}
+
+HYS.run({
+  vo: VO, cover: 0, flat: true, seed: 2,
+  captionSkip: [],
+  init(D) {
+    GL = D.country('Greenland'); TR = D.country('Turkey');
+    AF = topojson.merge(D.TOPO, D.TOPO.objects.countries.geometries.filter(g => AFRICA_NAMES.has(g.properties.name)));
+    G0 = d3.geoCentroid(GL); TRC = d3.geoCentroid(TR); AFC = [20, 3];
+    R.mapGT = areaM(GL) / areaM(TR);                                  // haritada ~27,3
+    R.realGT = d3.geoArea(GL) / d3.geoArea(TR);                       // gerçekte ~2,76
+    R.mapAG = areaM(AF) / areaM(GL);                                  // haritada ~1,05
+    R.realAG = d3.geoArea(AF) / d3.geoArea(GL);                       // gerçekte ~13,9
+  },
+  times: (L, at, DUR) => ({
+    slide0: at(2), slide1: at(2, 'end') + 2.0, reveal: at(3) + .7,
+    why: at(4), circles: at(4) + .4, same: at(4) + 3.6,
+    afr: at(5), af0: at(6) - .2, af1: at(6) + 1.3, afReveal: at(6) + 1.2,
+    tag: at(7), back0: at(7, 'end') + .1, DUR,
+  }),
+  scenes: (T, at, DUR) => [
+    { name: 'kanca', start: 0, end: at(1) }, { name: 'tahmin', start: at(1), end: T.slide0 },
+    { name: 'taşıma', start: T.slide0, end: at(3) }, { name: 'gerçek', start: at(3), end: T.why },
+    { name: 'neden', start: T.why, end: T.afr }, { name: 'afrika', start: T.afr, end: T.tag },
+    { name: 'sonuç', start: T.tag, end: T.back0 }, { name: 'döngü', start: T.back0, end: DUR },
+  ],
+  keys: (T, at, DUR) => [
+    [0, -8, 66, 1.9], [T.slide0, -4, 65, 2.0], [T.slide1, 33, 41, 3.4], [T.why, 33, 41, 3.4],
+    [T.why + 1.2, 0, 35, 1.3], [T.afr - .1, 2, 33, 1.35], [T.afr + 1.0, 18, 6, 2.4],
+    [T.tag, 18, 6, 2.5], [T.back0, 16, 10, 2.25], [DUR, -8, 66, 1.9],
+  ],
+  draw(t, g) {
+    const { path, T, DUR } = g;
+    baseMap(path, { fine: g.cam.k > 2.5 });
+
+    // Mercator'un şişirmesi: aynı büyüklükte daireler
+    const cA = win(t, T.circles, T.afr + .4, .4);
+    if (cA > 0) {
+      for (const lat of [-60, -30, 0, 30, 60, 75]) for (let lon = -165; lon <= 165; lon += 30) {
+        const k = prog(t, T.circles + (75 - lat) / 135 * .9, T.circles + (75 - lat) / 135 * .9 + .3);
+        const pulse = t > T.same ? .15 * Math.sin(Math.min(1, (t - T.same) / .6) * Math.PI) : 0;
+        fillFeature(path, d3.geoCircle().center([lon, lat]).radius(3.5 * (1 + pulse))(),
+          { color: C.accent, alpha: cA * k * .35, stroke: C.accent, width: 3 });
+      }
+    }
+    // Afrika
+    const afA = win(t, T.afr + .3, T.back0 + .4, .4);
+    fillFeature(path, AF, { color: '#B4A78C', stroke: C.ocean, width: 4, alpha: afA });
+
+    // Türkiye
+    fillFeature(path, TR, { color: '#B4A78C', stroke: C.ocean, width: 4, alpha: 1 - .6 * cA });
+
+    // Grönland: orijinal yerinde hayalet + taşınan gerçek şekil
+    const pos = gpos(t, T, DUR);
+    const away = d3.geoDistance(pos, G0) > .01;
+    fillFeature(path, GL, { color: null, stroke: C.ocean, width: 4, alpha: away ? .9 : 0 });
+    const M = moved(GL, pos);
+    fillFeature(path, M, { color: C.accent, alpha: .88, stroke: C.ocean, width: 2 });
+
+    // Harita içi etiketler
+    const lab = (str, p, o) => { const xy = g.pr(p); label(str, xy[0], xy[1], o); };
+    const hookA = win(t, 0, T.slide0 + .3, .3) || (t > DUR - 1.4 ? prog(t, DUR - 1.4, DUR - .7) : 0);
+    lab('Grönland', [-42, 72], { font: SANS, weight: 600, alpha: hookA, dx: -60, dy: 10 });
+    lab('Türkiye', TRC, { font: SANS, weight: 600, alpha: hookA, dx: 20, dy: 80 });
+    const afLab = win(t, T.afr + .6, T.tag, .3);
+    lab('Afrika', [22, 14], { font: SANS, weight: 600, alpha: afLab, dx: 40, dy: -40 });
+  },
+  header(t, g) {
+    const { T, DUR } = g;
+    const hookA = t < DUR - 3 ? 1 - prog(t, T.slide0 - .3, T.slide0 + .1) : prog(t, DUR - 1.4, DUR - .6);
+    heading('Grönland, Türkiye’nin', hookA, { size: 72 });
+    text('kaç katı?', SAFE.x0, SAFE.y0 + 40 + 80 + 84, 84, { alpha: hookA, color: C.land });
+    text(`haritada ${fmtNum(R.mapGT, 1)}×`, SAFE.x0, SAFE.y0 + 40 + 80 + 158, 50, { font: MONO, weight: 500, color: C.mute, alpha: hookA });
+
+    // taşıma: canlı oran
+    const live = areaM(moved(GL, gpos(t, T, DUR))) / areaM(TR);
+    const sA = win(t, T.slide0 + .1, T.reveal + .1, .3);
+    heading('Haritada', sA, { size: 72 });
+    text(`${fmtNum(live, 1)}×`, SAFE.x0, SAFE.y0 + 40 + 80 + 110, 110, { font: MONO, weight: 500, alpha: sA });
+    const rA = win(t, T.reveal, T.why + .4, .25);
+    heading('Gerçekte', rA, { size: 72 });
+    text(`${fmtNum(R.realGT, 1)}×`, SAFE.x0, SAFE.y0 + 40 + 80 + 110, 110, { font: MONO, weight: 500, alpha: rA, color: C.accent });
+
+    heading('Mercator haritası', win(t, T.why + .3, T.afr + .2), { sub: 'kutuplara yaklaştıkça şişirir' });
+    const aA = win(t, T.afr + .2, T.afReveal + .1, .25), bA = win(t, T.afReveal, T.tag + .2, .25);
+    heading('Afrika ÷ Grönland', aA, { sub: `haritada ${fmtNum(R.mapAG, 1)}×` });
+    heading('Afrika ÷ Grönland', bA);
+    text(`${fmtNum(R.realAG, 1)}×`, SAFE.x0, SAFE.y0 + 40 + 80 + 110, 110, { font: MONO, weight: 500, alpha: bA, color: C.accent });
+    heading('Harita yalan söyler.', win(t, T.tag + .1, T.back0 + .6), { sub: 'yuvarlak dünya, düz kâğıt' });
+  },
+  sounds: T => [
+    { t: T.slide0, type: 'whoosh', dur: T.slide1 - T.slide0, gain: .06 },
+    { t: T.reveal, type: 'ping2', gain: .55 },
+    { t: T.same, type: 'ping', gain: .25, f: 660 },
+    { t: T.afReveal, type: 'ping', gain: .4, f: 784 },
+  ],
+});
+
+/** Grönland'ın merkezinin zamana göre konumu */
+function gpos(t, T, DUR) {
+  const go = (a, b, t0, t1) => d3.geoInterpolate(a, b)(ease.inOutCubic(prog(t, t0, t1)));
+  if (t < T.slide1) return go(G0, TRC, T.slide0, T.slide1);
+  if (t < T.af1) return go(TRC, AFC, T.af0, T.af1);
+  return go(AFC, G0, T.back0, DUR - .35);
+}
+</script>
+</body>
+</html>
