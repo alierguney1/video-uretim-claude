@@ -1,0 +1,53 @@
+{
+  "duration": 35.61,
+  "lines": [
+    {
+      "id": "l1",
+      "start": 0.15,
+      "end": 3.684,
+      "text": "Bu iki ada arasında sadece 3,8 km var."
+    },
+    {
+      "id": "l2",
+      "start": 3.984,
+      "end": 5.783,
+      "text": "Sence aralarında kaç saat fark var?"
+    },
+    {
+      "id": "l3",
+      "start": 6.883,
+      "end": 8.418,
+      "text": "Cevap: 21 saat!"
+    },
+    {
+      "id": "l4",
+      "start": 9.118,
+      "end": 14.508,
+      "text": "Büyük olan Rusya'nın, küçük olan Amerika'nın. Ve aralarından Uluslararası Tarih Değiştirme Çizgisi geçiyor."
+    },
+    {
+      "id": "l5",
+      "start": 14.808,
+      "end": 19.814,
+      "text": "Rusya tarafı UTC+12, Alaska tarafı UTC−9 kullanıyor."
+    },
+    {
+      "id": "l6",
+      "start": 20.114,
+      "end": 23.024,
+      "text": "Bu yüzden adları: Yarın Adası ve Dün Adası."
+    },
+    {
+      "id": "l7",
+      "start": 23.324,
+      "end": 27.717,
+      "text": "Kışın aradaki deniz donuyor. Yani teorik olarak yarına yürüyebilirsin."
+    },
+    {
+      "id": "l8",
+      "start": 28.617,
+      "end": 33.413,
+      "text": "Yaz saatinde fark 20 saate iniyor; ama yine de dünyanın en tuhaf komşuluğu."
+    }
+  ]
+}

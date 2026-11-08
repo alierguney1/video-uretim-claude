@@ -1,0 +1,15 @@
+{
+  "voice": "Charon",
+  "style": "enerjik ve merak uyandıran, hızlı tempolu, önemli kelimeleri vurgulayan, izleyiciye meydan okur gibi",
+  "tempo": 1.12, "lead": 0.15, "gap": 0.3, "tail": 2.2,
+  "lines": [
+    { "id": "l1", "text": "Bu iki ada arasında sadece ÜÇ VİRGÜL SEKİZ kilometre var.", "caption": "Bu iki ada arasında sadece 3,8 km var." },
+    { "id": "l2", "text": "Sence aralarında kaç saat fark var?", "holdAfter": 0.8 },
+    { "id": "l3", "text": "Cevap: YİRMİ BİR saat!", "caption": "Cevap: 21 saat!", "holdAfter": 0.4 },
+    { "id": "l4", "text": "Büyük olan Rusya'nın, küçük olan Amerika'nın. Ve aralarından Uluslararası Tarih Değiştirme Çizgisi geçiyor." },
+    { "id": "l5", "text": "Rusya tarafı UTC artı on iki, Alaska tarafı UTC eksi dokuz kullanıyor.", "caption": "Rusya tarafı UTC+12, Alaska tarafı UTC−9 kullanıyor." },
+    { "id": "l6", "text": "Bu yüzden adları: YARIN Adası ve DÜN Adası.", "caption": "Bu yüzden adları: Yarın Adası ve Dün Adası." },
+    { "id": "l7", "text": "Kışın aradaki deniz donuyor. Yani teorik olarak, yarına YÜRÜYEBİLİRSİN.", "caption": "Kışın aradaki deniz donuyor. Yani teorik olarak yarına yürüyebilirsin.", "holdAfter": 0.6 },
+    { "id": "l8", "text": "Yaz saatinde fark yirmi saate iniyor; ama yine de dünyanın en tuhaf komşuluğu.", "caption": "Yaz saatinde fark 20 saate iniyor; ama yine de dünyanın en tuhaf komşuluğu." }
+  ]
+}

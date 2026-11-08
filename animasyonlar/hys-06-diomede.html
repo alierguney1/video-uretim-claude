@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dün ve Yarın Adası</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@600;800&family=IBM+Plex+Mono:wght@500&display=block" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/d3-array@3.2.4/dist/d3-array.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/d3-geo@3.1.1/dist/d3-geo.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/topojson-client@3.1.0/dist/topojson-client.min.js"></script>
+<style>
+  html, body { margin: 0; height: 100%; background: #0b141b; }
+  body { display: grid; place-items: center; overflow: hidden; }
+  canvas { display: block; }
+  #hud { position: fixed; left: 12px; bottom: 10px; font: 12px/1.4 ui-monospace, monospace;
+         color: #bbb; background: rgba(0,0,0,.55); padding: 4px 8px; border-radius: 4px; user-select: none; }
+  body.render #hud { display: none; }
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div id="hud">yükleniyor…</div>
+<audio id="vo" src="../ses/hys-06-diomede/voice.wav" preload="auto"></audio>
+<script src="../lib/harita-motoru.js"></script>
+<script>
+'use strict';
+// Harita Yalan Söyler · Bölüm 6 — "Dün Adası ve Yarın Adası" (Diomede)
+// Brif: hys-06-diomede.brief.md. Ada şekilleri Natural Earth 1:10m karadan kesildi (aşağıda gömülü).
+// Mesafe kaynaklardan 3,8 km; bu sadeleştirilmiş veride en yakın kıyılar 3,97 km ölçülüyor.
+// Saatler: Büyük Diomede UTC+12, Küçük Diomede UTC−9 (yaz saatinde −8); ekrandaki saatler her karede hesaplanır.
+
+/*VO:BEGIN*/ const VO = {"duration":35.61,"lines":[{"id":"l1","start":0.15,"end":3.684,"text":"Bu iki ada arasında sadece 3,8 km var."},{"id":"l2","start":3.984,"end":5.783,"text":"Sence aralarında kaç saat fark var?"},{"id":"l3","start":6.883,"end":8.418,"text":"Cevap: 21 saat!"},{"id":"l4","start":9.118,"end":14.508,"text":"Büyük olan Rusya'nın, küçük olan Amerika'nın. Ve aralarından Uluslararası Tarih Değiştirme Çizgisi geçiyor."},{"id":"l5","start":14.808,"end":19.814,"text":"Rusya tarafı UTC+12, Alaska tarafı UTC−9 kullanıyor."},{"id":"l6","start":20.114,"end":23.024,"text":"Bu yüzden adları: Yarın Adası ve Dün Adası."},{"id":"l7","start":23.324,"end":27.717,"text":"Kışın aradaki deniz donuyor. Yani teorik olarak yarına yürüyebilirsin."},{"id":"l8","start":28.617,"end":33.413,"text":"Yaz saatinde fark 20 saate iniyor; ama yine de dünyanın en tuhaf komşuluğu."}]}; /*VO:END*/
+const ISLANDS_NE10 = [[[[-169.08336,65.81586],[-169.06322,65.82819],[-169.04133,65.82734],[-168.99462,65.81586],[-169.00776,65.79572],[-169.02754,65.77391],[-169.05138,65.75788],[-169.07653,65.75507],[-169.0937,65.76195],[-169.09809,65.77888],[-169.09337,65.79906],[-169.08336,65.81586]]],[[[-168.90791,65.7683],[-168.90278,65.76154],[-168.89961,65.74763],[-168.90986,65.73957],[-168.92622,65.7399],[-168.94213,65.74372],[-168.95173,65.75316],[-168.94298,65.76472],[-168.92012,65.76887],[-168.90791,65.7683]]]];
+const { C, SANS, MONO, W, SAFE, RAD, ctx, clamp, lerp, prog, win, ease, fmtNum, text, label, pin, line, baseMap, fillFeature, heading } = HYS;
+
+let BIG, LITTLE, PA, PB, DL;
+const C0 = [-168.99, 65.748];
+const DAYS = ['Paz', 'Pzt', 'Sal', 'Çar', 'Per', 'Cum', 'Cmt'];
+const fmtClock = min => { const m = ((min % 10080) + 10080) % 10080; const d = Math.floor(m / 1440), h = Math.floor(m % 1440 / 60), mm = Math.floor(m % 60); return `${DAYS[d]} ${String(h).padStart(2, '0')}:${String(mm).padStart(2, '0')}`; };
+const littleMin = t => 1 * 1440 + 15 * 60 + t * 10;            // Küçük Diomede: Pzt 15:00'ten başlar, 1 sn = 10 dk
+const bigMin = t => littleMin(t) + 21 * 60;                      // UTC+12 − (UTC−9) = 21 saat
+const poly = rings => { const f = { type: 'Polygon', coordinates: rings.map(r => r.slice()) }; if (d3.geoArea(f) > 2 * Math.PI) f.coordinates = f.coordinates.map(r => r.reverse()); return f; };
+
+HYS.run({
+  vo: VO, cover: 0, seed: 6,
+  init() {
+    BIG = poly(ISLANDS_NE10[0]); LITTLE = poly(ISLANDS_NE10[1]);
+    // en yakın kıyı noktaları (veriden)
+    const dens = r => r.flatMap((p, i) => i < r.length - 1 ? Array.from({ length: 10 }, (_, k) => d3.geoInterpolate(p, r[i + 1])(k / 10)) : []);
+    let best = 1e9;
+    for (const a of dens(BIG.coordinates[0])) for (const b of dens(LITTLE.coordinates[0])) { const d = d3.geoDistance(a, b); if (d < best) { best = d; PA = a; PB = b; } }
+    DL = (PA[0] + PB[0]) / 2;
+  },
+  times: (L, at, DUR) => ({ reveal: at(2) + .35, dl0: at(3) + 2.4, dl1: at(3) + 3.8, names: at(5), ice0: at(6), walk0: at(6) + 1.8, walk1: at(6, 'end') + .4, out: at(7), back: at(7, 'end') + .1, DUR }),
+  scenes: (T, at, DUR) => [
+    { name: 'kanca', start: 0, end: at(1) }, { name: 'tahmin', start: at(1), end: at(2) }, { name: 'cevap', start: at(2), end: at(3) },
+    { name: 'çizgi', start: at(3), end: at(4) }, { name: 'saat dilimleri', start: at(4), end: at(5) }, { name: 'adlar', start: at(5), end: at(6) },
+    { name: 'buz', start: at(6), end: at(7) }, { name: 'yaz + kapanış', start: at(7), end: T.back }, { name: 'döngü', start: T.back, end: DUR },
+  ],
+  keys: (T, at, DUR) => [
+    [0, C0[0], C0[1], 520], [at(2), C0[0], C0[1] + .005, 560], [at(3) + 1.6, C0[0], C0[1] + .01, 470], [at(6), C0[0], C0[1], 470],
+    [T.walk1, C0[0], C0[1] - .005, 600], [T.out + .3, C0[0], C0[1], 560], [T.out + 2.2, -171, 65.4, 9], [T.back, -171, 65.4, 9.5],
+    [DUR, C0[0], C0[1], 520],
+  ],
+  draw(t, g) {
+    const { path, pr, cam, T, DUR, at } = g;
+    baseMap(path, { fine: true });
+    const vis = p => HYS.visible(cam, p) ? pr(p) : null;
+    const near = cam.k > 100 ? 1 : 0;
+
+    // buz köprüsü
+    const iceA = win(t, T.ice0 + .2, T.out + .6, .6);
+    if (iceA > 0) {
+      const mid = d3.geoInterpolate(PA, PB)(.5);
+      for (const [r, a] of [[.075, .18], [.06, .22], [.045, .28]])                     // yumuşak kenarlı buz
+        fillFeature(path, d3.geoCircle().center(mid).radius(r).precision(2)(), { color: '#C9D6DE', alpha: a * iceA });
+    }
+    fillFeature(path, BIG, { color: C.land, stroke: C.ocean, width: 3 });
+    fillFeature(path, LITTLE, { color: C.land, stroke: C.ocean, width: 3 });
+
+    // tarih değiştirme çizgisi (yerel kesit)
+    const dk = ease.inOutCubic(prog(t, T.dl0, T.dl1)), dA = 1 - prog(t, T.out + .2, T.out + .8);
+    if (dk > 0) line(path, Array.from({ length: 21 }, (_, i) => [DL, 65.62 + .33 * dk * i / 20]), { color: C.accent, width: 5, dash: [16, 12], outline: true, alpha: dA });
+    const dlp = vis([DL, 65.70]);
+    if (dlp) label('Tarih Değiştirme Çizgisi', dlp[0], dlp[1], { alpha: win(t, T.dl1 - .2, at(5) + .2) * near, dx: -250, dy: 60, size: 40, color: C.accent });
+
+    // mesafe parantezi
+    const gapA = Math.max(win(t, 0, at(2) + .2, .3) * (t < .3 ? 0 : 1) + (t < .3 ? 1 : 0), prog(t, DUR - 1.3, DUR - .5)) * near;
+    if (gapA > 0) {
+      line(path, [PB, PA], { color: C.text, width: 4, outline: true, alpha: gapA });
+      const m = vis(d3.geoInterpolate(PA, PB)(.5));
+      if (m) label('3,8 km', m[0], m[1], { alpha: gapA, dx: -90, dy: -40, color: C.text });
+    }
+
+    // saatler
+    const bc = vis(d3.geoCentroid(BIG)), lc = vis(d3.geoCentroid(LITTLE));
+    const clkA = win(t, T.reveal, T.out + .5, .3) * near;
+    if (bc) label(fmtClock(bigMin(t)), bc[0], bc[1], { alpha: clkA, dx: -200, dy: -150, size: 50, color: C.text });
+    if (lc) label(fmtClock(littleMin(t)), lc[0], lc[1], { alpha: clkA, dx: -60, dy: 130, size: 50, color: C.text });
+    const nmA = win(t, T.names + .3, T.out + .5, .3) * near;
+    if (bc) label('YARIN ADASI · Rusya', bc[0], bc[1], { alpha: nmA, font: SANS, weight: 600, dx: -200, dy: -230, size: 42, color: C.accent });
+    if (lc) label('DÜN ADASI · ABD', lc[0], lc[1], { alpha: nmA, font: SANS, weight: 600, dx: -60, dy: 200, size: 42, color: C.accent });
+    const own = win(t, at(3) + .4, at(4) + .2, .3) * near;
+    if (bc) label('Rusya', bc[0], bc[1], { alpha: own, font: SANS, weight: 600, dx: -40, dy: 20 });
+    if (lc) label('ABD', lc[0], lc[1], { alpha: own, font: SANS, weight: 600, dx: -20, dy: 20 });
+    const utcA = win(t, at(4) - .1, at(5) + .1) * near;
+    if (bc) label('UTC+12', bc[0], bc[1], { alpha: utcA, dx: -40, dy: 20, size: 48 });
+    if (lc) label('UTC−9', lc[0], lc[1], { alpha: utcA, dx: -20, dy: 20, size: 48 });
+
+    // yürüyüşçü: dünden yarına
+    const wk = ease.inOutSine(prog(t, T.walk0, T.walk1));
+    const wA = win(t, T.walk0 - .2, T.out + .4, .3) * near;
+    if (wA > 0) {
+      const wp = d3.geoInterpolate(PB, PA)(wk), xy = vis(wp);
+      line(path, [PB, wp], { color: C.accent, width: 4, dash: [6, 10], alpha: wA });
+      pin(xy, { color: C.accent, r: 13, alpha: wA, pulse: (t * 1.2) % 1 });
+      if (xy) label(wp[0] < DL ? 'yarın' : 'dün', xy[0], xy[1], { alpha: wA, dx: 30, dy: -30, size: 44, color: C.accent });
+    }
+    // uzak görünüm etiketleri
+    const farA = win(t, T.out + 1.6, T.back + .4, .3);
+    const ru = vis([-174, 66.3]), ak = vis([-163.5, 65.2]);
+    if (ru) label('Rusya', ru[0], ru[1], { alpha: farA, font: SANS, weight: 600, dx: -200, dy: -20 });
+    if (ak) label('Alaska · ABD', ak[0], ak[1], { alpha: farA, font: SANS, weight: 600, dx: 30, dy: 80 });
+  },
+  header(t, g) {
+    const { T, DUR, at } = g;
+    const hookA = t < DUR - 3 ? 1 - prog(t, T.reveal - .3, T.reveal) : prog(t, DUR - 1.4, DUR - .6);
+    heading('İki ada, 3,8 km.', hookA, { size: 80 });
+    text('Kaç saat fark?', SAFE.x0, SAFE.y0 + 40 + 80 + 90, 80, { alpha: hookA, color: C.land });
+    const rA = win(t, T.reveal, at(3) + .2, .2);
+    text('21 saat', SAFE.x0, SAFE.y0 + 40 + 120, 130, { font: MONO, weight: 500, alpha: rA, color: C.accent });
+    heading('Rusya ↔ ABD', win(t, at(3), at(4) + .1), { sub: 'arada tarih değiştirme çizgisi' });
+    heading('UTC+12 · UTC−9', win(t, at(4) - .1, at(5) + .1), { sub: '+12 − (−9) = 21 saat' });
+    heading('Yarın ve Dün', win(t, at(5) - .1, at(6) + .1), { sub: 'adaların takma adları' });
+    heading('Kışın: buz köprüsü', win(t, at(6) - .1, at(7) + .1), { size: 72, sub: 'yarına yürümek' });
+    heading('Yazın 20 saat', win(t, at(7) - .1, T.back + .6), { sub: 'yine de en tuhaf komşuluk' });
+  },
+  sounds: T => [
+    { t: T.reveal, type: 'ping2', gain: .5 },
+    { t: T.dl1, type: 'ping', gain: .3, f: 587 },
+    { t: T.walk0, type: 'whoosh', dur: T.walk1 - T.walk0, gain: .05 },
+    { t: (T.walk0 + T.walk1) / 2, type: 'ping', gain: .4, f: 784 },
+  ],
+});
+</script>
+</body>
+</html>
