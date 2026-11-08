@@ -27,7 +27,7 @@ Algoritmanın ölçtüğü şey 3–5 arası; "AI ile yapılmış" olması ne ö
 * Sayfada `window.__duration` ve `window.__setTime(t)` olsun. Böylece dışarıdan kare kare sürülebilsin.
 * URL'de `?t=3.2` verilirse o anı çizip dursun (tek kare kontrolü için).
 * Sabit çözünürlük ve fps. `devicePixelRatio` ile net çizim.
-* Tek dosya HTML. Kütüphane gerekirse CDN'den.
+* Tek dosya HTML. Kütüphane gerekirse CDN'den. İstisna: bir serinin ortak motoru (`lib/<seri>-motoru.js`) bölüm dosyalarına göreli yolla eklenebilir; bölüm dosyası yalnızca hikâyeyi taşır.
 * MP4 gerekiyorsa: headless tarayıcıyla kare kare PNG al, FFmpeg ile birleştir.
 * `window.__cover` = kapak karesinin zamanı. Render bunu `cover.png` olarak da çıkarır.
 

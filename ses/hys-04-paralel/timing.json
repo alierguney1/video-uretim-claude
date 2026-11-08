@@ -1,0 +1,59 @@
+{
+  "duration": 35.55,
+  "lines": [
+    {
+      "id": "l1",
+      "start": 0.15,
+      "end": 4.343,
+      "text": "İstanbul'dan dümdüz doğuya gitsen, eve dönene kadar kaç ülkeden geçerdin?"
+    },
+    {
+      "id": "l2",
+      "start": 4.593,
+      "end": 7.183,
+      "text": "Hep aynı enlemde kalalım: 41° kuzey."
+    },
+    {
+      "id": "l3",
+      "start": 7.433,
+      "end": 11.616,
+      "text": "Ermenistan, Azerbaycan, Hazar Denizi... ve Orta Asya'nın tam ortası."
+    },
+    {
+      "id": "l4",
+      "start": 11.866,
+      "end": 15.325,
+      "text": "Çin'i boydan boya geçip Kuzey Kore'ye giriyorsun. Sonra Japonya."
+    },
+    {
+      "id": "l5",
+      "start": 15.575,
+      "end": 19.897,
+      "text": "Pasifik'i aşınca Amerika. New York, İstanbul'dan sadece 33 km güneyde!"
+    },
+    {
+      "id": "l6",
+      "start": 20.147,
+      "end": 25.045,
+      "text": "Atlantik'ten sonra Portekiz, İspanya ve İtalya. Roma ise İstanbul'dan daha kuzeyde."
+    },
+    {
+      "id": "l7",
+      "start": 25.295,
+      "end": 28.629,
+      "text": "Arnavutluk, Kuzey Makedonya, Yunanistan... ve eve dönüş."
+    },
+    {
+      "id": "l8",
+      "start": 29.179,
+      "end": 31.899,
+      "text": "Toplam: 17 ülke, 30.207 km."
+    },
+    {
+      "id": "l9",
+      "start": 32.149,
+      "end": 33.152,
+      "text": "Sen kaç tahmin etmiştin?"
+    }
+  ]
+}
