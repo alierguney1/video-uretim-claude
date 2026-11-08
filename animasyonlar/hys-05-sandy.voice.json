@@ -1,0 +1,15 @@
+{
+  "voice": "Charon",
+  "style": "enerjik ve merak uyandıran, gizemli bir hikâye anlatır gibi, önemli kelimeleri vurgulayan",
+  "tempo": 1.12, "lead": 0.15, "gap": 0.3, "tail": 2.2,
+  "lines": [
+    { "id": "l1", "text": "Bu ada, yüz yıldan fazla haritalarda duruyordu. Google Haritalar'da BİLE." , "caption": "Bu ada, yüz yıldan fazla haritalarda duruyordu. Google Haritalar'da bile." },
+    { "id": "l2", "text": "Avustralya ile Yeni Kaledonya arasında, Mercan Denizi'nin ortasında: Sandy Adası." },
+    { "id": "l3", "text": "İki bin on iki yılında, Avustralyalı bilim insanları gemiyle tam oraya gitti.", "caption": "2012'de Avustralyalı bilim insanları gemiyle tam oraya gitti.", "holdAfter": 1.0 },
+    { "id": "l4", "text": "Ve... <short pause> ada YOKTU.", "caption": "Ve… ada yoktu.", "pauseBefore": 0.3, "holdAfter": 0.5 },
+    { "id": "l5", "text": "Altlarında, bin dört yüz metre derinliğinde okyanus vardı.", "caption": "Altlarında 1.400 metre derinliğinde okyanus vardı.", "holdAfter": 0.4 },
+    { "id": "l6", "text": "Bir hafta içinde Google, adayı haritadan sildi." },
+    { "id": "l7", "text": "Ada muhtemelen on dokuzuncu yüzyılda bir geminin hatalı kaydıyla doğdu, sonra haritadan haritaya kopyalandı.", "caption": "Ada muhtemelen 19. yüzyılda bir geminin hatalı kaydıyla doğdu, sonra haritadan haritaya kopyalandı." },
+    { "id": "l8", "text": "Yani bazen harita, gerçekten YALAN söyler.", "caption": "Yani bazen harita gerçekten yalan söyler." }
+  ]
+}

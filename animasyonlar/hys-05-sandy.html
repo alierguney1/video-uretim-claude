@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Olmayan Ada</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@600;800&family=IBM+Plex+Mono:wght@500&display=block" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/d3-array@3.2.4/dist/d3-array.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/d3-geo@3.1.1/dist/d3-geo.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/topojson-client@3.1.0/dist/topojson-client.min.js"></script>
+<style>
+  html, body { margin: 0; height: 100%; background: #0b141b; }
+  body { display: grid; place-items: center; overflow: hidden; }
+  canvas { display: block; }
+  #hud { position: fixed; left: 12px; bottom: 10px; font: 12px/1.4 ui-monospace, monospace;
+         color: #bbb; background: rgba(0,0,0,.55); padding: 4px 8px; border-radius: 4px; user-select: none; }
+  body.render #hud { display: none; }
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div id="hud">yükleniyor…</div>
+<audio id="vo" src="../ses/hys-05-sandy/voice.wav" preload="auto"></audio>
+<script src="../lib/harita-motoru.js"></script>
+<script>
+'use strict';
+// Harita Yalan Söyler · Bölüm 5 — "Hiç var olmayan ada" (Sandy Adası)
+// Brif: hys-05-sandy.brief.md. Konum 19°15′G 159°55′D (Wikipedia). Adanın şekli temsilidir
+// ("haritadaki hâli" etiketiyle); boyutu kaynaklarda çeliştiği için sayı verilmez.
+
+/*VO:BEGIN*/ const VO = {"duration":41.69,"lines":[{"id":"l1","start":0.15,"end":5.183,"text":"Bu ada, yüz yıldan fazla haritalarda duruyordu. Google Haritalar'da bile."},{"id":"l2","start":5.483,"end":11.605,"text":"Avustralya ile Yeni Kaledonya arasında, Mercan Denizi'nin ortasında: Sandy Adası."},{"id":"l3","start":11.905,"end":17.285,"text":"2012'de Avustralyalı bilim insanları gemiyle tam oraya gitti."},{"id":"l4","start":18.885,"end":20.771,"text":"Ve… ada yoktu."},{"id":"l5","start":21.571,"end":25.558,"text":"Altlarında 1.400 metre derinliğinde okyanus vardı."},{"id":"l6","start":26.258,"end":29.278,"text":"Bir hafta içinde Google, adayı haritadan sildi."},{"id":"l7","start":29.578,"end":36.157,"text":"Ada muhtemelen 19. yüzyılda bir geminin hatalı kaydıyla doğdu, sonra haritadan haritaya kopyalandı."},{"id":"l8","start":36.457,"end":39.486,"text":"Yani bazen harita gerçekten yalan söyler."}]}; /*VO:END*/
+const { C, SANS, MONO, W, SAFE, RAD, ctx, clamp, lerp, prog, win, ease, fmtNum, text, label, pin, line, greatCircle, baseMap, fillFeature, heading } = HYS;
+
+const SANDY = [159 + 55 / 60, -(19 + 15 / 60)], BNE = [153.03, -27.47];
+const ISLAND = { type: 'Polygon', coordinates: [Array.from({ length: 49 }, (_, i) => {
+  const a = -i / 48 * 2 * Math.PI;                                   // saat yönü (d3 küresel poligon)
+  return [SANDY[0] + .032 * Math.cos(a), SANDY[1] + .11 * Math.sin(a)];
+})] };
+let AUS, NCL;
+
+function mapPin(x, y, s, alpha) {                                    // genel harita iğnesi (marka yok)
+  if (alpha <= .001) return;
+  ctx.save(); ctx.globalAlpha = alpha; ctx.translate(x, y); ctx.scale(s, s);
+  ctx.fillStyle = C.ocean; ctx.beginPath(); ctx.arc(0, -62, 34, Math.PI * .8, Math.PI * .2); ctx.lineTo(0, 0); ctx.closePath(); ctx.fill();
+  ctx.fillStyle = C.accent; ctx.beginPath(); ctx.arc(0, -62, 28, Math.PI * .8, Math.PI * .2); ctx.lineTo(0, -8); ctx.closePath(); ctx.fill();
+  ctx.fillStyle = C.ocean; ctx.beginPath(); ctx.arc(0, -62, 11, 0, 2 * Math.PI); ctx.fill();
+  ctx.restore();
+}
+
+HYS.run({
+  vo: VO, cover: 0, seed: 5,
+  init(D) { AUS = D.country('Australia'); NCL = D.country('New Caledonia'); },
+  times: (L, at, DUR) => ({
+    ship0: at(2) + .4, ship1: at(3) - .4, vanish: at(3) + 1.25, depth0: at(4) - .1, depth1: at(4, 'end') - .2,
+    gone: at(5) + 1.4, hist: at(6), tag: at(7), back: at(7, 'end') + .2, DUR,
+  }),
+  scenes: (T, at, DUR) => [
+    { name: 'kanca', start: 0, end: at(1) }, { name: 'konum', start: at(1), end: at(2) },
+    { name: 'gemi', start: at(2), end: at(3) }, { name: 'ada yok', start: at(3), end: at(4) },
+    { name: 'derinlik', start: at(4), end: at(5) }, { name: 'silindi', start: at(5), end: at(6) },
+    { name: 'neden', start: at(6), end: at(7) }, { name: 'kapanış', start: at(7), end: T.back }, { name: 'döngü', start: T.back, end: DUR },
+  ],
+  keys: (T, at, DUR) => [
+    [0, SANDY[0], SANDY[1] + .02, 110], [at(1) - .2, SANDY[0], SANDY[1] + .02, 120], [at(1) + 1.2, 158, -21.5, 3.4],
+    [T.ship0, 157.5, -22.5, 3.6], [T.ship1, SANDY[0], SANDY[1], 24], [T.vanish, SANDY[0], SANDY[1], 110],
+    [T.depth1, SANDY[0], SANDY[1], 125], [T.gone, SANDY[0], SANDY[1] + .02, 100], [T.hist + .2, SANDY[0] + .12, SANDY[1] - .05, 60],
+    [T.hist + 3.2, SANDY[0] + .14, SANDY[1] - .07, 56], [T.tag, 157, -21, 4.5], [T.back, 150, -12, 1.4], [DUR, SANDY[0], SANDY[1] + .02, 110],
+  ],
+  draw(t, g) {
+    const { path, pr, cam, T, DUR, at } = g;
+    baseMap(path, { fine: cam.k > 1.9 });
+    const vis = p => HYS.visible(cam, p) ? pr(p) : null;
+
+    // Yeni Kaledonya ve Avustralya etiketleri
+    const ctxA = win(t, at(1) + .9, T.ship1 - .6, .4);
+    const nc = vis([165.6, -21.3]), au = vis([144, -24]);
+    if (nc) label('Yeni Kaledonya', nc[0], nc[1], { font: SANS, weight: 600, alpha: ctxA, dx: -100, dy: 110 });
+
+    // Ada: önce "var", sonra kesikli hayalet, sonra silinir
+    const isA = 1 - prog(t, T.vanish - .05, T.vanish + .25);
+    const ghostA = Math.min(prog(t, T.vanish, T.vanish + .3), 1 - prog(t, T.gone - .3, T.gone + .3));
+    const reborn = win(t, T.hist + .6, T.tag + .2, .4);                 // "kopyalandı": yankılar
+    const loopA = prog(t, DUR - 1.3, DUR - .5);
+    fillFeature(path, ISLAND, { color: C.land, stroke: C.ocean, width: 3, alpha: Math.max(isA, loopA) });
+    if (ghostA > 0 || reborn > 0) {
+      ctx.save(); ctx.setLineDash([10, 9]);
+      fillFeature(path, ISLAND, { color: null, stroke: C.text, width: 4, alpha: Math.max(ghostA, reborn) });
+      for (let i = 1; i <= 4 && reborn > 0; i++) {                        // haritadan haritaya kopyalar
+        const k = prog(t, T.hist + .6 + i * .45, T.hist + 1.0 + i * .45);
+        const off = { type: 'Polygon', coordinates: [ISLAND.coordinates[0].map(([x, y]) => [x + i * .07, y - i * .035])] };
+        fillFeature(path, off, { color: null, stroke: C.text, width: 3, alpha: reborn * k * (1 - i * .15) });
+      }
+      ctx.restore();
+    }
+    const ip = vis(SANDY);
+    if (ip) {
+      const pinA = Math.max(1 - prog(t, T.gone - .5, T.gone), loopA) * (1 - win(t, at(1) + .9, T.ship1 - .6, .4) * .0);
+      const drop = ease.inOutCubic(prog(t, T.gone - .5, T.gone)) * (1 - loopA);
+      mapPin(ip[0], ip[1] - 40 + drop * 60, .95 - drop * .4, pinA * (cam.k > 8 ? 1 : 0));
+      const la = win(t, at(1) + 2.6, T.ship1 + .2, .3);
+      label('Sandy Adası', ip[0], ip[1], { font: SANS, weight: 600, alpha: la, dx: 40, dy: 10 });
+      label('haritadaki hâli', ip[0], ip[1], { alpha: Math.max(1 - prog(t, at(1) + .1, at(1) + .4), loopA), dx: 60, dy: 30, size: 40, color: C.mute });
+    }
+
+    // Gemi: Brisbane → Sandy (büyük daire)
+    const sk = ease.inOutSine(prog(t, T.ship0, T.ship1));
+    const shipOn = win(t, T.ship0 - .2, T.gone, .3);
+    if (shipOn > 0) {
+      line(path, greatCircle(BNE, SANDY, sk), { color: C.accent, width: 5, dash: [12, 10], outline: true, alpha: shipOn });
+      const sp = vis(d3.geoInterpolate(BNE, SANDY)(sk));
+      if (sp) {
+        // sonar halkaları (derinlik ölçümü)
+        const sonar = win(t, T.depth0 - .3, T.depth1 + .5, .3);
+        for (let i = 0; i < 3; i++) {
+          const ph = ((t - T.depth0) * .9 + i / 3) % 1;
+          if (sonar > 0 && t > T.depth0) { ctx.globalAlpha = sonar * (1 - ph) * .8; ctx.strokeStyle = C.accent; ctx.lineWidth = 4; ctx.beginPath(); ctx.arc(sp[0], sp[1], 20 + ph * 260, 0, 2 * Math.PI); ctx.stroke(); ctx.globalAlpha = 1; }
+        }
+        pin(sp, { color: C.accent, r: 14, alpha: shipOn });
+        const bl = vis(BNE);
+        if (bl) label('Brisbane', bl[0], bl[1], { font: SANS, weight: 600, alpha: win(t, T.ship0 - .2, T.ship0 + 2.4, .3), dx: 30, dy: 50 });
+      }
+    }
+  },
+  header(t, g) {
+    const { T, DUR, at } = g;
+    const hookA = t < DUR - 3 ? 1 - prog(t, at(1) - .3, at(1) + .1) : prog(t, DUR - 1.4, DUR - .6);
+    heading('Bu ada 100 yıl', hookA, { size: 80 });
+    text('haritadaydı.', SAFE.x0, SAFE.y0 + 40 + 80 + 90, 80, { alpha: hookA, color: C.land });
+    text('19°15′G 159°55′D', SAFE.x0, SAFE.y0 + 40 + 80 + 160, 48, { font: MONO, weight: 500, alpha: hookA, color: C.mute });
+    heading('Sandy Adası', win(t, at(1) - .1, at(2) + .1), { sub: 'Mercan Denizi, Pasifik' });
+    heading('2012', win(t, at(2) - .1, T.vanish - .2), { sub: 'Avustralyalı araştırma gemisi' });
+    const yA = win(t, T.vanish - .1, at(4) + .1, .2);
+    text('Ada yok.', SAFE.x0, SAFE.y0 + 40 + 110, 120, { alpha: yA, color: C.accent });
+    const dA = win(t, at(4) - .1, at(5) + .1);
+    heading('Derinlik', dA, { size: 64 });
+    text(`${fmtNum(1400 * ease.outCubic(prog(t, T.depth0, T.depth1)))} m`, SAFE.x0, SAFE.y0 + 40 + 80 + 104, 104, { font: MONO, weight: 500, alpha: dA, color: C.accent });
+    heading('Haritadan silindi.', win(t, at(5) - .1, at(6) + .1), { sub: 'Kasım 2012' });
+    heading('19. yüzyıl → 2012', win(t, at(6) - .1, at(7) + .1), { size: 70, sub: 'haritadan haritaya kopyalandı' });
+    heading('Harita yalan söyler.', win(t, at(7) - .1, T.back + .7), { sub: 'bazen gerçekten' });
+  },
+  sounds: T => [
+    { t: T.ship0, type: 'whoosh', dur: T.ship1 - T.ship0, gain: .05 },
+    { t: T.vanish, type: 'ping', gain: .55, f: 330 },
+    ...[0, 1, 2, 3].map(i => ({ t: T.depth0 + i * 1.1, type: 'tick', gain: .2, f: 900 })),
+    { t: T.gone, type: 'ping', gain: .3, f: 523 },
+  ],
+});
+</script>
+</body>
+</html>
