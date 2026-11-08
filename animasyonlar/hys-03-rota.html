@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Eğri Daha Kısa</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@600;800&family=IBM+Plex+Mono:wght@500&display=block" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/d3-array@3.2.4/dist/d3-array.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/d3-geo@3.1.1/dist/d3-geo.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/topojson-client@3.1.0/dist/topojson-client.min.js"></script>
+<style>
+  html, body { margin: 0; height: 100%; background: #0b141b; }
+  body { display: grid; place-items: center; overflow: hidden; }
+  canvas { display: block; }
+  #hud { position: fixed; left: 12px; bottom: 10px; font: 12px/1.4 ui-monospace, monospace;
+         color: #bbb; background: rgba(0,0,0,.55); padding: 4px 8px; border-radius: 4px; user-select: none; }
+  body.render #hud { display: none; }
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div id="hud">yükleniyor…</div>
+<audio id="vo" src="../ses/hys-03-rota/voice.wav" preload="auto"></audio>
+<script src="../lib/harita-motoru.js"></script>
+<script>
+'use strict';
+// Harita Yalan Söyler · Bölüm 3 — "Bu eğri çizgi, düz olandan 2.000 km daha kısa"
+// Brif: hys-03-rota.brief.md. Mercator'da düz çizgi = sabit pusula rotası (loxodrom); eğri = büyük daire
+// (en kısa yol). Uzunluklar kodda hesaplanır. Kürede kamera, rota ekranda tam dikey/yatay olacak açıya
+// (gamma) sayısal olarak çevrilir.
+
+/*VO:BEGIN*/ const VO = {"duration":38.15,"lines":[{"id":"l1","start":0.15,"end":4.384,"text":"Bu eğri çizgi, düz olandan neredeyse 2.000 km daha kısa."},{"id":"l2","start":4.684,"end":6.624,"text":"İkisi de İstanbul'dan Los Angeles'a gidiyor."},{"id":"l3","start":7.224,"end":11.553,"text":"Haritada cetvelle çektiğin düz çizgi: 12.969 km."},{"id":"l4","start":11.853,"end":14.168,"text":"Eğri olan ise: 11.002 km."},{"id":"l5","start":14.768,"end":17.815,"text":"Eğri nasıl daha kısa olabilir? Çünkü dünya düz değil."},{"id":"l6","start":19.515,"end":24.294,"text":"Küreye bakınca eğri dümdüz: Polonya, İskandinavya ve Grönland'ın üstünden geçip Kanada'ya iniyor."},{"id":"l7","start":24.594,"end":28.536,"text":"Tokyo'ya en kısa yol da, Kazakistan, Moğolistan ve Çin'in üstünden geçiyor."},{"id":"l8","start":28.836,"end":35.751,"text":"Gerçek uçuşlar rüzgâra ve hava sahasına göre biraz sapar; ama mantık hep aynı: en kısa yol, kürenin üstündeki düz çizgi."}]}; /*VO:END*/
+const { C, SANS, MONO, W, SAFE, GLOBE, RAD, R_EARTH, ctx, clamp, lerp, prog, win, ease, fmtNum, text, label, pin, line, greatCircle, baseMap, heading } = HYS;
+
+const IST = [28.7519, 41.2753], LAX = [-118.4085, 33.9416], NRT = [140.3929, 35.772];
+let RH, GC, GC2, M1, M2, G1, G2;
+
+/** Loxodrom (Mercator'da düz çizgi) noktaları */
+function rhumbCoords(a, b, k = 1, n = 96) {
+  const y = la => Math.log(Math.tan(Math.PI / 4 + la * RAD / 2));
+  let dl = b[0] - a[0]; if (Math.abs(dl) > 180) dl -= Math.sign(dl) * 360;
+  const ya = y(a[1]), yb = y(b[1]);
+  return Array.from({ length: n + 1 }, (_, i) => { const s = k * i / n; return [a[0] + dl * s, (2 * Math.atan(Math.exp(lerp(ya, yb, s))) - Math.PI / 2) / RAD]; });
+}
+function rhumbLength(a, b) {
+  const [l1, p1] = a.map(x => x * RAD), [l2, p2] = b.map(x => x * RAD);
+  const dphi = p2 - p1, dpsi = Math.log(Math.tan(Math.PI / 4 + p2 / 2) / Math.tan(Math.PI / 4 + p1 / 2));
+  const q = Math.abs(dpsi) > 1e-12 ? dphi / dpsi : Math.cos(p1);
+  let dl = l2 - l1; if (Math.abs(dl) > Math.PI) dl = dl > 0 ? -(2 * Math.PI - dl) : (2 * Math.PI + dl);
+  return Math.sqrt(dphi * dphi + q * q * dl * dl) * R_EARTH;
+}
+/** Rotayı ekranda dikey (mode='v', a altta) ya da yatay (mode='h', a solda) gösteren gamma */
+function straightGamma(a, b, center, mode) {
+  let best = 0, bestErr = 1e9;
+  for (let g = -180; g < 180; g += .25) {
+    const pr = HYS.globeProjection({ lon: center[0], lat: center[1], k: 1, gamma: g });
+    const [x1, y1] = pr(a), [x2, y2] = pr(b);
+    const err = mode === 'v' ? Math.abs(x2 - x1) + (y1 > y2 ? 0 : 1e6) : Math.abs(y2 - y1) + (x1 < x2 ? 0 : 1e6);
+    if (err < bestErr) { bestErr = err; best = g; }
+  }
+  return best;
+}
+
+let GKEYS = [];
+HYS.run({
+  vo: VO, cover: 0, flat: true, seed: 3,
+  init() {
+    RH = rhumbLength(IST, LAX); GC = HYS.km(IST, LAX); GC2 = HYS.km(IST, NRT);
+    M1 = d3.geoInterpolate(IST, LAX)(.5); M2 = d3.geoInterpolate(IST, NRT)(.5);
+    G1 = straightGamma(IST, LAX, M1, 'v'); G2 = straightGamma(IST, NRT, M2, 'h');
+    while (G2 - G1 > 180) G2 -= 360; while (G1 - G2 > 180) G2 += 360;   // en kısa dönüş
+  },
+  times: (L, at, DUR) => ({
+    rh0: at(2) + .2, rh1: at(2, 'end') - .3, gc0: at(3), gc1: at(3, 'end') - .2,
+    morph0: at(4) + 1.6, morph1: at(4) + 3.0, fly0: at(5), fly1: at(5, 'end'),
+    tyo0: at(6), tyo1: at(6) + 1.6, tyoDraw1: at(6, 'end') - .4,
+    note: at(7), back0: at(7, 'end') + .1, back1: DUR - .4, DUR,
+  }),
+  scenes: (T, at, DUR) => [
+    { name: 'kanca', start: 0, end: at(1) }, { name: 'iki şehir', start: at(1), end: at(2) },
+    { name: 'düz çizgi', start: at(2), end: at(3) }, { name: 'eğri', start: at(3), end: at(4) },
+    { name: 'küreye geçiş', start: at(4), end: at(5) }, { name: 'kürede düz', start: at(5), end: at(6) },
+    { name: 'tokyo', start: at(6), end: at(7) }, { name: 'dürüstlük + kapanış', start: at(7), end: T.back0 },
+    { name: 'döngü', start: T.back0, end: DUR },
+  ],
+  keys(T, at, DUR) {
+    GKEYS = [
+      [0, M1[0], M1[1], .95, G1], [T.morph0, M1[0], M1[1], .95, G1], [T.morph1 + .6, M1[0], M1[1], 1.22, G1],
+      [T.tyo0, M1[0], M1[1], 1.25, G1], [T.tyo1, M2[0], M2[1], 1.42, G2], [T.back0, M2[0], M2[1], 1.48, G2],
+      [DUR, M2[0], M2[1], 1.3, G2],
+    ];
+    return [[0, -46, 53, 1.75], [at(2), -44, 53, 1.85], [T.morph0, -44, 55, 1.9], [T.back0, -44, 55, 1.9], [DUR, -46, 53, 1.75]];
+  },
+  draw(t, g) {
+    const { path, T, DUR } = g;
+    const m = Math.min(ease.inOutCubic(prog(t, T.morph0, T.morph1)), 1 - ease.inOutCubic(prog(t, T.back0, T.back1)));
+
+    // ── Mercator katmanı ──
+    if (m < 1) {
+      ctx.globalAlpha = 1;
+      baseMap(path, { fine: false });
+      const rhK = t < T.rh0 ? 1 : ease.inOutCubic(prog(t, T.rh0, T.rh1));
+      const gcK = t < T.gc0 ? 1 : ease.inOutCubic(prog(t, T.gc0, T.gc1));
+      const rhDim = t > T.gc0 - .2 && t < T.back0 ? .45 : 1, gcDim = t > T.rh0 - .2 && t < T.gc0 ? .3 : 1;
+      line(path, rhumbCoords(IST, LAX, rhK), { color: C.text, width: 5, dash: [16, 12], outline: true, alpha: rhDim * (1 - m) });
+      line(path, greatCircle(IST, LAX, gcK), { color: C.accent, width: 7, outline: true, alpha: gcDim * (1 - m) });
+      pin(g.pr(IST), { color: C.text, alpha: 1 - m, pulse: (t * .8) % 1 });
+      pin(g.pr(LAX), { color: C.text, alpha: 1 - m });
+      const lA = (1 - m) * (t < T.morph0 ? 1 : 0);
+      const ip = g.pr(IST), lp = g.pr(LAX);
+      label('İstanbul', ip[0], ip[1], { font: SANS, weight: 600, alpha: lA, dx: 24, dy: 60 });
+      label('Los Angeles', lp[0], lp[1], { font: SANS, weight: 600, alpha: lA, dx: 24, dy: 64 });
+    }
+
+    // ── Küre katmanı ──
+    if (m > 0) {
+      const gc = HYS.camera(GKEYS, t, false), pr = HYS.globeProjection(gc), gp = d3.geoPath(pr, ctx);
+      ctx.save(); ctx.globalAlpha = m;
+      ctx.fillStyle = C.bg; ctx.fillRect(0, 0, W, HYS.H);
+      baseMap(gp, { fine: gc.k > 1.35 });
+      ctx.restore();
+      const r1A = m * (1 - prog(t, T.tyo0, T.tyo0 + .8) * .55);
+      line(gp, greatCircle(IST, LAX), { color: C.accent, width: 7, outline: true, alpha: r1A });
+      line(gp, rhumbCoords(IST, LAX), { color: C.text, width: 4, dash: [14, 12], outline: true, alpha: m * .5 * (1 - prog(t, T.fly0, T.fly0 + .8)) });
+      const tk = ease.inOutCubic(prog(t, T.tyo1 - .4, T.tyoDraw1));
+      if (tk > 0) line(gp, greatCircle(IST, NRT, tk), { color: C.accent, width: 7, outline: true, alpha: m });
+      const vis = p => HYS.visible(gc, p) ? pr(p) : null;
+      pin(vis(IST), { color: C.text, alpha: m, pulse: (t * .8) % 1 });
+      pin(vis(LAX), { color: C.text, alpha: m });
+      if (tk > 0) pin(vis(NRT), { color: C.text, alpha: m * prog(t, T.tyoDraw1 - .2, T.tyoDraw1) });
+      // uçan nokta
+      const fk = ease.inOutSine(prog(t, T.fly0, T.fly1));
+      if (fk > 0 && fk < 1) pin(vis(d3.geoInterpolate(IST, LAX)(fk)), { color: C.accent, r: 11, alpha: m });
+      const fk2 = ease.inOutSine(prog(t, T.tyo1, T.tyoDraw1 + .3));
+      if (fk2 > 0 && fk2 < 1) pin(vis(d3.geoInterpolate(IST, NRT)(fk2)), { color: C.accent, r: 11, alpha: m });
+      const lab = (s, p, o) => { const xy = vis(p); if (xy) label(s, xy[0], xy[1], { font: SANS, weight: 600, ...o }); };
+      const a1 = m * win(t, T.morph1 - .3, T.tyo0 + .4);
+      lab('İstanbul', IST, { alpha: a1, dx: 30, dy: 20 }); lab('Los Angeles', LAX, { alpha: a1, dx: 30, dy: 20 });
+      const a2 = m * win(t, T.tyoDraw1 - .2, T.back0 + .3);
+      lab('İstanbul', IST, { alpha: a2, dx: 30, dy: 70 }); lab('Tokyo', NRT, { alpha: a2, dx: -150, dy: 70 });
+    }
+  },
+  header(t, g) {
+    const { T, DUR, at } = g;
+    const hookA = t < DUR - 3 ? 1 - prog(t, at(1) - .3, at(1) + .1) : prog(t, DUR - 1.4, DUR - .6);
+    heading('Bu eğri çizgi,', hookA, { size: 76 });
+    text('düz olandan kısa.', SAFE.x0, SAFE.y0 + 40 + 80 + 86, 76, { alpha: hookA, color: C.land });
+    text(`fark: ${fmtNum(RH - GC)} km`, SAFE.x0, SAFE.y0 + 40 + 80 + 158, 50, { font: MONO, weight: 500, alpha: hookA, color: C.accent });
+
+    heading('İstanbul → Los Angeles', win(t, at(1) - .1, at(2) + .1), { size: 66 });
+    const rA = win(t, at(2) - .1, at(3) + .1), gA = win(t, at(3) - .1, at(4) + .1);
+    heading('Düz çizgi', rA, { size: 66 });
+    text(`${fmtNum(RH * ease.inOutCubic(prog(t, T.rh0, T.rh1)))} km`, SAFE.x0, SAFE.y0 + 40 + 80 + 100, 96, { font: MONO, weight: 500, alpha: rA });
+    heading('Eğri', gA, { size: 66 });
+    text(`${fmtNum(GC * ease.inOutCubic(prog(t, T.gc0, T.gc1)))} km`, SAFE.x0, SAFE.y0 + 40 + 80 + 100, 96, { font: MONO, weight: 500, alpha: gA, color: C.accent });
+    heading('Dünya düz değil.', win(t, at(4) - .1, T.morph1 + .2));
+    heading('Kürede:', win(t, T.morph1, at(6) + .1), { size: 66 });
+    text('eğri dümdüz.', SAFE.x0, SAFE.y0 + 40 + 80 + 86, 76, { alpha: win(t, T.morph1, at(6) + .1), color: C.accent });
+    const tA = win(t, at(6) - .1, at(7) + .1);
+    heading('İstanbul → Tokyo', tA, { size: 66 });
+    text(`${fmtNum(GC2)} km`, SAFE.x0, SAFE.y0 + 40 + 80 + 100, 96, { font: MONO, weight: 500, alpha: tA, color: C.accent });
+    heading('En kısa yol,', win(t, at(7) - .1, T.back0 + .5), { size: 72, sub: 'kürenin üstündeki düz çizgi' });
+  },
+  sounds: (T) => [
+    { t: T.rh1, type: 'ping', gain: .3, f: 587 },
+    { t: T.gc1, type: 'ping2', gain: .5 },
+    { t: T.morph0, type: 'whoosh', dur: T.morph1 - T.morph0, gain: .07 },
+    { t: T.tyoDraw1, type: 'ping', gain: .35, f: 784 },
+  ],
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,53 @@
+{
+  "duration": 38.15,
+  "lines": [
+    {
+      "id": "l1",
+      "start": 0.15,
+      "end": 4.384,
+      "text": "Bu eğri çizgi, düz olandan neredeyse 2.000 km daha kısa."
+    },
+    {
+      "id": "l2",
+      "start": 4.684,
+      "end": 6.624,
+      "text": "İkisi de İstanbul'dan Los Angeles'a gidiyor."
+    },
+    {
+      "id": "l3",
+      "start": 7.224,
+      "end": 11.553,
+      "text": "Haritada cetvelle çektiğin düz çizgi: 12.969 km."
+    },
+    {
+      "id": "l4",
+      "start": 11.853,
+      "end": 14.168,
+      "text": "Eğri olan ise: 11.002 km."
+    },
+    {
+      "id": "l5",
+      "start": 14.768,
+      "end": 17.815,
+      "text": "Eğri nasıl daha kısa olabilir? Çünkü dünya düz değil."
+    },
+    {
+      "id": "l6",
+      "start": 19.515,
+      "end": 24.294,
+      "text": "Küreye bakınca eğri dümdüz: Polonya, İskandinavya ve Grönland'ın üstünden geçip Kanada'ya iniyor."
+    },
+    {
+      "id": "l7",
+      "start": 24.594,
+      "end": 28.536,
+      "text": "Tokyo'ya en kısa yol da, Kazakistan, Moğolistan ve Çin'in üstünden geçiyor."
+    },
+    {
+      "id": "l8",
+      "start": 28.836,
+      "end": 35.751,
+      "text": "Gerçek uçuşlar rüzgâra ve hava sahasına göre biraz sapar; ama mantık hep aynı: en kısa yol, kürenin üstündeki düz çizgi."
+    }
+  ]
+}

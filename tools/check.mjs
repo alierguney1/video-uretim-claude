@@ -65,9 +65,16 @@ if (meta.hasSetTime && meta.duration > 0) try {
     const cs = document.querySelectorAll('canvas');
     return cs.length === 1 ? cs[0].toDataURL('image/png') : null;
   });
-  const viaUrl = cur ? Buffer.from(cur.split(',')[1], 'base64')
+  let viaUrl = cur ? Buffer.from(cur.split(',')[1], 'base64')
     : await single.page.screenshot({ clip: { x: 0, y: 0, width: meta.width, height: meta.height } });
-  const viaSet = await frameAt(page, meta, tq);
+  let viaSet = await frameAt(page, meta, tq);
+  if (!viaUrl.equals(viaSet)) {
+    // Yükleme zamanlaması (geç gelen font alt kümesi vb.) yanıltmasın: bekle, iki tarafı yeniden oku
+    await new Promise(r => setTimeout(r, 1000));
+    const again = await single.page.evaluate(t => { window.__setTime(t); const cs = document.querySelectorAll('canvas'); return cs.length === 1 ? cs[0].toDataURL('image/png') : null; }, tq);
+    if (again) viaUrl = Buffer.from(again.split(',')[1], 'base64');
+    viaSet = await frameAt(page, meta, tq);
+  }
   if (!viaUrl.equals(viaSet)) warn(`?t=${tq} ile açılan kare __setTime(${tq}) ile aynı değil. URL parametresi destekleniyor mu?`);
   else ok('?t= tek kare desteği');
   await single.close();
