@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sülün Adası</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@600;800&family=IBM+Plex+Mono:wght@500&display=block" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/d3-array@3.2.4/dist/d3-array.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/d3-geo@3.1.1/dist/d3-geo.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/topojson-client@3.1.0/dist/topojson-client.min.js"></script>
+<style>
+  html, body { margin: 0; height: 100%; background: #0b141b; }
+  body { display: grid; place-items: center; overflow: hidden; }
+  canvas { display: block; }
+  #hud { position: fixed; left: 12px; bottom: 10px; font: 12px/1.4 ui-monospace, monospace;
+         color: #bbb; background: rgba(0,0,0,.55); padding: 4px 8px; border-radius: 4px; user-select: none; }
+  body.render #hud { display: none; }
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div id="hud">yükleniyor…</div>
+<audio id="vo" src="../ses/hys-07-sulun/voice.wav" preload="auto"></audio>
+<script src="../lib/harita-motoru.js"></script>
+<script>
+'use strict';
+// Harita Yalan Söyler · Bölüm 7 — "Her 6 ayda bir ülke değiştiren ada" (Sülün Adası / Pheasant Island)
+// Brif: hys-07-sulun.brief.md. Ada ~200 m × 40 m olduğu için dünya verilerinde yok: konum gerçek haritada
+// gösterilir, yakın plan ŞEMATİKTİR (ekranda "şematik" yazar). Takvim: Şub–Tem İspanya, Ağu–Oca Fransa.
+
+/*VO:BEGIN*/ const VO = {"duration":33.46,"lines":[{"id":"l1","start":0.15,"end":3.805,"text":"Bu ada, yılın yarısında İspanya'nın, diğer yarısında Fransa'nın."},{"id":"l2","start":4.105,"end":8.007,"text":"İspanya ile Fransa arasındaki Bidasoa Nehri'nin ortasında: Sülün Adası."},{"id":"l3","start":8.307,"end":12.701,"text":"1659'da iki ülke savaşı burada bitirdi: Pireneler Antlaşması."},{"id":"l4","start":13.001,"end":16.746,"text":"O günden beri ada ortak toprak. Ama aynı anda değil: sırayla."},{"id":"l5","start":17.046,"end":20.656,"text":"Şubat'tan Temmuz'a İspanya, Ağustos'tan Ocak'a Fransa yönetiyor."},{"id":"l6","start":21.556,"end":23.939,"text":"Büyüklüğü mü? Yaklaşık 200 metreye 40 metre."},{"id":"l7","start":24.239,"end":27.529,"text":"Kimse yaşamıyor. Ziyaret etmek de neredeyse her zaman yasak."},{"id":"l8","start":27.829,"end":31.259,"text":"Ve 360 yılı aşkın süredir, her altı ayda bir: devir teslim."}]}; /*VO:END*/
+const { C, SANS, MONO, W, H, SAFE, ctx, clamp, lerp, prog, win, ease, fmtNum, text, label, pin, baseMap, fillFeature, heading } = HYS;
+
+const ISLE = [-1.7656, 43.3428];                                  // yaklaşık konum
+const MONTHS = ['Oca', 'Şub', 'Mar', 'Nis', 'May', 'Haz', 'Tem', 'Ağu', 'Eyl', 'Eki', 'Kas', 'Ara'];
+const isES = m => m >= 1 && m <= 6;
+const RV = { x0: 395, x1: 685 }, IS = { cx: 540, cy: 960, rx: 34, ry: 170 };   // şema: 200 m ≈ 340 px
+let FRA, ESP, TT;
+
+function monthAt(t, T) {
+  if (t >= T.y0 && t < T.y1) return Math.min(11, Math.floor(12 * prog(t, T.y0, T.y1)));   // bir yıl, yavaş
+  if (t >= T.y1 && t < T.fast2) return 10;                                                // bugün: Kasım
+  return Math.floor(t * 3) % 12;                                                          // hızlı devir teslim
+}
+
+function diagram(t, g, A) {
+  if (A <= .001) return;
+  const { T, at } = g;
+  ctx.save(); ctx.globalAlpha = A;
+  ctx.fillStyle = C.land; ctx.fillRect(0, 0, W, H);
+  // nehir (şematik)
+  ctx.fillStyle = C.ocean; ctx.beginPath();
+  for (let y = 0; y <= H; y += 20) ctx.lineTo(RV.x0 + 14 * Math.sin(y / 170), y);
+  for (let y = H; y >= 0; y -= 20) ctx.lineTo(RV.x1 + 14 * Math.sin(y / 190 + 1), y);
+  ctx.closePath(); ctx.fill();
+  ctx.restore();
+
+  const m = monthAt(t, T), es = isES(m);
+  // kıyı etiketleri: sahip olan vurgu renginde
+  text('İSPANYA', 70, 810, 60, { alpha: A, color: es ? C.accent : '#6F6656' });
+  text('Irun', 70, 870, 44, { weight: 600, alpha: A, color: '#6F6656' });
+  text('FRANSA', 1010, 810, 60, { alpha: A, color: es ? '#6F6656' : C.accent, align: 'right' });
+  text('Hendaye', 1010, 870, 44, { weight: 600, alpha: A, color: '#6F6656', align: 'right' });
+
+  // ada
+  ctx.save(); ctx.globalAlpha = A;
+  ctx.fillStyle = C.land; ctx.strokeStyle = C.accent; ctx.lineWidth = 6;
+  ctx.beginPath(); ctx.ellipse(IS.cx, IS.cy, IS.rx, IS.ry, 0, 0, 2 * Math.PI); ctx.fill(); ctx.stroke();
+  // sahiplik oku: adadan sahibine
+  const dir = es ? -1 : 1;
+  ctx.strokeStyle = C.accent; ctx.lineWidth = 5; ctx.beginPath();
+  ctx.moveTo(IS.cx + dir * 60, IS.cy); ctx.lineTo(IS.cx + dir * 150, IS.cy); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(IS.cx + dir * 150, IS.cy); ctx.lineTo(IS.cx + dir * 128, IS.cy - 14); ctx.lineTo(IS.cx + dir * 128, IS.cy + 14); ctx.closePath();
+  ctx.fillStyle = C.accent; ctx.fill();
+  ctx.restore();
+  text('şematik', 960, 1290, 36, { font: MONO, weight: 500, alpha: A * .8, color: '#8A8170', align: 'right' });
+
+  // takvim şeridi
+  const sy = 610, cw = (SAFE.x1 - SAFE.x0) / 12;
+  MONTHS.forEach((mn, i) => {
+    const x = SAFE.x0 + i * cw, on = i === m;
+    ctx.save(); ctx.globalAlpha = A;
+    ctx.fillStyle = on ? C.accent : (isES(i) ? '#CFC6B3' : '#B4A78C');
+    ctx.beginPath(); ctx.roundRect(x + 3, sy, cw - 6, 70, 8); ctx.fill(); ctx.restore();
+    text(mn, x + cw / 2, sy + 46, 30, { font: MONO, weight: 500, alpha: A, color: on ? C.text : C.ocean, align: 'center' });
+  });
+  text('Şub–Tem İspanya  ·  Ağu–Oca Fransa', SAFE.x0, sy + 118, 38, { weight: 600, alpha: A * win(t, at(4) - .2, T.y1 + 1.2, .3), color: '#6F6656' });
+
+  // boyut cetveli
+  const rA = A * win(t, at(5) - .1, at(6) + .2, .3);
+  if (rA > 0) {
+    ctx.save(); ctx.globalAlpha = rA; ctx.strokeStyle = C.text; ctx.lineWidth = 4;
+    const xr = IS.cx + 95;
+    ctx.beginPath(); ctx.moveTo(xr, IS.cy - IS.ry); ctx.lineTo(xr, IS.cy + IS.ry);
+    ctx.moveTo(xr - 14, IS.cy - IS.ry); ctx.lineTo(xr + 14, IS.cy - IS.ry); ctx.moveTo(xr - 14, IS.cy + IS.ry); ctx.lineTo(xr + 14, IS.cy + IS.ry);
+    const yb = IS.cy + IS.ry + 45;
+    ctx.moveTo(IS.cx - IS.rx, yb); ctx.lineTo(IS.cx + IS.rx, yb); ctx.stroke(); ctx.restore();
+    label('≈200 m', xr, IS.cy, { alpha: rA, dx: 22, dy: 16 });
+    label('≈40 m', IS.cx, yb, { alpha: rA, dx: -60, dy: 70 });
+  }
+  // yasak çiti
+  const fA = A * win(t, at(6) - .1, at(7) + .2, .3);
+  if (fA > 0) {
+    ctx.save(); ctx.globalAlpha = fA; ctx.strokeStyle = C.text; ctx.lineWidth = 4; ctx.setLineDash([14, 10]);
+    ctx.beginPath(); ctx.ellipse(IS.cx, IS.cy, IS.rx + 40, IS.ry + 40, 0, 0, 2 * Math.PI); ctx.stroke(); ctx.restore();
+    label('ziyaret yasak', IS.cx, IS.cy - IS.ry - 40, { alpha: fA, font: SANS, weight: 600, dx: -150, dy: -20 });
+  }
+}
+
+HYS.run({
+  vo: VO, cover: 0, seed: 7,
+  init(D) { FRA = D.country('France'); ESP = D.country('Spain'); },
+  times: (L, at, DUR) => (TT = { map0: at(1) - .3, map1: at(2) - .1, y0: at(4) - .2, y1: at(4, 'end') + .4, fast2: at(7), DUR }),
+  scenes: (T, at, DUR) => [
+    { name: 'kanca', start: 0, end: at(1) }, { name: 'konum', start: at(1), end: at(2) }, { name: '1659', start: at(2), end: at(3) },
+    { name: 'sırayla', start: at(3), end: at(4) }, { name: 'takvim', start: at(4), end: at(5) }, { name: 'boyut', start: at(5), end: at(6) },
+    { name: 'yasak', start: at(6), end: at(7) }, { name: 'devir teslim', start: at(7), end: at(7, 'end') + .2 }, { name: 'döngü', start: at(7, 'end') + .2, end: DUR },
+  ],
+  keys: (T, at, DUR) => [[0, -1.8, 43.3, 30], [T.map0, -1.8, 43.3, 30], [T.map0 + 1.2, -2.5, 44.0, 6.5], [T.map1, -1.9, 43.4, 9], [DUR, -1.9, 43.4, 9]],
+  draw(t, g) {
+    const { path, pr, cam, T, at } = g;
+    const mapA = win(t, T.map0, T.map1, .45);
+    if (mapA > 0) {
+      baseMap(path, { fine: true });
+      fillFeature(path, ESP, { color: null, stroke: C.ocean, width: 4 });
+      fillFeature(path, FRA, { color: null, stroke: C.ocean, width: 4 });
+      const ip = HYS.visible(cam, ISLE) ? pr(ISLE) : null;
+      pin(ip, { color: C.accent, r: 14, pulse: (t * 1.2) % 1 });
+      const fr = pr([1.5, 46.5]), es = pr([-3.8, 40.3]);
+      label('Fransa', fr[0], fr[1], { font: SANS, weight: 600, alpha: mapA });
+      label('İspanya', es[0], es[1], { font: SANS, weight: 600, alpha: mapA });
+      if (ip) label('Sülün Adası', ip[0], ip[1], { font: SANS, weight: 600, alpha: mapA, dx: 30, dy: -30, color: C.accent });
+    }
+    diagram(t, g, 1 - mapA);
+  },
+  header(t, g) {
+    const { T, DUR, at } = g;
+    const hookA = t < DUR - 3 ? 1 - prog(t, at(1) - .3, at(1) + .1) : prog(t, DUR - 1.4, DUR - .6);
+    heading('Bu ada her 6 ayda', hookA, { size: 76 });
+    text('ülke değiştiriyor.', SAFE.x0, SAFE.y0 + 40 + 80 + 86, 76, { alpha: hookA, color: C.land });
+    heading('Sülün Adası', win(t, at(1) - .1, at(2) + .1), { sub: 'Bidasoa Nehri · İspanya / Fransa' });
+    heading('1659', win(t, at(2) - .1, at(3) + .1), { sub: 'Pireneler Antlaşması burada imzalandı' });
+    heading('Ortak toprak', win(t, at(3) - .1, at(4) + .1), { sub: 'ama aynı anda değil, sırayla' });
+    heading('Bir yıl, iki sahip', win(t, at(4) - .1, at(5) + .1), { sub: 'takvime göre devir teslim' });
+    heading('≈ 200 m × 40 m', win(t, at(5) - .1, at(6) + .1), { size: 72 });
+    heading('Kimse yaşamıyor.', win(t, at(6) - .1, at(7) + .1), { sub: 'ziyaret neredeyse hep yasak' });
+    const yA = win(t, at(7) - .1, at(7, 'end') + .6);
+    text(String(Math.round(lerp(1659, 2026, ease.outCubic(prog(t, at(7), at(7, 'end')))))), SAFE.x0, SAFE.y0 + 40 + 104, 104, { font: MONO, weight: 500, alpha: yA, color: C.accent });
+    text('her 6 ayda bir devir teslim', SAFE.x0, SAFE.y0 + 40 + 104 + 64, 48, { weight: 600, alpha: yA, color: C.mute });
+  },
+  sounds(T) {
+    const s = [];
+    // hızlı döngülerde her sahiplik değişiminde tık (ay 1 ve 7'ye geçiş)
+    for (let k = 0; k < 40; k++) for (const mm of [1, 7]) {
+      const tt = (k * 12 + mm) / 3;
+      if ((tt < T.map0 || (tt >= T.fast2 && tt < T.DUR)) && tt > 0) s.push({ t: tt, type: 'tick', gain: .22, f: mm === 1 ? 1100 : 1500 });
+    }
+    s.push({ t: T.y0 + (T.y1 - T.y0) * 1 / 12, type: 'ping', gain: .3, f: 659 });
+    s.push({ t: T.y0 + (T.y1 - T.y0) * 7 / 12, type: 'ping', gain: .3, f: 784 });
+    return s;
+  },
+});
+</script>
+</body>
+</html>

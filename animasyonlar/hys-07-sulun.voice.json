@@ -1,0 +1,15 @@
+{
+  "voice": "Charon",
+  "style": "enerjik ve merak uyandıran, hızlı tempolu, önemli kelimeleri vurgulayan, izleyiciye meydan okur gibi",
+  "tempo": 1.12, "lead": 0.15, "gap": 0.3, "tail": 2.2,
+  "lines": [
+    { "id": "l1", "text": "Bu ada, yılın yarısında İspanya'nın, diğer yarısında FRANSA'nın.", "caption": "Bu ada, yılın yarısında İspanya'nın, diğer yarısında Fransa'nın." },
+    { "id": "l2", "text": "İspanya ile Fransa arasındaki Bidasoa Nehri'nin ortasında: Sülün Adası." },
+    { "id": "l3", "text": "Bin altı yüz elli dokuzda iki ülke, savaşı burada bitirdi: Pireneler Antlaşması.", "caption": "1659'da iki ülke savaşı burada bitirdi: Pireneler Antlaşması." },
+    { "id": "l4", "text": "O günden beri ada ortak toprak. Ama aynı anda değil: SIRAYLA.", "caption": "O günden beri ada ortak toprak. Ama aynı anda değil: sırayla." },
+    { "id": "l5", "text": "Şubat'tan Temmuz'a İspanya, Ağustos'tan Ocak'a Fransa yönetiyor.", "holdAfter": 0.6 },
+    { "id": "l6", "text": "Büyüklüğü mü? Yaklaşık iki yüz metreye kırk metre.", "caption": "Büyüklüğü mü? Yaklaşık 200 metreye 40 metre." },
+    { "id": "l7", "text": "Kimse yaşamıyor. Ziyaret etmek de neredeyse her zaman yasak." },
+    { "id": "l8", "text": "Ve üç yüz altmış yılı aşkın süredir, her altı ayda bir: DEVİR TESLİM.", "caption": "Ve 360 yılı aşkın süredir, her altı ayda bir: devir teslim." }
+  ]
+}
