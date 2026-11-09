@@ -58,8 +58,10 @@ ekranda "anılarına göre", modern sınır ve anakronizm yok (PLAN.md §4).
   `ctx.save()/restore()` içinde çizer; bu yapıyı koru. `check`'in `?t=` satırı bunu yakalar.
 - **Durum:** Her şey `t`'den hesaplanır. Bir olayın "ne zaman olduğunu" bilmek gerekiyorsa
   (ör. ses tıkı) zamanı ters hesapla (`monthTime` örneği), kare kare sayaç tutma.
-- **Ses:** `SOUNDS` dizisine `{t, type, gain}` ekle. Aynı liste canlı oynatmada Web Audio ile,
-  render'da `OfflineAudioContext` ile WAV olarak çalınır; görüntüyle kayma olmaz.
+- **Ses:** `SOUNDS` dizisine olay ekle. Yeni işlerde `lib/ses.js` kullan (`{t, tur, ad, gain, pan, yatak}`):
+  kod sentezi ve ZzFX `OfflineAudioContext` ile WAV olur, kütüphane dosyaları (`tur: 'dosya'`) render'da
+  FFmpeg ile örnek-kesin eklenir. Ad bulmak için `ses/kutuphane/index.html`; kurallar `docs/ses-rehberi.md`.
+  Sesi duyamazsın: spektrogram çiz (`showspectrumpic`) ve olayların saniyesini gözle doğrula.
 - **WebGL/Three.js:** `preserveDrawingBuffer: true`, döngü yerine `__setTime(t)` içinde `renderer.render`.
 - **Piksel sanatı:** Şekli küçük tuvale maske olarak çiz, alfa ≥ 128 ile eşikle, sonra renklendir;
   büyütme sadece tamsayı kat ve `imageSmoothingEnabled = false`. Piksel boyu okunurluğa göre seçilir:

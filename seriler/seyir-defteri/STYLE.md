@@ -90,9 +90,17 @@ karakteri her bölümde aynı liste. Harita ikonları, gemi ve kedi de aynı yö
 
 ## Ses
 
-- Anlatıcı: tercihen insan sesi; TTS ise Charon dışı, sakin anlatıcı (PLAN.md §5).
-- Müzik: kodla chiptune döngüsü (kare + üçgen dalga), sezon başına bir tema; −14 LUFS'u altlık tutar.
-- Ses imzası: dither geçişinde kısa "şşt", rota adımlarında yumuşak tık, defter kaydında daktilo tıkı.
+Kurallar ve katmanlar: [docs/ses-rehberi.md](../../docs/ses-rehberi.md). Motor `lib/ses.js`.
+
+- **Anlatıcı:** tercihen insan sesi; TTS ise Charon dışı, sakin ve gerilimli anlatıcı (aday: Algenib, Gacrux,
+  Sadaltager, Sulafat; seçim kullanıcıda). Tempo 1,0–1,05.
+- **Ses imzası (sabit):** defter kaydında `kayit` damgası · harita ↔ durak geçişinde `gecis` piksel çözülmesi +
+  dioramaya inişte yumuşak `darbe` · anlatı kutusunda 8-bit daktilo (`blip`/`blip2`).
+- **Harita sesi:** rota çizilirken her adımda `adim`; durak ikonunun yanından geçerken `cinlama`; varışta `onay`.
+- **Durak ortamı:** her durak kendi yatağı (liman `dalga` + `marti`, zindan damla + metal, çatı `ruzgar`,
+  ateş başı `ates`); konuşurken kısılır.
+- **Büyük an:** `yukselis` → 300–600 ms sessizlik → `darbe`. Gerilim anlarında `gerilim` ya da `kalp`.
+- **Müzik (sonra):** kodla chiptune tema (ZzFXM ya da Web Audio), sezon başına bir tema.
 
 ## Yasaklar
 

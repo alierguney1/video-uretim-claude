@@ -95,6 +95,11 @@ Algoritmanın ölçtüğü şey 3–5 arası; "AI ile yapılmış" olması ne ö
 * **Ses kapalıyken de anlaşılmalı.** Ses güçlendirir, taşımaz.
 * **İnsan sesi tercih edilir.** Kendi seslendirmen videoya "insan" öğesini getirir: Instagram açıkça insan içeriğini öne çıkarıyor, AI yığınından ayrışmanın en ucuz yolu bu. Seslendirme varsa Whisper ile kelime düzeyinde zamanla, altyazı ve sahneler ona otursun.
 * Ses verilmezse Web Audio ile sentezle. Her ses ekranda görünen bir olaya bağlı olsun (`SOUNDS` listesi).
+* **Ses tasarımı** ([docs/ses-rehberi.md](docs/ses-rehberi.md), motor `lib/ses.js`): her görünür olayın bir sesi,
+  her sesin bir görüntüsü var; aynı anda tek vurgu; büyük an = yükseliş → sessizlik → vuruş; her mekânın
+  ortam sesi; yatak seslendirme konuşurken kısılır. Brifte ses planı tablosu olur.
+* **Lisans:** yalnızca kod sentezi, ZzFX ve lisansı belgelenmiş kütüphane (`ses/kutuphane/`, CC0). Trend ses,
+  telifli müzik, lisansı belirsiz dosya yok.
 * Müzik verilirse önce analiz et (BPM, vuruşlar, enerji), görüntüyü ona göre zamanla. Kullanım hakkı sende olmalı.
 * **Ses seviyesi:** hedef −14 LUFS, tepe ≤ −1 dBTP. Render iki geçişte ölçüp uygular ve sonucu yazar. Sadece seyrek efekt sesi varsa tepe sınırı yüzünden −16/−17'de kalır; bu kabul edilebilir. Altına sürekli bir doku (drone, müzik) eklenirse hedef tutar.
 

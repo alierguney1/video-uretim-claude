@@ -21,6 +21,8 @@
 <script src="https://cdn.jsdelivr.net/npm/d3-array@3.2.4/dist/d3-array.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/d3-geo@3.1.1/dist/d3-geo.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/topojson-client@3.1.0/dist/topojson-client.min.js"></script>
+<script src="../../ses/kutuphane/katalog.js"></script>
+<script src="../../lib/ses.js"></script>
 <style>
   html, body { margin: 0; height: 100%; background: #120e1c; }
   body { display: grid; place-items: center; overflow: hidden; }
@@ -413,19 +415,56 @@ function draw(t) {
   } finally { ctx.restore(); }
 }
 
+// ── ses tasarımı (docs/ses-rehberi.md): her görünür olayın bir sesi var ──
+const routeT = p => { let a = .2, b = 2.6; for (let i = 0; i < 30; i++) { const m = (a + b) / 2; inOut(prog(m, .2, 2.6)) < p ? a = m : b = m; } return (a + b) / 2; };
+const corFrac = (() => { let bi = 0, bd = 1e9; ROUTE.forEach((p, i) => { const d = Math.hypot(p[0] - COR[0], p[1] - COR[1]); if (d < bd) { bd = d; bi = i; } }); return bi / (ROUTE.length - 1); })();
+const SOUNDS = [
+  // harita: deniz + rüzgâr altlığı, başlık damgası, rota adımları, durak çınlaması, varış
+  { t: 0, tur: 'dalga', dur: T_D1 + .2, gain: .22, yatak: true, giris: .05, cikis: .6 },
+  { t: 0, tur: 'ruzgar', dur: T_D1, gain: .07, yatak: true, giris: .05 },
+  { t: .04, tur: 'zzfx', ad: 'kayit', gain: .8 },
+  { t: .42, tur: 'dosya', ad: 'tikla', gain: .45 },
+  ...Array.from({ length: 15 }, (_, i) => ({ t: +routeT((i + 1) / 16).toFixed(3), tur: 'zzfx', ad: 'adim', gain: .7 })),
+  { t: +routeT(corFrac).toFixed(3), tur: 'dosya', ad: 'cinlama', gain: .5, pan: -.3 },
+  { t: 2.6, tur: 'zzfx', ad: 'onay', gain: .8 },
+  // yaklaşma → yükseliş → piksel çözülmesi → iniş
+  { t: 2.72, tur: 'whoosh', dur: .7, gain: .35 },
+  { t: T_D0 - .55, tur: 'yukselis', dur: .55, gain: .3 },
+  { t: T_D0, tur: 'zzfx', ad: 'gecis', gain: .9 },
+  { t: T_D1, tur: 'darbe', gain: .45 },
+  { t: T_D1 + .05, tur: 'dosya', ad: 'sayfa', gain: .55 },
+  // diorama: liman ortamı, martılar, gemi gıcırtısı, daktilo
+  { t: T_D0, tur: 'dalga', dur: DUR - T_D0, gain: .3, yatak: true, seed: 5, giris: .8, cikis: .3 },
+  { t: 4.7, tur: 'marti', kez: 2, gain: .22, pan: -.5 },
+  { t: 6.1, tur: 'marti', kez: 3, gain: .16, pan: .45 },
+  { t: 5.3, tur: 'dosya', ad: 'gicirti', gain: .3, pan: .55 },
+  ...SES.dizi(T_D1 + .22, 6.55, .062, i => ({ tur: 'zzfx', ad: i % 2 ? 'blip2' : 'blip', gain: .35 })),
+];
+
 // ── sözleşme ──
 let current = 0;
 window.__duration = DUR; window.__fps = FPS; window.__size = { width: W, height: H }; window.__cover = 0;
 window.__scenes = [{ name: 'harita', start: 0, end: 2.7 }, { name: 'yaklaşma', start: 2.7, end: T_D0 }, { name: 'çözülme', start: T_D0, end: T_D1 }, { name: 'diorama', start: T_D1, end: DUR }];
 window.__setTime = t => { current = t; draw(t); };
+window.__renderAudio = () => SES.wav(SOUNDS, DUR);
+window.__sfx = SES.dosyalar(SOUNDS);
 window.__ready = Promise.all([document.fonts.load(`400 40px ${FONT}`, GLYPHS), document.fonts.load(`400 40px ${MONO}`, GLYPHS), loadData()]).then(() => document.fonts.ready);
-let playing = false, start = 0;
+let playing = false, start = 0, ac = null, stopAudio = null;
 function hud() { document.getElementById('hud').textContent = `${current.toFixed(2)} sn · kare ${Math.round(current * FPS)}` + (playing ? '' : '  (tıkla: oynat · ←/→ kare)'); }
-function loop(now) { if (!playing) return; let t = (now - start) / 1000; if (t >= DUR) { start = now; t = 0; } window.__setTime(t); hud(); requestAnimationFrame(loop); }
+function loop(now) {
+  if (!playing) return; let t = (now - start) / 1000;
+  if (t >= DUR) { start = now; t = 0; if (stopAudio) stopAudio(); stopAudio = SES.oynat(ac, SOUNDS, 0, { kok: '../../' }); }
+  window.__setTime(t); hud(); requestAnimationFrame(loop);
+}
 window.__ready.then(() => {
   const qt = params.get('t'); window.__setTime(qt !== null ? parseFloat(qt) || 0 : 0); hud();
   if (RENDER || qt !== null) return;
-  canvas.addEventListener('click', () => { playing = !playing; if (playing) { start = performance.now() - current * 1000; requestAnimationFrame(loop); } hud(); });
+  canvas.addEventListener('click', () => {
+    playing = !playing;
+    if (stopAudio) { stopAudio(); stopAudio = null; }
+    if (playing) { ac = ac || new AudioContext(); ac.resume(); stopAudio = SES.oynat(ac, SOUNDS, current, { kok: '../../' }); start = performance.now() - current * 1000; requestAnimationFrame(loop); }
+    hud();
+  });
   addEventListener('keydown', e => { if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') { playing = false; window.__setTime(clamp(current + (e.key === 'ArrowRight' ? 1 : -1) * (e.shiftKey ? 1 : 1 / FPS), 0, DUR)); hud(); } });
 });
 </script>

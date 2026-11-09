@@ -35,8 +35,11 @@ bulunamazsa araç ne kuracağını söyler.
 | [lib/harita-motoru.js](lib/harita-motoru.js) | "Harita Yalan Söyler" seri motoru: küre/Mercator, altyazı, etiket, ses, render sözleşmesi |
 | [STYLE.md](STYLE.md) | "Harita Yalan Söyler" seri kimliği (sabit): palet, yazı tipleri, hareket dili, ses |
 | [seriler/seyir-defteri/](seriler/seyir-defteri/) | İkinci seri (ayrı kanal): tarihte tuhaf yolculuklar, piksel harita + piksel diorama. [PLAN.md](seriler/seyir-defteri/PLAN.md), [STYLE.md](seriler/seyir-defteri/STYLE.md), [stil-testi.html](seriler/seyir-defteri/stil-testi.html) |
-| [tools/render.mjs](tools/render.mjs) | Paralel kare kare PNG → FFmpeg H.264 MP4, sentez sesi ya da `--audio` |
+| [tools/render.mjs](tools/render.mjs) | Paralel kare kare PNG → FFmpeg H.264 MP4; sentez sesi + kütüphane efektleri (`__sfx`) + `--audio`, −14 LUFS |
 | [promptlar/](promptlar/) | Brif, dikey video, cilalama döngüsü, skill'e çevirme |
+| [docs/ses-rehberi.md](docs/ses-rehberi.md) | Ses tasarımı: katmanlar, seviyeler, kurallar, lisanslı kaynaklar, kullanım |
+| [lib/ses.js](lib/ses.js) | Ortak ses motoru: ZzFX 8-bit (MIT), kod sentezi (yükseliş, darbe, dalga, rüzgâr…), kütüphane dosyaları, seslendirme altında kısma |
+| [ses/kutuphane/](ses/kutuphane/) | CC0 ses kütüphanesi (Kenney: RPG, Impact, Interface, Digital; 343 dosya). `npm run sesler` katalog + dinleme sayfası (`index.html`) üretir |
 | [docs/hikaye-rehberi.md](docs/hikaye-rehberi.md) | Hikâye ve dikkat: merak boşluğu, gerilim, "ama/bu yüzden", soğuk açılış, döngü haritası, hikâye testi, etik sınır |
 | [docs/platform-notlari.md](docs/platform-notlari.md) | Instagram / YouTube / TikTok algoritmaları ve AI içerik kuralları (Kasım 2026) |
 | [docs/kutuphaneler.md](docs/kutuphaneler.md) | Kütüphaneler ve her birini `draw(t)`'ye nasıl bağlayacağın |
