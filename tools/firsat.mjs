@@ -113,7 +113,11 @@ Videolar:\n${batch.map(v => JSON.stringify({ id: v.id, baslik: v.baslik, aciklam
   return [];
 }
 const labels = {};
-for (const b of chunks(videos, 40)) for (const l of await classify(b)) labels[l.id] = l;
+const batches = chunks(videos, 40);
+for (const group of chunks(batches, 6)) {   // 6 istek aynı anda
+  for (const res of await Promise.all(group.map(classify))) for (const l of res) labels[l.id] = l;
+  process.stdout.write(`  tür etiketi: ${Object.keys(labels).length}/${videos.length}\n`);
+}
 for (const v of videos) { v.tur = turler[labels[v.id]?.tur] ? labels[v.id].tur : 'diger'; v.konu = labels[v.id]?.konu || '?'; }
 
 // ---------- Tür bazında özet ----------

@@ -60,3 +60,21 @@ Mevcut 8 bölüm "tek hikâye / tahmin et" ağırlıklı (konu farklı, kalıp b
 
 Öneri: fırsat raporu çıkınca en yüksek skorlu 2 türden birer bölüm yap, aynı hafta yayınla,
 48 saat sonra `yayinlar.csv`'de mevcut türle karşılaştır (MOTION_RULES §7).
+
+## İlk sonuç (9 Kasım 2026)
+
+Rapor: [arastirma/firsat-2026-11-09.md](../arastirma/firsat-2026-11-09.md). 950 harita/coğrafya
+Shorts'u, son 90 gün; 80 video etiketlenemedi (Gemini 502), "diger"e düştü. Örnekte İngilizce
+videolar da var (quiz türünde çok).
+
+- **Bizim ana türümüz (tek hikâye) en kalabalık, en az izlenen:** örneğin %27'si, 200 kanal,
+  medyan günlük 59 izlenme, kırılma %11. Bölüm 5–8 (Sandy, Diomede, Sülün, Samoa) bu türde.
+- **Boyut karşılaştırma:** kırılma %32 (büyük türler arasında en yüksek). "Türkiye haritalarda
+  bize neden küçük gösteriliyor?" 947 B. Grönland bölümü bu türde, açılış için doğru seçim.
+- **Ya … olursa:** büyük türler içinde en yüksek günlük izlenme (348), %42'si Türkiye konulu.
+- **Statik liste / infografik:** sadece 20 video ama kırılma %65, günlük 5,6 B ("Türkiye'nin en
+  iyi yemeklerine sahip illeri" 2,5 M). Örnek küçük; ucuz bir deneme ile doğrulanmalı.
+- **Zaman atlamalı:** zayıf (günlük 51, kırılma %2). Şimdilik yapma.
+
+Karar önerisi: sıradaki bölümler boyut karşılaştırma, Türkiye merkezli ya-olursa ve bir
+statik-liste denemesi. Tek hikâye bölümleri yayın takviminde kalır ama yenisi üretilmez.
