@@ -52,7 +52,7 @@ açıklamada tek satır yeter; içerikleri karıştırma.
 
 **Neden "her bölüm tek macera" ve "bir bölümde bütün hayat" değil?**
 Bir araştırmadan 4–6 video çıkar. Her bölüm tek başına kanca taşır. İzleyici bir sonraki bölümü
-arar (seri izleme). 2–3 dk dikey hikâye Shorts/Reels/TikTok'ta artık mümkün (üçünde de 3 dk sınırı var).
+arar (seri izleme). 2–3 dk dikey hikâye artık mümkün (Shorts ve Reels'te sınır 3 dk, TikTok daha uzununa izin veriyor).
 
 ### Seri imzası: defter büyür
 
@@ -69,13 +69,16 @@ diorama 180x320 / 320x180). Render hızı sorun değil: stil testi 420 kareyi 19
 
 ### Bölüm iskeleti (dikey, ~120 sn)
 
+Hikâye mekaniği: [docs/hikaye-rehberi.md](../../docs/hikaye-rehberi.md). Her bölüm brifinde hikâye testi
+puanı (≥ 12/16) ve döngü haritası olur; `check` haritayı ölçer.
+
 | Zaman | Ne olur | Görsel |
 | --- | --- | --- |
-| 0–3 sn | **Kanca:** bölümün en tuhaf anı tek cümle + o anın diorama karesi | Diorama ya da yakın plan; yer/tarih kaydı |
-| 3–8 sn | Geri sarma: genel harita, sezonun soluk rotaları, "defter kaydı" (tarih, yer) | Harita ekranı |
-| 8–100 sn | 3–5 durak: rota çizilir → şehir ikonuna yaklaşma → diorama → geri | Harita ↔ durak döngüsü |
+| 0–3 sn | **Soğuk açılış:** bölümün en gergin anı, şimdiki zamanla; ana soru (A) açılır | Diorama ya da yakın plan; yer/tarih kaydı |
+| 3–15 sn | Geri sarma + "önceki bölümde" (soluk rotalar, tek cümle) + **istek, engel, bedel** | Harita ekranı, defter kaydı |
+| 15–100 sn | 3–5 durak: her durak bir soruyu kapatır, yenisini açar. %40–60 arasında **kırılma** ("ama") | Harita ↔ durak döngüsü |
 | 100–115 sn | Büyük an (kancada vaat edilen) | Yakın plan / seçim kutusu / nesne kartı |
-| 115–120 sn | Sonraki bölümün yönü: rota yeni şehre doğru çizilmeye başlar ve **kesilir** | Yarım rota (outro kartı yok) |
+| 115–120 sn | A cevaplandı; sonraki soru (Z) açılır: rota yeni şehre çizilmeye başlar ve **kesilir** | Yarım rota (outro kartı yok) |
 
 ---
 
@@ -113,10 +116,16 @@ Karakter şiveleri (HYS'den farklı, hikâyeye özgü):
 
 ### Örnek: Casanova sezonu durak taslağı
 
+Sezon en güçlü bölümle açılır (dizilerde pilot sezonun en iyi bölümüdür); sıra kronolojik olmak zorunda değil,
+defter haritası zaten yılları gösterir. İstanbul tek başına bölüm olarak zayıf
+([hikâye testi](../../docs/hikaye-rehberi.md#7-hikâye-seçme-testi) 5/16: istek, engel, bedel ve doruk yok).
+Bonneval'in kendi hikâyesiyle birleşince güçlenir: *"İki Avrupalı, İstanbul'da aynı teklif: biri kabul edip
+paşa oldu, öbürü…"* (teklif anılardan doğrulanmadan kullanılmaz).
+
 | Bölüm | Duraklar | Ana araç(lar) |
 | --- | --- | --- |
-| B1 İstanbul (1745) | Venedik → Korfu (bekleyiş) → Pera → Bonneval Paşa → teklif (?) → dönüş | Tablo, seçim kutusu |
-| B2 Kurşun Damlar (1755–56) | Venedik: tutuklama → hücre → çatıdan kaçış → Münih yolu | Kesit, harita olayı |
+| B1 Kurşun Damlar (1755–56) **pilot, 14/16** | Venedik: tutuklama → hücre → kazı → başka hücreye taşınma (kırılma) → çatı → kaçış yolu | Kesit, saat, harita olayı |
+| B2 İki Avrupalı, bir teklif (1745) | Venedik → Korfu → Pera → Bonneval Paşa → teklif → dönüş | Tablo, seçim kutusu, dramatik ironi |
 | B3 Paris | Piyango, maliye işleri | Nesne kartı, hesap anı |
 | B4–B6 | Londra, Berlin, St. Petersburg, Varşova düellosu, Dux'ta kütüphaneci | Araştırılacak |
 
@@ -193,7 +202,7 @@ Bölüm dosyası yalnızca hikâyeyi taşır: rota noktaları, durak listesi
 
 ## 7. Kanca türleri (bu seriye özgü katalog önerisi, V)
 
-MOTION_RULES §2 kataloğu geçerli; hikâyede en çok işe yarayacaklar:
+MOTION_RULES §2 kataloğu ve [hikâye rehberi §3](../../docs/hikaye-rehberi.md) kalıpları geçerli; hikâyede en çok işe yarayacaklar:
 
 | Tür | Örnek |
 | --- | --- |
@@ -213,11 +222,11 @@ Durum: ✓ kaynakla kısmen doğrulandı · ? araştırılacak · 📖 senin not
 
 | Sezon / hikâye | Neden haritada iyi | Acayiplik | Durum |
 | --- | --- | --- | --- |
-| **Casanova** (1725–1798) | Venedik, Korfu, İstanbul, Paris, Londra, Berlin, St. Petersburg, Varşova, Dux | İstanbul'da dönmüş bir Fransız paşa; kurşun çatıdan kaçış; piyango | ✓ 1745 İstanbul: Korfu'da bekleme, *Europa* fırkateyni, Temmuz ortası Pera, ertesi gün Bonneval ([anılar](https://www.bookrags.com/ebooks/2981/274.html)) · gerisi ? |
+| **Casanova** (1725–1798) | Venedik, Korfu, İstanbul, Paris, Londra, Berlin, St. Petersburg, Varşova, Dux | İstanbul'da dönmüş bir Fransız paşa; kurşun çatıdan kaçış; piyango | ✓ 1745 İstanbul: Korfu'da bekleme, *Europa* fırkateyni, Temmuz ortası Pera, ertesi gün Bonneval ([anılar](https://www.bookrags.com/ebooks/2981/274.html)) · ✓ Kurşun Damlar: 31 Ekim–1 Kasım 1756 gecesi, yan hücredeki Peder Balbi ile tavanlardan, kaçıştan önce başka hücreye taşınıp yeniden başlama, gondol ([Wikipedia: Piombi](https://en.wikipedia.org/wiki/Piombi), [History Avenue](https://the-history-avenue.eu/2025/02/09/casanovas-great-escape-from-venices-most-secure-prison/)) · aracın saklanma biçimi ve diğer ayrıntılar ? |
 | **Sultanın Casusları** (Gürkan, 2017) | İstanbul–Venedik–Napoli–Madrid bilgi ağı: kurye jetonları, haber gecikmesi | Çifte ajanlar, sabotaj planları, rüşvet ağları | 📖 kitapta işaretlediğin 3–5 hikâye |
 | **Bonneval / Humbaracı Ahmed Paşa** | Fransa → Avusturya → Bosna → İstanbul | Üç ordu değiştiren kont; Casanova bölümüyle bağlanır | ? |
-| **Seydi Ali Reis** (1550'ler) | Basra → Hint Okyanusu → Hindistan → karadan Afganistan, İran → İstanbul | Donanmasını kaybeden amiral yürüyerek döner, *Mirat ül-Memalik* | ? |
-| **Cem Sultan** | Rodos → Fransa → Roma → Napoli | Avrupa'da el değiştiren rehine şehzade | ? |
+| **Seydi Ali Reis** (1550'ler) | Basra → Hint Okyanusu → Hindistan → karadan Afganistan, İran → İstanbul | Donanmasını kaybeden amiral yürüyerek döner, *Mirat ül-Memalik* | ? (test ~14) |
+| **Cem Sultan** | Rodos → Fransa → Roma → Napoli | Avrupa'da el değiştiren rehine şehzade | ? (test ~14) |
 | **Lady Mary Wortley Montagu** (1717) | Londra → Viyana → Belgrad → İstanbul | Çiçek aşılamasını (variolasyon) İstanbul'da görüp İngiltere'de yaydı | ? |
 | **Yirmisekiz Mehmed Çelebi** (1720–21) | İstanbul → Toulon → Paris | Bir Osmanlı elçisinin gözünden Paris | ? |
 | **Evliya Çelebi** | 40 yıl, üç kıta | Adı seriyle kafiyeli; çok sezonluk | ? |
@@ -231,7 +240,7 @@ Durum: ✓ kaynakla kısmen doğrulandı · ? araştırılacak · 📖 senin not
 1. **Kanal adı ve hesaplar** (sen). Ad müsait mi bak.
 2. **Ses kararı:** kendi sesin mi, TTS mi? TTS ise 3 ses testi.
 3. **Motor:** stil testinden `lib/piksel-motoru.js` çıkarılır; HYS'deki gibi bölüm dosyası sadece hikâye taşır.
-4. **Pilot: Casanova B1 "İstanbul".** Brif → sahne/durak listesi → **onay** → kod → check → contact →
+4. **Pilot: Casanova B1 "Kurşun Damlar" (hikâye testi 14/16).** Brif → döngü haritası + durak listesi → **onay** → kod → check → contact →
    cilalama → render (CLAUDE.md akışı aynen).
 5. **3 bölüm yayınla, ölç.** Sonra süre (V), durak sayısı ve kanca türleri gözden geçirilir.
 6. Tutma iyiyse: Casanova sezonu yatay uzun video.

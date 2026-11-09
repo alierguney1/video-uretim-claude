@@ -10,11 +10,14 @@ her piksel kodla çizilir. Her işte **[MOTION_RULES.md](MOTION_RULES.md)** geç
    `animasyonlar/<ad>.brief.md` olarak kaydet. Kanca türü, ara ödüller, gönderilme sebebi ve
    farklılık satırları zorunlu: `animasyonlar/` içindeki son brifleri ve `yayinlar.csv`'yi oku,
    aynı kanca türünü art arda 2'den fazla kullanma. Bölüm hangi serideyse onun STYLE dosyasına uy
-   (aşağıdaki "Seriler" tablosu); kanca türü kuralı seri içinde sayılır.
+   (aşağıdaki "Seriler" tablosu); kanca türü kuralı seri içinde sayılır. Hikâye omurgası, hikâye testi
+   puanı ve döngü haritası zorunlu ([docs/hikaye-rehberi.md](docs/hikaye-rehberi.md)); 12/16 altındaki
+   hikâyeyi kullanıcıya dürüstçe söyle ve daha güçlü açı öner.
 2. **Sahne listesi + süreler + geçiş nesneleri.** Göster, **onay al**. Onaydan önce kod yazma.
 3. **Kod.** `template.html` dosyasını `animasyonlar/<ad>.html` olarak kopyala. `CONFIG`, `SCENES`,
    `SOUNDS` ve çizim fonksiyonlarını değiştir. Sözleşme kısmına (en alttaki blok) dokunma.
 4. **Denetim.** `npm run check -- animasyonlar/<ad>.html`. ✗ varsa düzelt; ! uyarılarını değerlendir.
+   Döngü haritası (`window.__beats`) uyarıları hikâyenin yerinde nerede izleyici kaybedeceğini gösterir.
 5. **Kontak sayfası.** `npm run contact -- animasyonlar/<ad>.html`, sonra `out/<ad>/contact.png`
    dosyasını **Read ile aç ve gerçekten bak**. Taşan yazı, çakışma, okunmayan metin, güvenli alan
    dışı öge, kopuk geçiş, ölü zaman ara. Bulduklarını saniye + kare numarasıyla yaz, düzelt, tekrarla.

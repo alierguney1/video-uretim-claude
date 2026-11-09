@@ -29,7 +29,7 @@ bulunamazsa araç ne kuracağını söyler.
 | [MOTION_RULES.md](MOTION_RULES.md) | Kurallar: render sözleşmesi, görünüm yasakları, ses, kontrol döngüsü, dağıtım |
 | [CLAUDE.md](CLAUDE.md) | Claude'un bu repoda izlediği iş akışı ve öğrenilmiş dersler |
 | [template.html](template.html) | Çalışan iskelet: `__setTime`, `?t=`, mulberry32, easing seti, tabular rakam, Web Audio + offline WAV |
-| [tools/check.mjs](tools/check.mjs) | `Math.random`, tüm karelerde hata, determinizm, `?t=`, ilk saniye hareketi, font sayısı |
+| [tools/check.mjs](tools/check.mjs) | `Math.random`, tüm karelerde hata, determinizm, `?t=`, ilk saniye hareketi, font sayısı, döngü haritası |
 | [tools/contact.mjs](tools/contact.mjs) | Her sahnenin başı/ortası/sonu + geçişler, güvenli alan katmanıyla kontak sayfası |
 | [tools/tts.mjs](tools/tts.mjs) | `npm run tts -- animasyonlar/<ad>.voice.json`: Gemini TTS ile cümle cümle seslendirme (önbellekli), zaman çizelgesi ve animasyondaki `VO` bloğu |
 | [lib/harita-motoru.js](lib/harita-motoru.js) | "Harita Yalan Söyler" seri motoru: küre/Mercator, altyazı, etiket, ses, render sözleşmesi |
@@ -37,6 +37,7 @@ bulunamazsa araç ne kuracağını söyler.
 | [seriler/seyir-defteri/](seriler/seyir-defteri/) | İkinci seri (ayrı kanal): tarihte tuhaf yolculuklar, piksel harita + piksel diorama. [PLAN.md](seriler/seyir-defteri/PLAN.md), [STYLE.md](seriler/seyir-defteri/STYLE.md), [stil-testi.html](seriler/seyir-defteri/stil-testi.html) |
 | [tools/render.mjs](tools/render.mjs) | Paralel kare kare PNG → FFmpeg H.264 MP4, sentez sesi ya da `--audio` |
 | [promptlar/](promptlar/) | Brif, dikey video, cilalama döngüsü, skill'e çevirme |
+| [docs/hikaye-rehberi.md](docs/hikaye-rehberi.md) | Hikâye ve dikkat: merak boşluğu, gerilim, "ama/bu yüzden", soğuk açılış, döngü haritası, hikâye testi, etik sınır |
 | [docs/platform-notlari.md](docs/platform-notlari.md) | Instagram / YouTube / TikTok algoritmaları ve AI içerik kuralları (Kasım 2026) |
 | [docs/kutuphaneler.md](docs/kutuphaneler.md) | Kütüphaneler ve her birini `draw(t)`'ye nasıl bağlayacağın |
 | [animasyonlar/ornek-yuzde-bir.html](animasyonlar/ornek-yuzde-bir.html) | Örnek: "Her gün %1 daha iyi → 1 yılda 37,8x" (10 sn, dikey, sesli) |

@@ -54,12 +54,27 @@ Algoritmanın ölçtüğü şey 3–5 arası; "AI ile yapılmış" olması ne ö
 * **Ölü zaman yok.** 0.7 sn'den uzun tamamen durağan an olmasın. Bilinçli durgunluk (aşağıda) hariç. `check` bunu ölçer.
 * **Süre: sonucu taşıyan en kısa süre.** Dolgu sahne, tekrar eden açıklama yok. Kısalabiliyorsa kısalt.
 
+**Hikâye mekaniği** (gerekçe ve kaynaklar: [docs/hikaye-rehberi.md](docs/hikaye-rehberi.md))
+* **Döngü haritası zorunlu.** Brifte tablo, kodda `window.__beats`. Her an en az bir açık soru, aynı anda
+  en fazla üç; ana soru son %40'ta cevaplanır; her soru kapanır ya da açıkça sonraki videoya bırakılır.
+  `check` bunları ölçer.
+* **İstek, engel, bedel** ilk 15 sn'de söylenmiş olur. Bedel yoksa hikâye yok.
+* **Ama / bu yüzden.** Ardışık iki cümle ya da sahne arasına "ve sonra" giriyorsa biri gereksizdir.
+* **Gerilim > sürpriz.** Tehlikeyi izleyiciye önceden göster; karakter bilmesin, izleyici bilsin.
+* **Orta nokta kırılması.** Sürenin %40–60'ında bir "ama": plan bozulur, durum tersine döner.
+* **Hikâye testi.** Aday hikâye 8 ölçütte puanlanır (rehber §7); 12/16 altı pilot olmaz.
+
 **Son: tekrar izlet, gönderilsin**
 * Video **en büyük andan hemen sonra biter.** Outro, "abone ol" kartı, logo kapanışı yok.
 * Dikey videoda son kare ilk kareye bağlanır (döngü). İzleyici fark etmeden ikinci tura girer.
 * **Tek izlemede yakalanmayacak bir detay** koy (hızlı geçen bir sayı, köşede küçük bir not). Tekrar izlemeyi bu getirir.
 * **Gönderilme sebebi** brifte tek cümleyle yazılır: "Bunu kime, neden gönderir?" Cevap yoksa fikir zayıf.
+* **Seride bölüm sonu:** bölüm kendi ana sorusunu cevaplar, sonra yeni bir soru açar (rota sonraki şehre
+  çizilmeye başlar ve kesilir). Ana soruyu cevapsız bırakıp "devamı sonraki bölümde" demek yasak.
 * Abartı içeren şokun yanına küçük bir dürüstlük notu ekle. Yorumlarda güven kazandırır.
+* **Psikolojik teknik gerçek bir cevabı bekletmek içindir, olmayanı vaat etmek için değil.** Yalan kanca,
+  sahte askı, uydurma diyalog, sahte aciliyet yok (rehber §8). YouTube izleyiciye video puanlatıyor;
+  kandırılan izleyici düşük puan verir ve video daha az önerilir.
 
 ## 3) Görünüm
 
@@ -126,7 +141,7 @@ Her video şu paketle çıkar (`animasyonlar/<ad>.brief.md` sonunda):
 ## 8) Kontrol döngüsü
 
 * Kod yazmadan önce sahne listesi, süreler, kanca türü ve ara ödüllerin yeri gösterilir. Onaydan sonra kod.
-* `npm run check` temiz geçer (determinizm, hata, ilk saniye hareketi, ölü zaman).
+* `npm run check` temiz geçer (determinizm, hata, ilk saniye hareketi, ölü zaman, döngü haritası).
 * Final render'dan önce kontak sayfası alınır ve gözle incelenir.
 * Taşan yazı, çakışma, okunmayan metin, güvenli alan dışı öge, kısa okuma süresi varsa düzeltilir.
 * "Kod çalışıyor" ile "görüntü doğru" aynı şey değil.

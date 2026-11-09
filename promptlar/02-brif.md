@@ -16,6 +16,10 @@ ne istediğini bulunca uzun yaz.
 10. **Gönderilme sebebi:** "Bunu kime, neden gönderir?" Tek cümle. Yazılamıyorsa fikir zayıf.
 11. **Farklılık:** Son 5 videodan kanca türü ve yapı olarak nasıl ayrılıyor.
 12. **Yayın paketi:** kapak saniyesi, başlık, açıklama, 3–5 etiket, AI etiketi (gerekli mi), kaynak.
+13. **Hikâye omurgası:** istek · engel · bedel (tek cümle), hikâye testi puanı (16 üzerinden,
+    [docs/hikaye-rehberi.md](../docs/hikaye-rehberi.md) §7), orta nokta kırılması, tuhaf detay + kaynağı.
+14. **Döngü haritası:** hangi soru kaç. saniyede açılıp kaç. saniyede kapanıyor, ara ödüller nerede,
+    sonraki videoya hangi soru bırakılıyor. Tablo olarak; kodda `window.__beats` olur.
 
 ## Tam iskelet
 
@@ -37,6 +41,9 @@ HAREKET DİLİ: [3 kural, her sahnede tutarlı].
 YASAKLAR: MOTION_RULES.md + [bu işe özel].
 KANCA TÜRÜ: [sayı şoku / yanlış inanış / sonuçtan başla / görsel paradoks / ya …olursa / yarım hareket]
 ARA ÖDÜLLER: [sn: ne] · [sn: ne] · …
+HİKÂYE: istek [..] · engel [..] · bedel [..] · kırılma [sn: ..] · tuhaf detay [.. (kaynak)] · test [../16]
+DÖNGÜLER: A [açılış sn → kapanış sn]: "[soru]" · B [..] · … · sonraki: "[soru]"
+KANCA KALIBI: [soğuk açılış / çelişki / seçim / belge / bedel sayısı] (rehber §3)
 GÖNDERİLME SEBEBİ: [kime, neden]
 FARKLILIK: [son videolardan farkı].
 PAKET: kapak [sn] · başlık [...] · açıklama [...] · etiketler [...] · AI etiketi [evet/hayır, neden] · kaynak [...]
@@ -52,7 +59,8 @@ Konu: [bir cümle]
 İzleyici videodan çıkınca şunu hatırlasın: [bir cümle]
 Platform: [Shorts / Reels / TikTok / yatay]
 
-Brifi sen doldur (12 parça). Kararlarını tek satırla gerekçelendir.
+Brifi sen doldur (14 parça). Kararlarını tek satırla gerekçelendir.
+Hikâye testinden 12/16 altında kalırsa söyle ve daha güçlü bir açı ya da hikâye öner.
 animasyonlar/ klasöründeki son brifleri ve yayinlar.csv'yi oku; kanca türünü ve farklılık satırını ona göre seç.
 Kod yazma; brifi göster, ben düzelteyim, onaydan sonra kodla.
 ```

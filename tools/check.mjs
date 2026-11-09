@@ -98,6 +98,48 @@ if (meta.hasSetTime && meta.duration > 0) try {
   if (dead.length) warn(`Ölü zaman (>0.7 sn durağan): ${dead.join(', ')}. Bilinçli durgunluk değilse hareket ya da ara ödül ekle.`);
   else ok('ölü zaman yok (>0.7 sn durağan an bulunmadı)');
 
+  // Döngü haritası (docs/hikaye-rehberi.md §4): izleyicinin her an beklediği bir cevap var mı?
+  const beats = await page.evaluate(() => window.__beats || null);
+  if (!Array.isArray(beats) || !beats.length) warn('Döngü haritası yok (window.__beats): açık soru ve ara ödül aralıkları ölçülmedi. docs/hikaye-rehberi.md §4');
+  else {
+    const long = d > 180;                                             // (V) değerler: dikey kısa / uzun video
+    const MAX_GAP = long ? 90 : 5, HOOK_BY = long ? 10 : 3, IDLE = long ? 20 : 3, MAX_OPEN = 3;
+    const bs = [...beats].sort((a, b) => a.t - b.t), open = new Map(), probs = [];
+    let maxOpen = 0, idleFrom = 0, main = null, mainClosed = null, rewards = [0];
+    const idle = [];
+    for (const b of bs) {
+      if (b.ac) {
+        if (open.has(b.ac)) probs.push(`"${b.ac}" kapanmadan yeniden açılmış (${b.t.toFixed(1)} sn)`);
+        if (!open.size && idleFrom !== null && b.t - idleFrom > IDLE) idle.push(`${idleFrom.toFixed(1)}–${b.t.toFixed(1)} sn`);
+        open.set(b.ac, b); idleFrom = null;
+        if (!main && !b.sonraki) main = b;
+        maxOpen = Math.max(maxOpen, [...open.values()].filter(x => !x.sonraki).length);
+      }
+      if (b.odul) rewards.push(b.t);
+      if (b.kapa) {
+        if (!open.has(b.kapa)) probs.push(`"${b.kapa}" açılmadan kapanıyor (${b.t.toFixed(1)} sn)`);
+        open.delete(b.kapa); rewards.push(b.t);
+        if (main && b.kapa === main.ac) mainClosed = b.t;
+        if (!open.size) idleFrom = b.t;
+      }
+    }
+    if (!open.size && idleFrom !== null && d - idleFrom > IDLE) idle.push(`${idleFrom.toFixed(1)}–${d.toFixed(1)} sn (son)`);
+    rewards.push(d); rewards.sort((a, b) => a - b);
+    const gaps = [];
+    for (let i = 1; i < rewards.length; i++) if (rewards[i] - rewards[i - 1] > MAX_GAP + 1e-6) gaps.push(`${rewards[i - 1].toFixed(1)}–${rewards[i].toFixed(1)} sn`);
+    const unclosed = [...open.values()].filter(b => !b.sonraki).map(b => `"${b.ac}"`);
+
+    if (!bs.some(b => b.ac && b.t <= HOOK_BY)) warn(`İlk ${HOOK_BY} sn'de açılan soru yok: kanca bir merak boşluğu açmalı.`);
+    if (main && mainClosed !== null && mainClosed < d * .6) warn(`Ana soru ("${main.soru || main.ac}") ${mainClosed.toFixed(1)} sn'de cevaplanıyor (süresinin %${Math.round(mainClosed / d * 100)} noktası): vaat edilen cevap sona saklanmalı (yerine yeni bir soru açılmıyorsa izleyici burada çıkar).`);
+    if (unclosed.length) warn(`Cevaplanmayan soru: ${unclosed.join(', ')}. Kapat ya da sonraki videoya bırakıldığını işaretle ({sonraki: true}).`);
+    if (idle.length) warn(`Açık soru olmayan aralık (> ${IDLE} sn): ${idle.join(', ')}. Bu sırada izleyicinin kalma sebebi yok.`);
+    if (gaps.length) warn(`Ara ödülsüz aralık (> ${MAX_GAP} sn, V): ${gaps.join(', ')}.`);
+    if (maxOpen > MAX_OPEN) warn(`Aynı anda ${maxOpen} açık soru: ${MAX_OPEN}'ten fazlası izleyiciyi yorar.`);
+    if (probs.length) warn('Döngü haritası tutarsız: ' + probs.join('; '));
+    const longest = Math.max(...rewards.slice(1).map((r, i) => r - rewards[i]));
+    ok(`döngü haritası: ${bs.filter(b => b.ac).length} soru, ${bs.filter(b => b.odul).length} ara ödül, en uzun ödülsüz aralık ${longest.toFixed(1)} sn`);
+  }
+
   const cover = await page.evaluate(() => window.__cover);
   if (typeof cover !== 'number') warn('window.__cover yok: render kapak için 0. kareyi kullanacak.');
   else ok(`kapak karesi ${cover} sn`);
