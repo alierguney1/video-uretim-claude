@@ -32,6 +32,7 @@ bulunamazsa araç ne kuracağını söyler.
 | [tools/check.mjs](tools/check.mjs) | `Math.random`, tüm karelerde hata, determinizm, `?t=`, ilk saniye hareketi, font sayısı |
 | [tools/contact.mjs](tools/contact.mjs) | Her sahnenin başı/ortası/sonu + geçişler, güvenli alan katmanıyla kontak sayfası |
 | [tools/tts.mjs](tools/tts.mjs) | `npm run tts -- animasyonlar/<ad>.voice.json`: Gemini TTS ile cümle cümle seslendirme (önbellekli), zaman çizelgesi ve animasyondaki `VO` bloğu |
+| [tools/firsat.mjs](tools/firsat.mjs) | `npm run firsat`: YouTube Data API + Gemini ile video türü bazında talep/arz (fırsat) raporu. Bkz. [docs/firsat-analizi.md](docs/firsat-analizi.md) |
 | [lib/harita-motoru.js](lib/harita-motoru.js) | "Harita Yalan Söyler" seri motoru: küre/Mercator, altyazı, etiket, ses, render sözleşmesi |
 | [STYLE.md](STYLE.md) | Seri kimliği (sabit): palet, yazı tipleri, hareket dili, ses |
 | [tools/render.mjs](tools/render.mjs) | Paralel kare kare PNG → FFmpeg H.264 MP4, sentez sesi ya da `--audio` |
