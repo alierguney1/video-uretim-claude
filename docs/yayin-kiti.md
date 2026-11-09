@@ -82,3 +82,33 @@ vidIQ ile:
 - **TikTok:** vidIQ yayın desteği yok. TikTok'a elle ya da Posty/Metricool ile yüklenir.
 
 Video dosyası vidIQ'ya herkese açık bir HTTPS bağlantısıyla verilmeli (yerel dosya okunmuyor).
+
+## 5. Yeni hesap açarken (araştırma, Kasım 2026)
+
+Kaynakların çoğu ikincil (pazarlama blogları). Resmî olanlar ✔, topluluk gözlemi olanlar ~ ile işaretli.
+
+**Kurulum (ilk videodan önce)**
+- Profili **eksiksiz** doldur: ad, kullanıcı adı, fotoğraf, bio. ~ Boş profil dağıtımı düşürüyor.
+- **VPN kullanma**, telefonun Türkiye SIM'iyle aç. TikTok bölgeyi buna göre seçiyor; hedef kitle Türkiye.
+- Instagram: **profesyonel hesap → İçerik üretici** (vidIQ yayını ve istatistikler için şart).
+- TikTok: kişisel / içerik üretici hesabı yeterli. Kendi sesimizi kullandığımız için ticari müzik kısıtı sorun değil.
+- YouTube: kanal tanıtıcısını `@haritayalansoyler` yap, telefonla doğrula.
+- Takipçi / beğeni **satın alma**, takip-bırak yapma, aynı cihazdan çok sayıda hesap açma.
+
+**Isınma**
+- ~ İlk 2–4 gün hesabı normal kullan: harita, coğrafya, ilginç bilgiler videoları izle, beğen, yorum yap. Algoritmaya bir kural değil, ama hesabın "kime gösterileceğini" öğrenmesine yardım eder ve rakipleri tanırsın. TikTok'un resmî bir ısınma şartı yok.
+
+**İlk paylaşımlar**
+- İlk video en güçlüsü olsun (Grönland). Günde 1 video ile başla; 10–15 videodan önce "hesap cezalı" sonucuna varma (~).
+- Her platforma **filigransız orijinal MP4** yükle. ✔ Instagram başkasının içeriğini paylaşan ya da anlamlı değiştirmeyen hesapları öneriden çıkarıyor; ~ başka uygulamanın filigranı olan videolar geri düşüyor.
+- Instagram **Deneme Reel'leri (Trial Reels)**: önce takipçi olmayanlara gösterilir. Yeni hesapta kanca A/B testi için ideal; vidIQ yayın aracı bunu destekliyor.
+- Instagram'da planlı paylaşım erişimi düşürmüyor (Mosseri, ikincil kaynak).
+- Instagram'ın önemli sinyalleri: izlenme süresi, erişim başına beğeni ve **erişim başına gönderme (sends)**. "Bunu kime göndermelisin?" sorusu sonunda işe yarar.
+
+**AI ve özgünlük**
+- Seslendirme sentetik (Gemini TTS). Videolar animasyon olduğundan YouTube'un gerçekçi AI etiketi zorunluluğu kapsamında değil, ama briflerdeki karar "AI etiketi: aç". ~ Etiketin erişimi düşürmediği söyleniyor.
+- YouTube'un "özgün olmayan / seri üretim" politikası tek kalıptan çoğaltılmış, katkısı olmayan içeriği hedefliyor. Bizim her bölümümüz farklı konu, hesap ve yapı; STYLE.md'deki çeşitlilik kuralı buna da hizmet ediyor.
+
+Kaynaklar: TikTok ısınma (postcrows.com, aiflowchat.com, superwarm.co), Instagram (petapixel.com 2026-04-30,
+buffer.com, pepperagency.com, zoomsphere.com, keywordseverywhere.com), YouTube (air.io, outlierkit.com,
+usefastlane.ai, quasa.io).
