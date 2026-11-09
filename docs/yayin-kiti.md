@@ -72,7 +72,7 @@ En kanıtlanmış konudan başla; kanca türü art arda 2'den fazla tekrar etmez
 | 7 | hys-05 Sandy | sonuçtan başla | |
 | 8 | hys-07 Sülün | ya …olursa | |
 
-Tempo: haftada 3 (Pzt / Çar / Cum), 8 bölüm ~3 haftada biter; o arada yeni bölümler üretilir.
+Tempo: haftada 3, **Pzt / Per / Paz, 17:00 (TR)**. Gerekçe: fırsat verisindeki 950 videonun yayın saati analizi (15–18 arası hem kalabalık hem güçlü; 18–21 en kalabalık ama zayıf; 21 sonrası en zayıf). 4. haftadan sonra kendi panolarımızdaki "izleyiciler ne zaman çevrimiçi" verisine göre güncellenir.
 
 ## 4. Paylaşım
 
