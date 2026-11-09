@@ -1,6 +1,7 @@
 # STYLE.md — "Harita Yalan Söyler"
 
-Seri kimliği: MOTION_RULES.md §5'teki **sabit** sütun. Her bölüm buna uyar; kanca türü,
+Seri kimliği: MOTION_RULES.md §5'teki **sabit** sütun. Bu dosya yalnızca HYS içindir; diğer seriler
+kendi STYLE dosyasını `seriler/<seri>/` altında taşır. Her bölüm buna uyar; kanca türü,
 yapı, konu ve süre bölümden bölüme değişir.
 
 ## Niş

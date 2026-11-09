@@ -33,7 +33,8 @@ bulunamazsa araç ne kuracağını söyler.
 | [tools/contact.mjs](tools/contact.mjs) | Her sahnenin başı/ortası/sonu + geçişler, güvenli alan katmanıyla kontak sayfası |
 | [tools/tts.mjs](tools/tts.mjs) | `npm run tts -- animasyonlar/<ad>.voice.json`: Gemini TTS ile cümle cümle seslendirme (önbellekli), zaman çizelgesi ve animasyondaki `VO` bloğu |
 | [lib/harita-motoru.js](lib/harita-motoru.js) | "Harita Yalan Söyler" seri motoru: küre/Mercator, altyazı, etiket, ses, render sözleşmesi |
-| [STYLE.md](STYLE.md) | Seri kimliği (sabit): palet, yazı tipleri, hareket dili, ses |
+| [STYLE.md](STYLE.md) | "Harita Yalan Söyler" seri kimliği (sabit): palet, yazı tipleri, hareket dili, ses |
+| [seriler/seyir-defteri/](seriler/seyir-defteri/) | İkinci seri (ayrı kanal): tarihte tuhaf yolculuklar, piksel harita + piksel diorama. [PLAN.md](seriler/seyir-defteri/PLAN.md), [STYLE.md](seriler/seyir-defteri/STYLE.md), [stil-testi.html](seriler/seyir-defteri/stil-testi.html) |
 | [tools/render.mjs](tools/render.mjs) | Paralel kare kare PNG → FFmpeg H.264 MP4, sentez sesi ya da `--audio` |
 | [promptlar/](promptlar/) | Brif, dikey video, cilalama döngüsü, skill'e çevirme |
 | [docs/platform-notlari.md](docs/platform-notlari.md) | Instagram / YouTube / TikTok algoritmaları ve AI içerik kuralları (Kasım 2026) |

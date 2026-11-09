@@ -9,7 +9,8 @@ her piksel kodla çizilir. Her işte **[MOTION_RULES.md](MOTION_RULES.md)** geç
    12 parçayı sen doldur, kararları tek satırla gerekçelendir. Brifi
    `animasyonlar/<ad>.brief.md` olarak kaydet. Kanca türü, ara ödüller, gönderilme sebebi ve
    farklılık satırları zorunlu: `animasyonlar/` içindeki son brifleri ve `yayinlar.csv`'yi oku,
-   aynı kanca türünü art arda 2'den fazla kullanma. `STYLE.md` varsa sabit kimliğe uy.
+   aynı kanca türünü art arda 2'den fazla kullanma. Bölüm hangi serideyse onun STYLE dosyasına uy
+   (aşağıdaki "Seriler" tablosu); kanca türü kuralı seri içinde sayılır.
 2. **Sahne listesi + süreler + geçiş nesneleri.** Göster, **onay al**. Onaydan önce kod yazma.
 3. **Kod.** `template.html` dosyasını `animasyonlar/<ad>.html` olarak kopyala. `CONFIG`, `SCENES`,
    `SOUNDS` ve çizim fonksiyonlarını değiştir. Sözleşme kısmına (en alttaki blok) dokunma.
@@ -26,6 +27,18 @@ her piksel kodla çizilir. Her işte **[MOTION_RULES.md](MOTION_RULES.md)** geç
    MOTION_RULES.md'deki (V) değerlerini güncellemeyi öner.
 
 "Kod çalışıyor" ile "görüntü doğru" aynı şey değil. Kontak sayfasına bakmadan "bitti" deme.
+
+## Seriler
+
+Her seri ayrı kanal, ayrı kimlik; üretim hattı (araçlar, sözleşme, TTS) ortak.
+
+| Seri | Önek | Kimlik | Motor | Durum |
+| --- | --- | --- | --- | --- |
+| Harita Yalan Söyler | `hys-` | [STYLE.md](STYLE.md) | [lib/harita-motoru.js](lib/harita-motoru.js) | 8 bölüm |
+| Seyir Defteri (çalışma adı) | `sd-` | [seriler/seyir-defteri/STYLE.md](seriler/seyir-defteri/STYLE.md) | `lib/piksel-motoru.js` (yazılacak; kaynak: [stil-testi.html](seriler/seyir-defteri/stil-testi.html)) | Plan: [PLAN.md](seriler/seyir-defteri/PLAN.md) |
+
+Tarih serisinde doğruluk kuralı sıkılaşır: her iddia brifte kaynaklı, kişinin kendi anlatısı
+ekranda "anılarına göre", modern sınır ve anakronizm yok (PLAN.md §4).
 
 ## Kodlama notları (bu repoda öğrenilen dersler)
 
@@ -45,6 +58,11 @@ her piksel kodla çizilir. Her işte **[MOTION_RULES.md](MOTION_RULES.md)** geç
 - **Ses:** `SOUNDS` dizisine `{t, type, gain}` ekle. Aynı liste canlı oynatmada Web Audio ile,
   render'da `OfflineAudioContext` ile WAV olarak çalınır; görüntüyle kayma olmaz.
 - **WebGL/Three.js:** `preserveDrawingBuffer: true`, döngü yerine `__setTime(t)` içinde `renderer.render`.
+- **Piksel sanatı:** Şekli küçük tuvale maske olarak çiz, alfa ≥ 128 ile eşikle, sonra renklendir;
+  büyütme sadece tamsayı kat ve `imageSmoothingEnabled = false`. Piksel yazı tipinin rakamlarını ve
+  Türkçe harflerini dene (Pixelify'da 5 ≈ S, Silkscreen'de İŞĞ yok). Ayrıntı: Seyir Defteri PLAN.md §11.
+- **Rota karadan geçmesin:** Elle verilen deniz yolu ara noktalarını `d3.geoContains(LAND, p)` ile
+  denetle; 50m veride dar boğazlar (Korfu kanalı, Çanakkale) neredeyse kapalı görünür.
 - **Gerçek veri:** Kullanıcının vermediği sayı, özellik, müşteri, arayüz uydurma. Emin olmadığın
   bilgiyi ekrana yazma; hesaplanabiliyorsa kodda hesapla (ör. `1.01 ** 365`).
 

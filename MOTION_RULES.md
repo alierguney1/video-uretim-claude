@@ -100,6 +100,8 @@ sabit neyin değişken olduğunu açıkça ayırmak:
 * Brifteki **"farklılık"** satırı zorunlu: son 5 videodan kanca türü ve yapı olarak ayrılmalı.
 * Aynı kanca türü art arda en fazla 2 kez.
 * Niş ve stil seçilene kadar sabit sütun boş kalır; seçilince `STYLE.md` doldurulur.
+* Birden fazla seri varsa her seri kendi STYLE dosyasını taşır (ilk seri kökteki `STYLE.md`, sonrakiler
+  `seriler/<seri>/STYLE.md`). Farklı vaat ve formattaki seriler ayrı kanalda yayınlanır.
 
 ## 6) Yayın paketi
 
