@@ -62,7 +62,8 @@ ekranda "anılarına göre", modern sınır ve anakronizm yok (PLAN.md §4).
   render'da `OfflineAudioContext` ile WAV olarak çalınır; görüntüyle kayma olmaz.
 - **WebGL/Three.js:** `preserveDrawingBuffer: true`, döngü yerine `__setTime(t)` içinde `renderer.render`.
 - **Piksel sanatı:** Şekli küçük tuvale maske olarak çiz, alfa ≥ 128 ile eşikle, sonra renklendir;
-  büyütme sadece tamsayı kat ve `imageSmoothingEnabled = false`. Piksel yazı tipinin rakamlarını ve
+  büyütme sadece tamsayı kat ve `imageSmoothingEnabled = false`. Piksel boyu okunurluğa göre seçilir:
+  1080x1920'de 3x (360x640); 6x telefonda okunmuyor. Karakterleri ASCII ile değil vektör kukla ile çiz. Piksel yazı tipinin rakamlarını ve
   Türkçe harflerini dene (Pixelify'da 5 ≈ S, Silkscreen'de İŞĞ yok). Ayrıntı: Seyir Defteri PLAN.md §11.
 - **Rota karadan geçmesin:** Elle verilen deniz yolu ara noktalarını `d3.geoContains(LAND, p)` ile
   denetle; 50m veride dar boğazlar (Korfu kanalı, Çanakkale) neredeyse kapalı görünür.

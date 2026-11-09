@@ -5,7 +5,10 @@
   İçerik: Casanova'nın 1745 Venedik → Korfu → İstanbul yolu (anılarına göre: Korfu'da bekleme,
   Temmuz ortasında Pera'daki Venedik elçiliği, ertesi gün Bonneval Paşa ziyareti).
   Metinler yer tutucu; rota denizden elle verilmiş ara noktalar (karadan geçmediği kodda denetlenir).
-  Harita 270x480 mantıksal (4x), diorama 180x320 mantıksal (6x) → 1080x1920.
+
+  Tek piksel ölçeği: 3x. Harita ve diorama 360x640 mantıksal → 1080x1920.
+  Karakter, ikon, gemi, silüet vektör şekillerle tanımlanır; küçük tuvalde çizilip alfa ≥ 128 ile
+  eşiklenir (kenar yumuşatma yok), sonra otomatik 1 px mürekkep dış hat eklenir ("vektörden piksele").
 -->
 <html lang="tr">
 <head>
@@ -33,8 +36,7 @@
 <script>
 'use strict';
 const W = 1080, H = 1920, FPS = 60, DUR = 7;
-// Harita 4x (270x480), diorama 6x (180x320). Geçiş maskesi 12 px hücrelerde: iki ızgara da 12'ye bölünür, yarım piksel oluşmaz.
-const P = 4, LW = W / P, LH = H / P, P6 = 6, DW = W / P6, DH = H / P6, CELL = 12;
+const P = 3, LW = W / P, LH = H / P;                                  // tek ölçek: 3x → 360x640
 const FONT = '"Jersey 10", ui-monospace, monospace', MONO = 'VT323, ui-monospace, monospace';
 const GLYPHS = 'AaİıŞşĞğÜüÖöÇç0123456789·\'';
 
@@ -61,126 +63,133 @@ function mulberry32(a) { return () => { a |= 0; a = a + 0x6D2B79F5 | 0; let t = 
 const BAYER = [0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5].map(v => (v + .5) / 16);
 const bayer = (x, y) => BAYER[(y & 3) * 4 + (x & 3)];
 
-// Piksel tamponu
+// ── piksel tamponu ──
 function makeBuf(w, h) { const img = new ImageData(w, h); return { w, h, img, px: new Uint32Array(img.data.buffer) }; }
 const put = (b, x, y, c) => { x |= 0; y |= 0; if (x >= 0 && y >= 0 && x < b.w && y < b.h) b.px[y * b.w + x] = c; };
 function rect(b, x, y, w, h, c) { for (let j = Math.max(0, y | 0); j < Math.min(b.h, (y + h) | 0); j++) for (let i = Math.max(0, x | 0); i < Math.min(b.w, (x + w) | 0); i++) b.px[j * b.w + i] = c; }
-/** ASCII sprite: her harf paletten bir renk, '.' boş. (x,y) = sol üst. */
-function sprite(b, rows, x, y, pal, flip = false) {
-  const w = Math.max(...rows.map(r => r.length));
-  rows.forEach((r, j) => { r = r.padEnd(w, '.'); for (let i = 0; i < w; i++) { const ch = r[flip ? w - 1 - i : i]; if (ch !== '.' && pal[ch] !== undefined) put(b, x + i, y + j, pal[ch]); } });
-}
 function frameBox(b, x, y, w, h) {                                   // piksel çerçeveli kutu (köşeler kırık)
   rect(b, x + 1, y, w - 2, h, U.ink); rect(b, x, y + 1, w, h - 2, U.ink);
   rect(b, x + 2, y + 1, w - 4, 1, U.paper); rect(b, x + 2, y + h - 2, w - 4, 1, U.paper);
   rect(b, x + 1, y + 2, 1, h - 4, U.paper); rect(b, x + w - 2, y + 2, 1, h - 4, U.paper);
 }
 
-// ── sprite'lar ──
-const MAP_PAL = { K: U.ink, P: U.paper, R: U.accent, G: U.gold };
-const ICON_VEN = ['...K...', '..KPK..', '.KPPPK.', '.KKKKK.', '.KPKPK.', '.KPPPK.', '.KPPPK.', '.KPPPK.', '.KPPPK.', 'KKKKKKK'];
-const ICON_COR = ['K.K.K.K.K', 'KKKKKKKKK', 'KPPPPPPPK', 'KPPKKKPPK', 'KPPKPKPPK', 'KKKKKKKKK'];
-const ICON_IST = ['..K.......K..', '.KPK..K..KPK.', '.KPK.KPK.KPK.', '.KPKKPPPKKPK.', '.KPKPPPPPKPK.', '.KPKPPPPPKPK.', '.KPKKKKKKKPK.', '.KPPPPPPPPPK.', '.KPPKPPPKPPK.', '.KKKKKKKKKKK.'];
-const TOKEN = ['...R...', '..RRK..', '.RRRK..', '...K...', 'KKKKKKK', '.KKKKK.'];
-// Karakter kartı: sağa bakar; sola baktırmak için flip.
-const CAS_PAL = { K: U.ink, W: U.wig, w: U.wigD, S: U.skin, s: U.skinD, E: U.ink, R: U.coat, r: U.coatD, G: U.gold, L: U.paper, B: U.brown, D: U.coatD };
-const CASANOVA = [
-  '......KKKKKKK.......',
-  '....KKKKKKKKKKK.....',
-  '..KKKKKKKKKKKKKKK...',
-  '...KGKKKKKKKKKGK....',
-  '....wWWWSSSSSS......',
-  '...wWWWSSSSSSSS.....',
-  '...WWWWSSSSSESS.....',
-  '...WWWwSSSSSSSSS....',
-  '...WWWwSSSSSSS......',
-  '...WWWwsSSSSSs......',
-  '....WWw.sSSSs.......',
-  '....ww..sLLs........',
-  '.......RRLLLRR......',
-  '.....RRRRLLLRRRR....',
-  '....RRRRRLLGRRRRR...',
-  '....RRrRRRLGRRRrRR..',
-  '....RRrRRRRGRRRrRR..',
-  '....RRrRRRRGRRRrRR..',
-  '....RRrRRRRGRRRrRSS.',
-  '....RRrRRRRGRRRrRSSB',
-  '....RRrRRRRGRRRrR..B',
-  '....RRrRRRRGRRRrR..B',
-  '....RRrRRRRGRRRrR..B',
-  '....RRrRRRRGRRRrR..B',
-  '....RRrrRRRGRRrrR..B',
-  '....RRrrrrrrrrrrR..B',
-  '....RRR.DDDDDD.RR..B',
-  '....RR..DDDDDD..R..B',
-  '........DDD.DDD....B',
-  '........LLL.LLL....B',
-  '........LLL.LLL....B',
-  '........LLL.LLL....B',
-  '........LLL.LLL....B',
-  '........LLL.LLL....B',
-  '.......KKKK.KKKK...B',
-];
-const BON_PAL = { L: U.paper, l: U.wigD, S: U.skin, s: U.skinD, E: U.ink, M: U.grey, Q: U.kaftan, q: U.kaftanD, G: U.gold, Y: U.gold, K: U.ink, R: U.accent };
-const BONNEVAL = [
-  '........RRR.........',
-  '......LLLLLLL.......',
-  '....LLLlLLLlLLL.....',
-  '...LLlLLLlLLLlLL....',
-  '...LLLLlLLLlLLLLL...',
-  '....LLLLLLLLLLLL....',
-  '.....lllllllllll....',
-  '.....SSSSSSSSSS.....',
-  '.....SSSSSSSESSS....',
-  '.....sSSSSSSSSSSS...',
-  '.....sSSSSSMMMSS....',
-  '.....sSSSSMMMMMM....',
-  '......sSSSSSSSS.....',
-  '.......sSSSSs.......',
-  '.....QQQQQQQQQQ.....',
-  '....QQQQQLLQQQQQ....',
-  '...QQQQQQLLQQQQQQ...',
-  '...QQqQQQQQQQQQqQQ..',
-  '...QQqQQQQQQQQQqQSS.',
-  '...QQqGGGGGGGGGqQSS.',
-  '...QQqGGGGGGGGGqQ...',
-  '...QQqQQQQQQQQQqQ...',
-  '...QQqQQQQQQQQQqQ...',
-  '...QQqQQQQQQQQQqQ...',
-  '...QQqQQQQQQQQQqQ...',
-  '...QQqQQQQQQQQQqQ...',
-  '...QQqQQQQQQQQQqQ...',
-  '...QQqQQQQQQQQQqQ...',
-  '...QQqQQQQQQQQQqQ...',
-  '...QQqQQQQQQQQQqQ...',
-  '...QQqQQQQQQQQQqQ...',
-  '...QQqqqqqqqqqqqQ...',
-  '...QQQQQQQQQQQQQQ...',
-  '....YYYY....YYYY....',
-];
-const SHIP_PAL = { K: U.ink, L: U.paper, l: U.wigD, R: U.accent, B: U.brown, b: U.brownD };
-const SHIP = [
-  '.............RR.............',
-  '.............RRR............',
-  '.............K..............',
-  '.........LLLLKLLLL..........',
-  '........LLLLlKLLLLL.........',
-  '.......LLLLLlKLLLLLL........',
-  '.......LLLLLlKLLLLLL........',
-  '........LLLLlKLLLLL.........',
-  '.............K..............',
-  '......LLLLLLlKLLLLLLLL......',
-  '.....LLLLLLLlKLLLLLLLLL.....',
-  '.....LLLLLLLlKLLLLLLLLL.....',
-  '......LLLLLLlKLLLLLLLL......',
-  '.............K..............',
-  '.BBBBBBBBBBBBBBBBBBBBBBBBBBB',
-  '..BbbbbbbbbbbbbbbbbbbbbbbbB.',
-  '...BBBBBBBBBBBBBBBBBBBBBBB..',
-];
-const CAT_PAL = { O: U.cat, o: U.catD, K: U.ink };
-const CAT_A = ['.O.O.....', '.OOO.....', '.OKO.....', '..OOO....', '..OoOO...', '..OOoOO..', '..OOOOOO.', '..O.O.OOO'];
-const CAT_B = ['.O.O.....', '.OOO.....', '.OKO.....', '..OOO....', '..OoOO...', '..OOoOO.O', '..OOOOOO.', '..O.O.O..'];
+// ── vektörden piksele ──
+// Şekil küçük tuvalde çizilir, alfa ≥ 128 eşiklenir: kenar yumuşatması kalmaz, ölçek ne olursa olsun piksel kalır.
+const mk = (w, h) => { const c = document.createElement('canvas'); c.width = w; c.height = h; return c; };
+const SCR = mk(LW, LH).getContext('2d', { willReadFrequently: true });
+function pix(b, color, draw, box = [0, 0, b.w, b.h]) {
+  const x0 = Math.max(0, Math.floor(box[0])), y0 = Math.max(0, Math.floor(box[1]));
+  const w = Math.min(b.w, Math.ceil(box[0] + box[2])) - x0, h = Math.min(b.h, Math.ceil(box[1] + box[3])) - y0;
+  if (w <= 0 || h <= 0) return;
+  SCR.save(); SCR.clearRect(x0, y0, w, h); SCR.beginPath(); SCR.rect(x0, y0, w, h); SCR.clip();
+  SCR.fillStyle = SCR.strokeStyle = '#fff'; SCR.lineCap = 'round'; SCR.lineJoin = 'round';
+  draw(SCR); SCR.restore();
+  const d = SCR.getImageData(x0, y0, w, h).data;
+  for (let j = 0; j < h; j++) for (let i = 0; i < w; i++) if (d[(j * w + i) * 4 + 3] >= 128) b.px[(y0 + j) * b.w + x0 + i] = color;
+}
+// şekil kalıpları (çizim fonksiyonu döner)
+const E = (cx, cy, rx, ry, a0 = 0, a1 = 2 * Math.PI) => c => { c.beginPath(); c.ellipse(cx, cy, rx, ry, 0, a0, a1); c.fill(); };
+const Pg = (...pts) => c => { c.beginPath(); pts.forEach(([x, y], i) => i ? c.lineTo(x, y) : c.moveTo(x, y)); c.closePath(); c.fill(); };
+const R = (x, y, w, h) => c => { c.fillRect(x, y, w, h); };
+const Ln = (pts, lw) => c => { c.lineWidth = lw; c.beginPath(); pts.forEach(([x, y], i) => i ? c.lineTo(x, y) : c.moveTo(x, y)); c.stroke(); };
+/** Kukla / ikon: [renk, şekil] listesi ressam sırasıyla → saydam sprite + otomatik mürekkep dış hat */
+function puppet(w, h, parts, { outline = true } = {}) {
+  const s = makeBuf(w, h);
+  for (const [col, fn] of parts) if (fn) pix(s, U[col], fn);
+  if (outline) {
+    const add = [];
+    for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+      const i = y * w + x; if (s.px[i]) continue;
+      if ((x > 0 && s.px[i - 1]) || (x < w - 1 && s.px[i + 1]) || (y > 0 && s.px[i - w]) || (y < h - 1 && s.px[i + w])) add.push(i);
+    }
+    for (const i of add) s.px[i] = U.ink;
+  }
+  return s;
+}
+function blit(b, s, x, y, flip = false) {
+  x = Math.round(x); y = Math.round(y);
+  for (let j = 0; j < s.h; j++) for (let i = 0; i < s.w; i++) {
+    const c = s.px[j * s.w + (flip ? s.w - 1 - i : i)]; if (c) put(b, x + i, y + j, c);
+  }
+}
+
+// ── karakter kartları (sağa bakar; 52x94, ayak tabanı y=91) ──
+function casanova(t) {
+  const blink = (t % 2.6) < .12, br = Math.floor(t * 1.4) % 2 ? 0 : .6;            // göz kırpma, nefes
+  return puppet(52, 94, [
+    ['brown', R(40, 50, 1.8, 41)], ['gold', E(40.9, 50, 2, 2)],                            // baston
+    ['wigD', R(18, 67, 4, 20)], ['paper', R(24, 67, 4, 20)],                              // çoraplar (arka bacak gölgede)
+    ['ink', Pg([17, 87], [22.5, 87], [23, 91], [15.5, 91])], ['ink', Pg([23.5, 87], [28.5, 87], [31.5, 91], [23.5, 91])],
+    ['gold', R(26, 88, 2, 1)],
+    ['coatD', Pg([16.5, 58], [29, 58], [28.5, 69], [16.5, 69])],                          // pantolon
+    ['coatD', Pg([13, 32 + br], [20, 32 + br], [18, 75], [9.5, 75])],                     // ceket arka (gölge)
+    ['coat', Pg([18, 31 + br], [30.5, 31 + br], [35, 75], [17, 75])],                     // ceket
+    ['gold', Pg([24.5, 33 + br], [29.5, 33 + br], [30.5, 59], [25.5, 59])],               // yelek
+    ...[37, 41, 45, 49, 53].map(y => ['coatD', R(27.5, y + br, 1, 1)]),
+    ['coat', Ln([[28.5, 35 + br], [36, 51]], 5.2)], ['paper', E(36.3, 52, 3, 2)],          // kol, dantel
+    ['skin', E(38.6, 53.2, 2.6, 2.4)],
+    ['paper', Pg([23, 27.5 + br], [29.5, 27.5 + br], [27.5, 35 + br], [25, 35 + br])],    // kravat
+    ['skin', E(26.5, 19.5, 6.4, 7.8)], ['skinD', E(23.4, 22.5, 2.6, 3.8)],                 // yüz
+    ['skin', Pg([32, 17.5], [34.8, 21.8], [32, 22.6])],                                   // burun
+    ['ink', blink ? R(28.5, 18.6, 2, 1) : R(28.5, 17.6, 2, 2)], ['wigD', R(28, 15.4, 3.2, 1)],
+    ['skinD', R(29.6, 24.6, 2, 1)], ['skinD', E(23.6, 19.6, 1.5, 2.2)],
+    ['wig', E(21, 18, 5.6, 7.2)], ['wig', E(21.3, 23.6, 2.6, 2.3)], ['wig', E(21.3, 27.3, 2.6, 2.3)],   // peruk, bukleler
+    ['wigD', R(19.5, 23.5, 1, 1)], ['wigD', R(19.5, 27.2, 1, 1)],
+    ['wig', Pg([14.6, 22], [17.6, 22], [17.2, 32], [14.2, 32])], ['ink', R(14, 23.4, 4, 2)],             // at kuyruğu + kurdele
+    ['ink', Pg([12.5, 13.5], [38, 12.5], [35, 8.5], [27.5, 4.5], [19, 5.8], [14.5, 9])],                 // üç köşeli şapka
+    ['gold', Ln([[13, 13.2], [37.5, 12.3]], 1.1)],
+  ]);
+}
+function bonneval(t) {
+  const blink = ((t + 1.1) % 3.1) < .12, puff = Math.floor(t * .9) % 2;               // göz kırpma, çubuk dumanı
+  return puppet(52, 94, [
+    ['gold', Pg([15.5, 87], [21, 87], [21.5, 91], [13.5, 91])], ['gold', Pg([24, 87], [30, 87], [32.5, 91], [24, 91])],   // çedik
+    ['kaftanD', Pg([13, 32], [20, 32], [15.5, 88], [9, 88])],                             // kaftan arka (gölge)
+    ['kaftan', Pg([18, 31], [31.5, 31], [36.5, 88], [14, 88])],                           // kaftan
+    ['wig', Pg([24.5, 33], [29, 33], [31.5, 88], [26.5, 88])],                            // entari
+    ['gold', Pg([13.6, 52], [32.6, 52], [33, 56.5], [13.2, 56.5])],                      // kuşak
+    ['catD', E(24, 31.5, 8.5, 3.2)],                                                      // kürk yaka
+    ['kaftan', Ln([[28.5, 35], [34, 55]], 6)], ['skin', E(35, 57, 2.7, 2.6)],             // kol, el
+    ['brown', Ln([[35.5, 56.5], [47, 47.5]], 1.4)], ['catD', R(46, 44.5, 2.6, 3.6)],     // çubuk
+    puff ? ['wigD', E(48.5, 41, 1.6, 1.6)] : ['wigD', E(47.8, 39, 1.3, 1.3)],
+    ['skin', E(25.5, 22.5, 6.2, 7.6)], ['skinD', E(22.4, 25, 2.4, 3.6)],                   // yüz
+    ['skin', Pg([31, 20.8], [33.8, 24.6], [31, 25.2])],
+    ['ink', blink ? R(27.5, 21.2, 2, 1) : R(27.5, 20.2, 2, 2)], ['grey', R(27, 18.2, 3.2, 1)],
+    ['grey', Pg([27.5, 26.4], [33.6, 26.8], [32.6, 29.2], [28, 28.6])],                  // bıyık
+    ['skinD', E(22, 22.5, 1.5, 2.2)],
+    ['paper', E(23.5, 12.5, 11.5, 7.8)],                                                  // sarık
+    ['wigD', Ln([[13.5, 12.5], [33, 9.5]], 1)], ['wigD', Ln([[14.5, 16], [33.5, 13.5]], 1)],
+    ['accent', E(23.5, 5.6, 4.6, 3.4)],                                                   // kavuk tepesi
+  ]);
+}
+function cat(t) {
+  const sway = Math.sin(t * 2.2) * 2;
+  return puppet(26, 18, [
+    ['cat', Ln([[5, 12], [2.5, 8], [3 + sway, 3.5]], 1.8)],                               // kuyruk
+    ['cat', E(11, 12, 6.5, 3.8)], ['cat', R(6.5, 13, 1.6, 4)], ['cat', R(14, 13, 1.6, 4)],
+    ['cat', E(18, 8.5, 3.8, 3.4)], ['cat', Pg([15.4, 7], [16.2, 3.4], [18, 6])], ['cat', Pg([18.6, 6], [20.4, 3.4], [21.2, 7.4])],
+    ['catD', Ln([[9, 9], [9, 11.5]], 1)], ['catD', Ln([[12, 8.6], [12, 11.5]], 1)],
+    ['ink', R(19, 8, 1, 1)],
+  ]);
+}
+const SHIP = () => puppet(62, 52, [
+  ['brown', Pg([2, 38], [59, 38], [53, 48], [9, 48])], ['brownD', R(6, 42, 50, 2)],
+  ['brown', Pg([2, 38], [2, 31], [13, 31], [15, 38])],
+  ['ink', Ln([[25, 38], [25, 3]], 1.5)], ['ink', Ln([[41, 38], [41, 9]], 1.5)],
+  ['paper', Pg([16, 7], [33, 7], [35, 20], [14, 20])], ['paper', Pg([14, 22], [35, 22], [37, 35], [12, 35])],
+  ['paper', Pg([34, 12], [47, 12], [48, 23], [33, 23])], ['paper', Pg([33, 25], [48, 25], [49, 35], [32, 35])],
+  ['wigD', R(24, 8, 1, 27)], ['wigD', R(40, 13, 1, 22)],
+  ['accent', Pg([25, 1], [32, 3], [25, 5])],
+]);
+// harita ikonları (kâğıt rengi, mürekkep dış hat)
+const ICON = {
+  IST: () => puppet(22, 20, [['paper', E(11, 12, 5.4, 5.4, Math.PI, 2 * Math.PI)], ['paper', R(5, 12, 12, 6)],
+    ['paper', R(2, 5, 2.4, 13)], ['paper', Pg([2, 5], [3.2, 1], [4.4, 5])], ['paper', R(17.6, 5, 2.4, 13)], ['paper', Pg([17.6, 5], [18.8, 1], [20, 5])],
+    ['ink', R(10, 14, 2, 4)], ['gold', R(10.5, 5, 1, 2)]]),
+  VEN: () => puppet(14, 22, [['paper', R(4, 7, 6, 13)], ['paper', Pg([3.5, 7], [7, 1], [10.5, 7])], ['ink', R(5.5, 9, 1, 2)], ['ink', R(7.5, 9, 1, 2)]]),
+  COR: () => puppet(22, 14, [['paper', R(2, 5, 18, 8)], ...[2, 6, 10, 14, 18].map(x => ['paper', R(x, 2, 2, 3)]), ['ink', R(9.5, 8, 3, 5)]]),
+  TOKEN: () => puppet(13, 11, [['brown', Pg([1, 7], [12, 7], [10, 10], [3, 10])], ['ink', Ln([[6.5, 7], [6.5, 1]], 1)], ['accent', Pg([7, 1.5], [11, 5.5], [7, 5.5])]]),
+};
 
 // ── kanvas ──
 const params = new URLSearchParams(location.search);
@@ -191,15 +200,14 @@ const DPR = Math.max(1, window.devicePixelRatio || 1);
 canvas.width = W * DPR; canvas.height = H * DPR;
 function fit() { const s = RENDER ? 1 : Math.min(innerWidth / W, innerHeight / H); canvas.style.width = W * s + 'px'; canvas.style.height = H * s + 'px'; }
 addEventListener('resize', fit); fit();
-const mk = (w, h) => { const c = document.createElement('canvas'); c.width = w; c.height = h; return c; };
-const loMap = mk(LW, LH), loDio = mk(DW, DH), loInset = mk(66, 45), maskC = mk(W / CELL, H / CELL), layer = mk(W * DPR, H * DPR);
+const lo = mk(LW, LH), loInset = mk(90, 60);
 
 // ── veri ──
-let LAND = null;
+let LAND = null, SPR = {};
 async function loadData() {
   const topo = await fetch('https://cdn.jsdelivr.net/npm/world-atlas@2.0.2/land-50m.json').then(r => r.json());
   LAND = topojson.feature(topo, topo.objects.land);
-  // denetim: rota örnekleri karaya düşmesin (liman uçları hariç)
+  SPR = { ship: SHIP(), ist: ICON.IST(), ven: ICON.VEN(), cor: ICON.COR(), token: ICON.TOKEN() };   // durağan sprite'lar bir kez
   window.__routeOnLand = ROUTE.slice(3, -10).filter(p => d3.geoContains(LAND, p)).map(p => p.map(v => +v.toFixed(2)));
   if (window.__routeOnLand.length) console.warn('Rota karadan geçiyor:', JSON.stringify(window.__routeOnLand));
 }
@@ -221,7 +229,7 @@ const ROUTE = (() => {               // Catmull-Rom ile pürüzsüz, yoğun örn
   }
   out.push(IST); return out;
 })();
-const WAVES = (() => { const r = mulberry32(1745); return Array.from({ length: 900 }, () => ({ p: [-8 + r() * 50, 28 + r() * 20], ph: r(), n: 2 + (r() * 2 | 0) })); })();
+const WAVES = (() => { const r = mulberry32(1745); return Array.from({ length: 1400 }, () => ({ p: [-8 + r() * 50, 28 + r() * 20], ph: r(), n: 2 + (r() * 3 | 0) })); })();
 
 // ── piksel harita: kara maskesi → eşik → kıyı çizgisi, sığ su halkası, gölge, dalga ──
 const masks = {};
@@ -243,7 +251,7 @@ function dilate(src, w, h) {
   }
   return out;
 }
-function renderMap(b, proj, t, { route = 1, icons = true, token = true, dash = 5 } = {}) {
+function renderMap(b, proj, t, { route = 1, icons = true, token = true, lw = 1 } = {}) {
   const { w, h } = b, land = landMask(w, h, proj), d1 = dilate(land, w, h), d2 = dilate(d1, w, h), d3m = dilate(dilate(d2, w, h), w, h);
   for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
     const i = y * w + x;
@@ -259,30 +267,19 @@ function renderMap(b, proj, t, { route = 1, icons = true, token = true, dash = 5
   for (const wv of WAVES) {                                           // dalga izleri: dünyaya sabitli, yanıp söner
     const p = proj(wv.p); if (!p) continue;
     const x = Math.round(p[0]), y = Math.round(p[1]);
-    if (x < 1 || y < 1 || x >= w - 4 || y >= h - 1 || d3m[y * w + x] || d3m[y * w + x + wv.n]) continue;
+    if (x < 1 || y < 1 || x >= w - 5 || y >= h - 1 || d3m[y * w + x] || d3m[y * w + x + wv.n]) continue;
     const ph = (t * .7 + wv.ph) % 1; if (ph > .55) continue;
-    const off = ph > .3 ? 1 : 0;
-    for (let k = 0; k < wv.n; k++) put(b, x + k + off, y, U.foam);
+    for (let k = 0; k < wv.n; k++) put(b, x + k + (ph > .3 ? 1 : 0), y, U.foam);
   }
-  if (route > 0) {                                                    // rota: kesikli kırmızı, koyu kenarlı; ucunda gemi jetonu
-    const pts = [];
+  if (route > 0) {                                                    // rota: kesikli kırmızı, mürekkep kenarlı (vektörden piksele)
     const n = Math.max(1, Math.round((ROUTE.length - 1) * route));
-    for (let i = 0; i <= n; i++) {
-      const p = proj(ROUTE[i]); const q = [Math.round(p[0]), Math.round(p[1])];
-      if (pts.length) {                                              // Bresenham ile boşluksuz
-        let [x0, y0] = pts[pts.length - 1]; const [x1, y1] = q, dx = Math.abs(x1 - x0), dy = -Math.abs(y1 - y0), sx = x0 < x1 ? 1 : -1, sy = y0 < y1 ? 1 : -1; let err = dx + dy;
-        while (x0 !== x1 || y0 !== y1) { const e2 = 2 * err; if (e2 >= dy) { err += dy; x0 += sx; } if (e2 <= dx) { err += dx; y0 += sy; } pts.push([x0, y0]); }
-      } else pts.push(q);
-    }
-    pts.forEach(([x, y], i) => { if (i % dash < dash - 2) { put(b, x + 1, y, U.ink); put(b, x - 1, y, U.ink); put(b, x, y + 1, U.ink); put(b, x, y - 1, U.ink); } });
-    pts.forEach(([x, y], i) => { if (i % dash < dash - 2) put(b, x, y, U.accent); });
-    if (token && route < 1) { const [x, y] = pts[pts.length - 1]; sprite(b, TOKEN, x - 3, y - 5 + (Math.sin(t * 6) > 0 ? 0 : 1), MAP_PAL); }
+    const pts = ROUTE.slice(0, n + 1).map(p => proj(p));
+    const path = (c, width, dash) => { c.lineWidth = width; c.lineCap = 'butt'; c.setLineDash(dash); c.beginPath(); pts.forEach(([x, y], i) => i ? c.lineTo(x, y) : c.moveTo(x, y)); c.stroke(); };
+    pix(b, U.ink, c => path(c, 3.6 * lw, [7 * lw, 4 * lw]));
+    pix(b, U.accent, c => { c.lineDashOffset = -.8 * lw; path(c, 1.6 * lw, [5.4 * lw, 5.6 * lw]); });
+    if (token && route < 1) { const [x, y] = pts[pts.length - 1]; blit(b, SPR.token, x - 6, y - 9 + (Math.sin(t * 6) > 0 ? 0 : 1)); }
   }
-  if (icons) {
-    for (const [ic, p] of [[ICON_VEN, VEN], [ICON_COR, COR], [ICON_IST, IST]]) {
-      const q = proj(p); sprite(b, ic, Math.round(q[0]) - (ic[0].length >> 1), Math.round(q[1]) - ic.length + 1, MAP_PAL);
-    }
-  }
+  if (icons) for (const [s, p] of [[SPR.ven, VEN], [SPR.cor, COR], [SPR.ist, IST]]) { const q = proj(p); blit(b, s, q[0] - (s.w >> 1), q[1] - s.h + 2); }
 }
 
 // ── kamera ──
@@ -293,74 +290,75 @@ function cam(t) {
   return { lon: lerp(a[1], b[1], k), lat: lerp(a[2], b[2], k), k: Math.exp(lerp(Math.log(a[3]), Math.log(b[3]), k)) };
 }
 const mapProj = c => d3.geoMercator().scale(LW / (2 * Math.PI) * c.k).center([c.lon, c.lat]).translate([LW / 2, LH * .56]).precision(.5);
-const insetProj = d3.geoMercator().scale(1300 / (2 * Math.PI)).center([20.6, 41.3]).translate([33, 23]);
+const insetProj = d3.geoMercator().scale(1780 / (2 * Math.PI)).center([20.6, 41.3]).translate([45, 31]);
 
-// ── diorama (180x320): Pera'dan tarihî yarımadaya bakış, gün batımı ──
-const HOR = 132, QUAY = 190;
-const SKYLINE = (() => {                                             // tohumlu, temsili silüet (kubbe + minare)
+// ── diorama (360x640): Pera'dan tarihî yarımadaya bakış, gün batımı ──
+const HOR = 268, QUAY = 386;
+const SKY = (() => {                                                 // tohumlu, temsili silüet (kubbe + minare)
   const r = mulberry32(31), houses = [];
-  for (let x = 0; x < DW; x += 4 + (r() * 5 | 0)) houses.push([x, 2 + (r() * 7 | 0), 4 + (r() * 5 | 0)]);
-  return { houses, mosques: [{ x: 78, r: 10, half: 6, min: [58, 64, 92, 98], mh: 28 }, { x: 146, r: 7, half: 4, min: [136, 156], mh: 21 }, { x: 22, r: 6, half: 0, min: [12], mh: 18 }] };
+  for (let x = 0; x < LW; x += 7 + (r() * 9 | 0)) houses.push([x, 4 + (r() * 12 | 0), 8 + (r() * 9 | 0)]);
+  return { houses, mosques: [{ x: 156, r: 20, half: 12, min: [114, 126, 186, 198], mh: 58 }, { x: 292, r: 14, half: 8, min: [270, 314], mh: 42 }, { x: 46, r: 11, half: 0, min: [28], mh: 34 }] };
 })();
-function dome(b, cx, cy, r, c) { for (let dx = -r; dx <= r; dx++) { const hh = Math.round(Math.sqrt(r * r - dx * dx)); rect(b, cx + dx, cy - hh, 1, hh, c); } }
-function minaret(b, x, base, hgt, c) { rect(b, x, base - hgt, 2, hgt, c); rect(b, x - 1, base - Math.round(hgt * .7), 4, 1, c); put(b, x, base - hgt - 1, c); put(b, x + 1, base - hgt - 1, c); put(b, x, base - hgt - 2, c); }
 function renderDio(b, t) {
   const sky = [U.sky0, U.sky1, U.sky2, U.sky3, U.sky4];
   for (let y = 0; y < HOR; y++) {                                    // bant + Bayer geçişli gökyüzü
     const v = Math.pow(y / HOR, 1.6) * (sky.length - 1), i = Math.min(sky.length - 2, Math.floor(v)), f = v - i;
-    for (let x = 0; x < DW; x++) b.px[y * DW + x] = f > bayer(x, y) ? sky[i + 1] : sky[i];
+    for (let x = 0; x < LW; x++) b.px[y * LW + x] = f > bayer(x, y) ? sky[i + 1] : sky[i];
   }
-  dome(b, 118, HOR - 4, 12, U.sun);                                  // güneş, silüetin arkasında
+  pix(b, U.sun, E(236, HOR - 6, 25, 25, Math.PI, 2 * Math.PI));      // güneş, silüetin arkasında
   for (let k = 0; k < 3; k++) {                                       // martılar (2 kare kanat)
-    const x = ((20 + k * 50 + t * (7 + k * 2)) % 200) - 10, y = 84 + k * 11 + Math.round(Math.sin(t * 2 + k) * 1.5), up = Math.floor(t * 4 + k) % 2;
-    if (up) { put(b, x, y, U.ink); put(b, x + 1, y + 1, U.ink); put(b, x + 2, y, U.ink); put(b, x - 1, y - 1, U.ink); put(b, x + 3, y - 1, U.ink); }
-    else { rect(b, x - 1, y, 5, 1, U.ink); put(b, x + 1, y + 1, U.ink); }
+    const x = ((40 + k * 100 + t * (14 + k * 4)) % 400) - 20, y = 168 + k * 22 + Math.sin(t * 2 + k) * 3, up = Math.floor(t * 4 + k) % 2;
+    pix(b, U.ink, up ? Ln([[x - 5, y - 3], [x, y], [x + 5, y - 3]], 1.3) : Ln([[x - 5, y + 1], [x, y], [x + 5, y + 1]], 1.3));
   }
-  for (const [x, hh, ww] of SKYLINE.houses) rect(b, x, HOR - hh, ww, hh, U.sil2);
-  for (const m of SKYLINE.mosques) {
-    rect(b, m.x - m.r - m.half - 2, HOR - 8, (m.r + m.half + 2) * 2, 8, U.sil);
-    if (m.half) { dome(b, m.x - m.r, HOR - 8, m.half, U.sil); dome(b, m.x + m.r, HOR - 8, m.half, U.sil); }
-    dome(b, m.x, HOR - 8, m.r, U.sil); rect(b, m.x, HOR - 8 - m.r - 3, 1, 3, U.sil);
-    for (const mx of m.min) minaret(b, mx, HOR, m.mh, U.sil);
-  }
+  pix(b, U.sil2, c => { for (const [x, hh, ww] of SKY.houses) c.fillRect(x, HOR - hh, ww, hh); });
+  pix(b, U.sil, c => {                                                // yakın silüet tek yol: tek eşik
+    for (const m of SKY.mosques) {
+      c.fillRect(m.x - m.r - m.half - 3, HOR - 16, (m.r + m.half + 3) * 2, 16);
+      const dome = (cx, cy, r) => { c.beginPath(); c.ellipse(cx, cy, r, r * .95, 0, Math.PI, 2 * Math.PI); c.fill(); };
+      if (m.half) { dome(m.x - m.r, HOR - 16, m.half); dome(m.x + m.r, HOR - 16, m.half); }
+      dome(m.x, HOR - 16, m.r); c.fillRect(m.x - .5, HOR - 16 - m.r - 6, 1.5, 6);
+      for (const mx of m.min) {
+        c.fillRect(mx, HOR - m.mh, 3.4, m.mh); c.fillRect(mx - 1.2, HOR - Math.round(m.mh * .72), 5.8, 1.6);
+        c.beginPath(); c.moveTo(mx - .3, HOR - m.mh); c.lineTo(mx + 1.7, HOR - m.mh - 8); c.lineTo(mx + 3.7, HOR - m.mh); c.fill();
+      }
+    }
+  });
   const water = [U.w0, U.w1, U.w2];
   for (let y = HOR; y < QUAY; y++) {
     const v = (y - HOR) / (QUAY - HOR) * 2.2, i = Math.min(1, Math.floor(v)), f = v - i;
-    for (let x = 0; x < DW; x++) b.px[y * DW + x] = f > bayer(x, y) ? water[i + 1] : water[i];
+    for (let x = 0; x < LW; x++) b.px[y * LW + x] = f > bayer(x, y) ? water[i + 1] : water[i];
   }
   const r = mulberry32(7);
   for (let y = HOR + 2; y < QUAY - 2; y += 3) {                       // güneş yansıması + dalga parıltısı
-    const half = 2 + r() * 6 + (y - HOR) * .1, sh = Math.round(Math.sin(t * 2.2 + y * .7) * 1.5);
-    rect(b, 118 - half + sh, y, half * 2 * (.4 + r() * .6), 1, (y - HOR) < 26 ? U.sun : U.sky4);
-    const wx = (r() * DW + t * (4 + r() * 4)) % DW, on = (t * .8 + r()) % 1 < .6;
-    if (on) rect(b, wx, y + 1, 2 + (r() * 3 | 0), 1, U.sky2);
+    const half = 3 + r() * 12 + (y - HOR) * .1, sh = Math.round(Math.sin(t * 2.2 + y * .5) * 2);
+    rect(b, 236 - half + sh, y, half * 2 * (.4 + r() * .6), 1, (y - HOR) < 50 ? U.sun : U.sky4);
+    const wx = (r() * LW + t * (6 + r() * 6)) % LW, on = (t * .8 + r()) % 1 < .6;
+    if (on) rect(b, wx, y + 1, 3 + (r() * 4 | 0), 1, U.sky2);
   }
-  const sx = Math.round(128 + Math.sin(t * .4) * 3), sy = 146 + (Math.sin(t * 2.4) > 0 ? 0 : 1);
-  sprite(b, SHIP, sx, sy, SHIP_PAL);
-  rect(b, sx + 2, sy + 17, 25, 1, U.w0);
-  rect(b, 0, QUAY, DW, 8, U.stoneL);                                  // rıhtım yürüyüş yolu
-  for (let x = 5; x < DW; x += 11) rect(b, x, QUAY, 1, 8, U.stone);
-  rect(b, 0, QUAY - 1, DW, 1, U.coast);
-  rect(b, 0, QUAY + 8, DW, DH - QUAY - 8, U.stone);                   // rıhtım duvarı
-  for (let y = QUAY + 8, row = 0; y < DH; y += 6, row++) {
-    rect(b, 0, y, DW, 1, U.stoneD);
-    for (let x = row % 2 ? 0 : 6; x < DW; x += 12) rect(b, x, y, 1, 6, U.stoneD);
+  const sx = 214 + Math.sin(t * .4) * 5, sy = 278 + (Math.sin(t * 2.4) > 0 ? 0 : 1);
+  blit(b, SPR.ship, sx, sy); rect(b, Math.round(sx) + 8, Math.round(sy) + 49, 46, 1, U.w0);
+  rect(b, 0, QUAY, LW, 14, U.stoneL);                                 // rıhtım yürüyüş yolu
+  for (let x = 9; x < LW; x += 21) rect(b, x, QUAY, 1, 14, U.stone);
+  rect(b, 0, QUAY - 1, LW, 1, U.coast);
+  rect(b, 0, QUAY + 14, LW, LH - QUAY - 14, U.stone);                 // rıhtım duvarı
+  for (let y = QUAY + 14, row = 0; y < LH; y += 10, row++) {
+    rect(b, 0, y, LW, 1, U.stoneD);
+    for (let x = row % 2 ? 0 : 11; x < LW; x += 22) rect(b, x, y, 1, 10, U.stoneD);
   }
-  const blink = (t % 2.6) < .12, blink2 = ((t + 1.1) % 3.1) < .12;    // göz kırpma: palet değişimi, yeni sprite yok
-  sprite(b, CASANOVA, 18, QUAY + 4 - CASANOVA.length, blink ? { ...CAS_PAL, E: U.skin } : CAS_PAL);
-  sprite(b, BONNEVAL, 52, QUAY + 4 - BONNEVAL.length, blink2 ? { ...BON_PAL, E: U.skin } : BON_PAL, true);
-  sprite(b, Math.floor(t * 1.7) % 3 === 0 ? CAT_B : CAT_A, 96, QUAY + 4 - 8, CAT_PAL);
+  blit(b, casanova(t), 40, QUAY + 8 - 91);
+  blit(b, bonneval(t), 104, QUAY + 8 - 91, true);
+  blit(b, cat(t), 192, QUAY + 8 - 17);
 }
 
 // ── kompozisyon ──
-const mapB = makeBuf(LW, LH), dioB = makeBuf(DW, DH), insetB = makeBuf(66, 45);
+const mapB = makeBuf(LW, LH), dioB = makeBuf(LW, LH), outB = makeBuf(LW, LH), insetB = makeBuf(90, 60);
 const T_D0 = 3.45, T_D1 = 4.25;
 function text(s, x, y, size, { font = FONT, color = HEX.paper, alpha = 1, align = 'left', plate = false } = {}) {
   if (alpha <= .001) return;
   ctx.font = `400 ${size}px ${font}`; ctx.textAlign = align;
-  if (plate) {                                                        // etiket plakası 4 px ızgaraya oturur
+  if (plate) {                                                        // etiket plakası piksel ızgarasına oturur
     const w = ctx.measureText(s).width, x0 = Math.round((align === 'center' ? x - w / 2 : x) / P) * P - 12;
-    ctx.globalAlpha = alpha; ctx.fillStyle = HEX.ink; ctx.fillRect(x0, Math.round((y - size * .82) / P) * P, Math.ceil((w + 24) / P) * P, Math.ceil(size * 1.0 / P) * P + 4);
+    ctx.globalAlpha = alpha; ctx.fillStyle = HEX.ink; ctx.fillRect(x0, Math.round((y - size * .82) / P) * P, Math.ceil((w + 24) / P) * P, Math.ceil(size / P) * P + 3);
   }
   ctx.globalAlpha = alpha; ctx.fillStyle = color; ctx.fillText(s, x, y); ctx.globalAlpha = 1; ctx.textAlign = 'left';
 }
@@ -375,48 +373,33 @@ function draw(t) {
     t = clamp(t, 0, DUR);
     const c = cam(t), proj = mapProj(c);
     const showMap = t < T_D1, showDio = t > T_D0;
+    const mapA = 1 - prog(t, T_D0 - .3, T_D0), dioA = prog(t, T_D1 - .1, T_D1 + .3);
+    if (showMap) { renderMap(mapB, proj, t, { route: inOut(prog(t, .2, 2.6)), lw: 1 }); if (mapA > 0) frameBox(mapB, 16, 80, 254, 64); }
+    if (showDio) { renderDio(dioB, t); if (dioA > 0) frameBox(dioB, 12, 406, 298, 98); }
+    const q = prog(t, T_D0, T_D1), ip = proj(IST), cx = ip[0], cy = ip[1] - 6;
+    for (let y = 0; y < LH; y++) for (let x = 0; x < LW; x++) {      // ikondan dışarı Bayer çözülmesi (mantıksal piksel)
+      const i = y * LW + x;
+      if (!showDio) { outB.px[i] = mapB.px[i]; continue; }
+      if (!showMap) { outB.px[i] = dioB.px[i]; continue; }
+      const d = Math.hypot(x - cx, y - cy) / 560;
+      outB.px[i] = q > d * .75 + bayer(x, y) * .25 ? dioB.px[i] : mapB.px[i];
+    }
+    lo.getContext('2d').putImageData(outB.img, 0, 0);
     ctx.setTransform(DPR, 0, 0, DPR, 0, 0); ctx.imageSmoothingEnabled = false;
-    const mapA = 1 - prog(t, T_D0 - .3, T_D0);
-    if (showMap) {
-      renderMap(mapB, proj, t, { route: inOut(prog(t, .2, 2.6)) });
-      if (mapA > 0) frameBox(mapB, 12, 60, 190, 50);                   // başlık kutusu: kâğıt rengi karada da okunur
-      loMap.getContext('2d').putImageData(mapB.img, 0, 0);
-      ctx.drawImage(loMap, 0, 0, W, H);
-    }
-    const dioA = prog(t, T_D1 - .1, T_D1 + .3);
-    if (showDio) {
-      renderDio(dioB, t);
-      if (dioA > 0) frameBox(dioB, 6, 204, 148, 50);                  // anlatı kutusu (altyazının yeri)
-      loDio.getContext('2d').putImageData(dioB.img, 0, 0);
-      if (!showMap) ctx.drawImage(loDio, 0, 0, W, H);
-      else {                                                          // ikondan dışarı Bayer çözülmesi, 12 px hücre
-        const q = prog(t, T_D0, T_D1), ip = proj(IST), cx = ip[0] * P, cy = (ip[1] - 5) * P;
-        const mc = maskC.getContext('2d'), mi = mc.createImageData(maskC.width, maskC.height);
-        for (let y = 0; y < maskC.height; y++) for (let x = 0; x < maskC.width; x++) {
-          const d = Math.hypot(x * CELL + 6 - cx, y * CELL + 6 - cy) / 1700;
-          mi.data[(y * maskC.width + x) * 4 + 3] = q > d * .75 + bayer(x, y) * .25 ? 255 : 0;
-        }
-        mc.putImageData(mi, 0, 0);
-        const lc = layer.getContext('2d'); lc.imageSmoothingEnabled = false;
-        lc.globalCompositeOperation = 'copy'; lc.drawImage(loDio, 0, 0, layer.width, layer.height);
-        lc.globalCompositeOperation = 'destination-in'; lc.drawImage(maskC, 0, 0, layer.width, layer.height);
-        lc.globalCompositeOperation = 'source-over';
-        ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.drawImage(layer, 0, 0); ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
-      }
-    }
-    if (dioA > 0) {                                                   // köşede mini harita (harita ölçeğinde, 4x)
-      renderMap(insetB, insetProj, t, { route: 1, icons: false, dash: 4 });
+    ctx.drawImage(lo, 0, 0, W, H);
+    if (dioA > 0) {                                                   // köşede mini harita (aynı 3x ölçek)
+      renderMap(insetB, insetProj, t, { route: 1, icons: false, lw: .7 });
       const p = insetProj(IST); if (Math.floor(t * 3) % 2) rect(insetB, Math.round(p[0]) - 1, Math.round(p[1]) - 2, 3, 3, U.gold);
       loInset.getContext('2d').putImageData(insetB.img, 0, 0);
       ctx.globalAlpha = dioA;
-      ctx.fillStyle = HEX.ink; ctx.fillRect(660, 252, 280, 196); ctx.fillStyle = HEX.paper; ctx.fillRect(664, 256, 272, 188);
-      ctx.drawImage(loInset, 668, 260, 264, 180); ctx.globalAlpha = 1;
+      ctx.fillStyle = HEX.ink; ctx.fillRect(645, 246, 282, 192); ctx.fillStyle = HEX.paper; ctx.fillRect(648, 249, 276, 186);
+      ctx.drawImage(loInset, 651, 252, 270, 180); ctx.globalAlpha = 1;
     }
 
     // ── tam çözünürlük yazılar ──
     text('1745', 80, 352, 110, { font: MONO, color: HEX.gold, alpha: mapA });
     text("Venedik'ten İstanbul'a", 80, 412, 64, { alpha: mapA });
-    for (const [s, p, dx, dy] of [['VENEDİK', VEN, 34, -6], ['KORFU', COR, -172, 44], ['İSTANBUL', IST, -120, -68]]) {
+    for (const [s, p, dx, dy] of [['VENEDİK', VEN, 36, -10], ['KORFU', COR, -176, 46], ['İSTANBUL', IST, -128, -74]]) {
       const q2 = proj(p); text(s, q2[0] * P + dx, q2[1] * P + dy, 52, { plate: true, alpha: mapA * prog(t, .3, .7) });
     }
     if (dioA > 0) {
@@ -424,7 +407,7 @@ function draw(t) {
       text('Pera · Temmuz 1745', 66, 412, 60, { font: MONO, color: HEX.gold, alpha: dioA });
       const lines = wrap("Ertesi gün, Müslüman olmuş Fransız kont Bonneval Paşa'yı ziyaret etti.", 62, 800);
       let left = Math.floor(clamp((t - T_D1 - .2) * 34, 0, 999));     // daktilo
-      lines.forEach((ln, i) => { text(ln.slice(0, Math.max(0, left)), 80, 1320 + i * 66, 62, { alpha: dioA }); left -= ln.length + 1; });
+      lines.forEach((ln, i) => { text(ln.slice(0, Math.max(0, left)), 84, 1308 + i * 66, 62, { alpha: dioA }); left -= ln.length + 1; });
     }
     text('stil testi · metin yer tutucu', 64, 1600, 40, { font: MONO, color: HEX.mute });
   } finally { ctx.restore(); }

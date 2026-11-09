@@ -63,8 +63,8 @@ kırmızıyla** zaten haritadadır. Bu bölümün rotası parlak çizilir. Sezon
 ### Uzun format (2. aşama)
 
 İlk 3–5 bölümün tutma verisi iyiyse sezon **yatay 8–12 dk** uzun videoya genişletilir: aynı duraklar,
-durak başına daha çok sahne. Motor baştan iki yerleşimi destekler (harita 270x480 / 480x270,
-diorama 180x320 / 320x180). Render hızı sorun değil: stil testi 420 kareyi 19,5 sn'de çıkardı,
+durak başına daha çok sahne. Motor baştan iki yerleşimi destekler (tek ölçek 3x: dikey 360x640,
+yatay 640x360). Render hızı sorun değil: stil testi 420 kareyi 19,5 sn'de çıkardı,
 10 dk ≈ 30 dk render. Uzun formatta 30 fps yeterli (piksel hareketi zaten tam piksel adımlı).
 
 ### Bölüm iskeleti (dikey, ~120 sn)
@@ -89,7 +89,7 @@ Her durağın **tek bir işi** var (MOTION_RULES §3) ve aşağıdaki araçlarda
 ### Durak anatomisi (15–25 sn)
 
 1. **Yaklaşma (1–1,5 sn):** Kamera şehir ikonuna iner. VT323 ile defter kaydı: `17 TEMMUZ 1745 · PERA`.
-2. **Geçiş (0,8 sn):** İkondan dışarı doğru Bayer dither çözülmesi (12 px hücre). Geçiş, önceki
+2. **Geçiş (0,8 sn):** İkondan dışarı doğru Bayer dither çözülmesi (mantıksal piksel başına). Geçiş, önceki
    sahnede görünen nesneden (ikon) doğar.
 3. **Tablo (8–15 sn):** Diorama kurulur; anlatı kutusunda 1–2 cümle. Köşede mini harita
    ("neredeyiz" kaybolmaz).
@@ -101,7 +101,7 @@ Her durağın **tek bir işi** var (MOTION_RULES §3) ve aşağıdaki araçlarda
 | Araç | Ne zaman | Örnek |
 | --- | --- | --- |
 | **Tablo** (ana araç) | Bir karşılaşma, bir varış | Pera rıhtımında Casanova ve Bonneval Paşa (stil testi) |
-| **Yakın plan** | Duygu, karar, şok | Diorama 2x büyür (6 px → 12 px piksel; yalnızca tamsayı katlar) |
+| **Yakın plan** | Duygu, karar, şok | Kamera yaklaşır; kukla büyük çizilip yeniden pikselleşir (piksel boyu 3x kalır, ayrıntı artar) |
 | **Kesit** ("bebek evi") | Kaçış, soygun, gizli oda | Kurşun Damlar: hücre, tavan, çatı; kazma ilerleme çubuğu |
 | **Nesne kartı** | Hikâyeyi döndüren eşya | Şifreli mektup, piyango bileti, sahte pasaport; ortada büyük sprite + tek satır |
 | **Seçim kutusu** | Tarihî bir karar anı | İki seçenek, gerçekte seçilen yanar (ör. anılardaki evlilik teklifi; doğrulanacak) |
@@ -180,14 +180,15 @@ Yeni olanlar (hepsi stil testinde çalışır halde):
 
 | Parça | Ne yapar |
 | --- | --- |
-| Piksel tamponu | `makeBuf / put / rect / sprite / frameBox`; ASCII sprite + palet harfi |
+| Piksel tamponu | `makeBuf / put / rect / blit / frameBox` |
+| Vektörden piksele | `pix(tampon, renk, şekil)`: küçük tuvalde çiz → alfa eşiği; `puppet([...])`: parça listesi → sprite + otomatik dış hat |
 | Piksel harita | Kara maskesi → alfa eşiği (≥128) → kıyı çizgisi, sığ su halkası (dither), güney gölgesi, dünyaya sabitli dalgalar |
 | Rota | Catmull-Rom → Bresenham → kesikli kırmızı + koyu kenar + gemi jetonu; **karadan geçiş denetimi** |
 | İkonlar | Şehir başına küçük simge (kubbe-minare, çan kulesi, kale …) |
 | Diorama | Katmanlar: gök (Bayer bantlı) → silüet → su → zemin → karakterler → ön plan |
-| Karakter kartı | 20x35 ASCII sprite, sağa bakar, `flip` ile sola; göz kırpma = palet değişimi |
-| Geçiş | Bayer çözülmesi, 12 px hücre (4 ile 6'nın EKOK'u: yarım piksel yok) |
-| Mini harita | Diorama köşesinde, harita ölçeğinde (4x), rota + yanıp sönen nokta |
+| Karakter kartı | 52x94 vektör kukla, sağa bakar, `flip` ile sola; göz kırpma, nefes, duman `t` ile |
+| Geçiş | Bayer çözülmesi, mantıksal piksel başına |
+| Mini harita | Diorama köşesinde, 90x60 (3x), rota + yanıp sönen nokta |
 | Yerleşim | Dikey/yatay ön ayarları, güvenli alanlar |
 
 Sonra eklenecekler: **otomatik deniz yolu** (kara maskesinde A*, kıyıdan uzak durma maliyetiyle;
@@ -257,7 +258,11 @@ hangi durakta düşüş başlıyor (YouTube tutma grafiği), sonraki bölüme ge
   Silkscreen'de İ Ş Ğ ı ş ğ yok (yedek yazı tipine düşüyor). Seçilen: Jersey 10 + VT323.
 - **Piksel görünüm çizerek değil eşikleyerek.** Canvas yolları kenar yumuşatmalı çizer; küçük tuvale
   maske çiz, alfa ≥ 128 eşikle, sonra renklendir. Büyütme `imageSmoothingEnabled = false` ve tamsayı kat.
-- **Farklı piksel ölçekleri karışmaz.** Harita 4x, diorama 6x; geçiş maskesi 12 px hücrede (EKOK).
+- **Okunurluk ölçeği belirler.** İlk sürüm harita 4x, diorama 6x idi: telefonda yüz, gemi, mini harita
+  okunmadı. Tek ölçek 3x'e inildi; render süresi neredeyse aynı kaldı (420 kare 22 sn).
+- **Yüksek çözünürlükte ASCII sprite ölçeklenmez.** 52x94'lük karakteri harf harf çizmek pahalı ve
+  hataya açık. Vektör şekil listesi + eşik + otomatik dış hat aynı piksel görünümünü verir, üstüne
+  hareket ve yakın plan bedavaya gelir.
 - **Dünyaya sabitli doku.** Dalga, köpük gibi işaretler ekran koordinatına konursa kaydırmada
   "yüzer". Coğrafi noktalara bağla, her karede yeniden projekte et.
 - **Dar boğazlar.** 50m veride Çanakkale açık ama dar; Korfu kanalı ve Kithira çevresi rotayı

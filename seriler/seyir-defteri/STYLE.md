@@ -12,7 +12,8 @@ elçiler. Ana hikâye haritada izlenir; her durakta piksel bir diorama o yerde n
 
 ## Neden piksel (izometrik değil)
 
-- **Üretim ucuz:** Karakter = 20x35'lik bir ASCII tablosu. Yeni kişi bir palet ve birkaç satırdır.
+- **Üretim ucuz:** Karakter = 25–30 vektör şekillik bir liste (elips, çokgen, çizgi); kod onu piksele çevirir.
+  Yeni kişi = yeni şapka, yeni kıyafet rengi, bir aksesuar.
   İzometrikte her bina ve karakter üç yüzlü çizilmeli, yürüyüş animasyonu da zor.
 - **Harita bedava gelir:** Natural Earth kıyıları düşük çözünürlükte eşiklenince kendiliğinden piksel harita olur.
 - **Deterministik ve tamsayı:** Her şey tam piksel ızgarada; `t` → aynı kare.
@@ -23,13 +24,16 @@ elçiler. Ana hikâye haritada izlenir; her durakta piksel bir diorama o yerde n
 
 | Ekran | Mantıksal | Piksel | Not |
 | --- | --- | --- | --- |
-| Harita (dikey) | 270x480 | 4x | Yatay: 480x270 |
-| Diorama (dikey) | 180x320 | 6x | Yatay: 320x180 |
-| Yakın plan | 90x160 | 12x | Diorama'nın 2x'i; sadece tamsayı kat |
-| Geçiş maskesi | 90x160 hücre | 12 px | 4 ve 6'nın EKOK'u: yarım piksel oluşmaz |
+| Harita, diorama, mini harita | 360x640 (yatay: 640x360) | **3x** | Her ekranda aynı piksel boyu |
+| Yakın plan | 360x640 | 3x | Kamera yaklaşır, kukla **büyük çizilip yeniden pikselleşir**; piksel kabalaşmaz |
+| Geçiş | mantıksal piksel | 3 px | Tek ölçek olduğu için yarım piksel sorunu yok |
 
-Bir ekranda tek ölçek. Döndürme yok (piksel bozulur; dönük hâl ayrı sprite olarak çizilir).
-Ölçekleme yalnızca tamsayı katlarla. Yazılar tam çözünürlükte çizilir (okunabilirlik için tek istisna).
+**Neden 3x:** İlk testte harita 4x, diorama 6x idi. Telefonda yüz, gemi, mini harita ve ikonlar
+okunmadı. 3x'te piksel hissi (merdiven kenar, dither, dış hat) korunuyor ve ayrıntı okunuyor.
+2x'te piksel görünümü kayboluyor. 1080 ve 1920'yi tam bölen bu ölçek yatayda 640x360 verir.
+
+Piksel sprite büyütülmez ve döndürülmez. Hareket, dönüş ve büyüme vektör kuklada yapılır, sonra
+yeniden pikselleştirilir. Yazılar tam çözünürlükte çizilir (okunabilirlik için tek istisna).
 
 ## Palet
 
@@ -64,13 +68,16 @@ Başlık her zaman çerçeveli kutuda: kâğıt rengi metin kara üstünde okunm
 
 **Durak ekranı (diorama).** Yandan görünüş, katmanlar: gök (Bayer bantları) → uzak silüet → su/arazi →
 zemin → karakterler → ön plan. Üstte yer adı (Jersey, büyük) + tarih satırı (VT323, altın).
-Sağ üstte mini harita (4x, rota + yanıp sönen altın nokta). Altta anlatı kutusu (2–3 satır,
+Sağ üstte mini harita (3x, rota + yanıp sönen altın nokta). Altta anlatı kutusu (2–3 satır,
 daktilo ile belirir, VO ile senkron).
 
-**Karakter kartı.** 20 sütun x ~35 satır, sağa bakar (`flip` ile sola). Harf = palet
-(K mürekkep, S ten, s ten gölgesi, E göz …). Kimlik 3 şeyden okunur: başlık (şapka/kavuk/fes),
-gövde rengi, tek bir aksesuar (baston, kılıç, mektup). Göz kırpma ve nefes palet/1 px ile;
-bir karakterde en fazla 2 karelik döngü. Sezonun ana karakteri her bölümde aynı sprite.
+**Karakter kartı ("vektörden piksele" kukla).** 52x94 mantıksal kutu (ekranda ~280 px), sağa bakar,
+`flip` ile sola. Karakter, ressam sırasıyla bir `[renk, şekil]` listesidir: elips, çokgen, dikdörtgen,
+kalın çizgi. Her şekil küçük tuvalde çizilir, alfa ≥ 128 ile eşiklenir (kenar yumuşatması kalmaz),
+sonunda otomatik 1 px mürekkep dış hat eklenir. Kimlik 3 şeyden okunur: başlık (üç köşeli şapka,
+sarık/kavuk, fes), kıyafet rengi, tek bir aksesuar (baston, çubuk, kılıç, mektup). Arka taraf bir ton
+koyu (gölge). Göz kırpma, nefes, duman, kuyruk: şekil parametresi `t`'ye bağlanır. Sezonun ana
+karakteri her bölümde aynı liste. Harita ikonları, gemi ve kedi de aynı yöntemle.
 
 ## Hareket dili
 
@@ -90,7 +97,7 @@ bir karakterde en fazla 2 karelik döngü. Sezonun ana karakteri her bölümde a
 ## Yasaklar
 
 - Kenar yumuşatmalı şekil (yazılar hariç), CSS gradyanı (Bayer kullan), yumuşak gölge, ışıma, bulanıklık.
-- Tamsayı dışı ölçek, döndürülmüş sprite, aynı ekranda iki piksel ölçeği.
+- 3x dışında piksel boyu; piksel sprite'ı büyütmek ya da döndürmek (vektörde yap, yeniden pikselleştir).
 - Modern sınır, modern bina, döneme ait olmayan eşya (bkz. PLAN.md §4).
 - Belirli bir oyunun karakteri, arayüzü, paleti ya da sahnesinin kopyası. Genel piksel sanatı dilini
   kullanırız, bir oyunu taklit etmeyiz.
