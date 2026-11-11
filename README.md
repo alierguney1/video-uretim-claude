@@ -33,6 +33,7 @@ bulunamazsa araç ne kuracağını söyler.
 | [tools/contact.mjs](tools/contact.mjs) | Her sahnenin başı/ortası/sonu + geçişler, güvenli alan katmanıyla kontak sayfası |
 | [tools/tts.mjs](tools/tts.mjs) | `npm run tts -- animasyonlar/<ad>.voice.json`: Gemini TTS ile cümle cümle seslendirme (önbellekli), zaman çizelgesi ve animasyondaki `VO` bloğu |
 | [lib/harita-motoru.js](lib/harita-motoru.js) | "Harita Yalan Söyler" seri motoru: küre/Mercator, altyazı, etiket, ses, render sözleşmesi |
+| [lib/ikon-katmani.js](lib/ikon-katmani.js) | Bayrak + il ikonu katmanı (çıkartma görünümü): 81 il eşlemesi `lib/ikonlar.js`, emoji/bayrak seti `lib/ikon-seti.js` (MIT, `npm run ikon-seti` üretir), katalog `npm run ikonlar` |
 | [STYLE.md](STYLE.md) | Seri kimliği (sabit): palet, yazı tipleri, hareket dili, ses |
 | [tools/render.mjs](tools/render.mjs) | Paralel kare kare PNG → FFmpeg H.264 MP4, sentez sesi ya da `--audio` |
 | [promptlar/](promptlar/) | Brif, dikey video, cilalama döngüsü, skill'e çevirme |

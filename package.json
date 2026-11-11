@@ -7,7 +7,9 @@
     "check": "node tools/check.mjs",
     "contact": "node tools/contact.mjs",
     "render": "node tools/render.mjs",
-    "tts": "NODE_USE_ENV_PROXY=1 node tools/tts.mjs"
+    "tts": "NODE_USE_ENV_PROXY=1 node tools/tts.mjs",
+    "ikonlar": "node tools/ikon-katalogu.mjs",
+    "ikon-seti": "node tools/ikon-seti.mjs"
   },
   "engines": {
     "node": ">=18"

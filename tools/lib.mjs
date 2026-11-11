@@ -3,6 +3,7 @@ import { createRequire } from 'node:module';
 import { pathToFileURL } from 'node:url';
 import path from 'node:path';
 import fs from 'node:fs';
+import { execFileSync } from 'node:child_process';
 
 const require = createRequire(import.meta.url);
 
@@ -45,6 +46,36 @@ export function outDir(file, override) {
   return dir;
 }
 
+
+/**
+ * cdn.jsdelivr.net/npm/<paket>@<sürüm>/<yol> isteklerini önce ağdan dener; ağ engelliyse (bazı bulut
+ * ortamları jsDelivr'ı kapatır, npm kayıt deposu açıktır) aynı sürümü `npm pack` ile .cache/cdn/'e indirip
+ * oradan sunar. Sabit sürüm olduğu için içerik aynıdır; çıktı değişmez.
+ */
+const CDN_CACHE = path.resolve(path.dirname(new URL(import.meta.url).pathname), '..', '.cache', 'cdn');
+const MIME = { '.js': 'application/javascript', '.json': 'application/json', '.css': 'text/css', '.svg': 'image/svg+xml' };
+function npmFile(spec, rel) {
+  const dir = path.join(CDN_CACHE, spec.replace('/', '__'));
+  if (!fs.existsSync(path.join(dir, 'package'))) {
+    fs.mkdirSync(dir, { recursive: true });
+    const tgz = execFileSync('npm', ['pack', spec, '--silent'], { cwd: dir }).toString().trim().split('\n').pop();
+    execFileSync('tar', ['xzf', tgz], { cwd: dir });
+  }
+  return path.join(dir, 'package', rel);
+}
+export async function cdnFallback(target) {
+  await target.route(/^https:\/\/cdn\.jsdelivr\.net\/npm\//, async route => {
+    const url = route.request().url();
+    try { const r = await route.fetch({ timeout: 8000 }); if (r.ok()) return route.fulfill({ response: r }); } catch { /* ağ yok: npm'e düş */ }
+    const m = url.match(/\/npm\/((?:@[^/]+\/)?[^/@]+@[^/]+)\/(.+)$/);
+    if (!m) return route.abort();
+    try {
+      const f = npmFile(m[1], m[2]);
+      route.fulfill({ status: 200, body: fs.readFileSync(f), contentType: MIME[path.extname(f)] || 'application/octet-stream', headers: { 'access-control-allow-origin': '*' } });
+    } catch (e) { console.error('CDN yedeği başarısız: ' + url + ' — ' + e.message); route.abort(); }
+  });
+}
+
 /**
  * Sayfayı açar, __ready'yi bekler, viewport'u __size'a göre ayarlar.
  * Döner: { browser, context, page, meta: {duration, fps, width, height, scenes} }
@@ -57,6 +88,7 @@ export async function openAnimation(file, { query = '', scale = 1, browser } = {
 
   // Önce boyutu öğren
   const probe = await browser.newPage();
+  await cdnFallback(probe);
   const errors = [];
   probe.on('pageerror', e => errors.push(e.message));
   await probe.goto(url);
@@ -66,6 +98,7 @@ export async function openAnimation(file, { query = '', scale = 1, browser } = {
 
   const context = await browser.newContext({ viewport: { width, height }, deviceScaleFactor: scale });
   const page = await context.newPage();
+  await cdnFallback(page);
   page.on('pageerror', e => errors.push(e.message));
   page.on('console', m => { if (m.type() === 'error') errors.push(m.text()); });
   await page.goto(url);

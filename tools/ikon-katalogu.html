@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<title>İkon Kataloğu</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@600;800&display=block" rel="stylesheet">
+<style>html,body{margin:0;background:#0F1C26}canvas{display:block}</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<script src="../lib/ikonlar.js"></script>
+<script src="../lib/ikon-seti.js"></script>
+<script src="../lib/ikon-katmani.js"></script>
+<script>
+'use strict';
+// 81 il ikonu + bayraklar tek sayfada (gözden geçirme için). npm run ikonlar → out/ikon-katalogu.png
+const COLS = 9, CW = 220, CH = 210, PAD = 40, HEAD = 120;
+const flags = Object.keys(IKON_SETI.bayrak).concat(Object.keys(BAYRAK_OZEL));
+const FC = 14, FW = 140, FH = 140;
+const rowsIl = Math.ceil(IKON.IL.length / COLS), rowsF = Math.ceil(flags.length / FC);
+const W = PAD * 2 + COLS * CW, H = HEAD + rowsIl * CH + HEAD + rowsF * FH + PAD;
+const c = document.getElementById('c'), ctx = c.getContext('2d');
+c.width = W; c.height = H;
+window.__size = { width: W, height: H };
+window.__ready = Promise.all([document.fonts.load('800 40px Inter', 'İŞĞışğ'), document.fonts.load('600 20px Inter', 'İŞĞışğ'), IKON.hazirla()]).then(() => {
+  ctx.fillStyle = '#0F1C26'; ctx.fillRect(0, 0, W, H);
+  ctx.fillStyle = '#F4F1EA'; ctx.font = '800 48px Inter'; ctx.fillText('81 il ikonu', PAD, 80);
+  IKON.IL.forEach((il, i) => {
+    const x = PAD + (i % COLS) * CW + CW / 2, y = HEAD + Math.floor(i / COLS) * CH;
+    ctx.fillStyle = '#E8E2D4'; ctx.beginPath(); ctx.roundRect(x - CW / 2 + 8, y, CW - 16, CH - 14, 18); ctx.fill();
+    IKON.ciz(ctx, il.ikon, x, y + 74, 92);
+    ctx.textAlign = 'center'; ctx.fillStyle = '#0F1C26'; ctx.font = '800 24px Inter';
+    const ad = `${String(il.plaka).padStart(2, '0')} ${il.ad}`;
+    ctx.fillText(ad, x, y + 154, CW - 30);
+    ctx.font = '600 19px Inter'; ctx.fillStyle = '#4a5a66'; ctx.fillText(il.etiket, x, y + 180, CW - 30);
+  });
+  const y0 = HEAD + rowsIl * CH;
+  ctx.textAlign = 'left'; ctx.fillStyle = '#F4F1EA'; ctx.font = '800 48px Inter'; ctx.fillText(`Bayraklar (${flags.length})`, PAD, y0 + 80);
+  flags.forEach((k, i) => {
+    const x = PAD + (i % FC) * FW + FW / 2, y = y0 + HEAD + Math.floor(i / FC) * FH;
+    IKON.bayrak(ctx, k, x, y + 30, 54);
+    ctx.textAlign = 'center'; ctx.fillStyle = '#8FA1AD'; ctx.font = '600 18px Inter';
+    const u = IKON.ulke(k); ctx.fillText(u ? u.ad.slice(0, 14) : k, x, y + 92);
+  });
+});
+</script>
+</body>
+</html>
