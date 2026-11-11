@@ -1,0 +1,418 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Anamur</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@600;800&family=IBM+Plex+Mono:wght@500&display=block" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/d3-array@3.2.4/dist/d3-array.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/d3-geo@3.1.1/dist/d3-geo.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/topojson-client@3.1.0/dist/topojson-client.min.js"></script>
+<style>
+  html, body { margin: 0; height: 100%; background: #0b141b; }
+  body { display: grid; place-items: center; overflow: hidden; }
+  canvas { display: block; }
+  #hud { position: fixed; left: 12px; bottom: 10px; font: 12px/1.4 ui-monospace, monospace;
+         color: #bbb; background: rgba(0,0,0,.55); padding: 4px 8px; border-radius: 4px; user-select: none; }
+  body.render #hud { display: none; }
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div id="hud">yükleniyor…</div>
+<audio id="vo" src="../ses/hys-10-anamur/voice.wav" preload="auto"></audio>
+<script src="../lib/ikonlar.js"></script>
+<script src="../lib/ikon-seti.js"></script>
+<script src="../lib/iller.js"></script>
+<script src="../lib/ikon-katmani.js"></script>
+<script src="../lib/harita-motoru.js"></script>
+<script>
+'use strict';
+// Harita Yalan Söyler · Bölüm 10 — "Türkiye'de Tunus'tan daha güneyde bir yer" (Anamur).
+// Brif: hys-10-anamur.brief.md. Kanca: gizem (cold open), merak motoru: promptlar/03-senaryo.md.
+// Sayıların kaynağı: tools/hys-10-anamur.mjs (Natural Earth 1:10m). Noktalar buraya gömülü; mesafeler
+// sayfada aynı formülle (d3.geoDistance × R) yeniden hesaplanır. Ufuk kesiti: geometrik ufuk, kırılma hariç.
+// VO bloğu `npm run tts` ile gerçek cümle süreleriyle güncellenir (şu an tahmini süreler).
+
+/*VO:BEGIN*/ const VO = {"duration":41.34,"lines":[{"id":"l1","start":0.15,"end":4.324,"text":"Türkiye'de öyle bir yer var ki, Afrika'nın 2 başkentinden daha güneyde."},{"id":"l2","start":4.624,"end":7.826,"text":"Üstelik oradan bakınca, ufukta başka bir ülke görünüyor."},{"id":"l3","start":8.126,"end":12.192,"text":"Burası Anamur. Anadolu'nun en güney ucu: Tunus'tan bile güneyde."},{"id":"l4","start":12.492,"end":15.815,"text":"Ama dur. Türkiye'nin en güneyi burası değil: Hatay."},{"id":"l5","start":16.415,"end":20.703,"text":"Gelelim o ülkeye: Kıbrıs, Anamur'a kendi il merkezinden 2 kat daha yakın."},{"id":"l6","start":21.003,"end":25.806,"text":"Ama Dünya yuvarlak. Kıbrıs'ın en yüksek dağının 1.000 metresi ufkun arkasında kalıyor."},{"id":"l7","start":26.606,"end":30.494,"text":"Ama zirvesi ufkun üstünde. Açık havada Anamur'dan Kıbrıs görünür."},{"id":"l8","start":31.094,"end":34.067,"text":"Senin ilin hangi başkentle aynı hizada? Durdur, bul."},{"id":"l9","start":34.967,"end":38.741,"text":"Peki Türkiye'nin en kuzey ucu? O da Roma'dan kuzeyde. Neresi? Yaz."}]}; /*VO:END*/
+const { C, SANS, MONO, W, H, SAFE, R_EARTH, ctx, clamp, lerp, prog, win, ease, km, fmtNum, text, label, pin, line, greatCircle, baseMap, fillFeature } = HYS;
+
+// ── gerçekler (tools/hys-10-anamur.mjs) ──
+const CAPE = [32.803722, 36.027167];          // Anamur Burnu: Anadolu'nun en güney noktası
+const TOWN = [32.8311, 36.0800];              // Anamur ilçe merkezi (Wikipedia)
+const TR_S = [36.138497, 35.819779];          // Türkiye'nin en güney noktası (Hatay)
+const TR_N = [34.94809, 42.098782];           // Türkiye'nin en kuzey noktası (Sinop, İnceburun)
+const CY_COAST = [32.920421, 35.397773];      // Anamur'a en yakın Kıbrıs kıyısı
+const OLYMPOS = [32.86333, 34.93639], OLY_M = 1952;   // Olimpos (Troodos), Wikipedia
+const MERSIN = [34.62, 36.80], LEFKOSA = [33.3666, 35.1667], ROMA = [12.4964, 41.9028];
+const TUNUS = [10.1797, 36.8028], CEZAYIR = [3.0486, 36.765];
+const LAT_A = CAPE[1], LAT_S = TR_S[1], LAT_N = TR_N[1];
+const kmLat = dl => dl * Math.PI / 180 * R_EARTH;     // aynı boylamda enlem farkı → km
+const D_TUN = kmLat(TUNUS[1] - LAT_A), D_CEZ = kmLat(CEZAYIR[1] - LAT_A), D_HAT = kmLat(LAT_A - LAT_S);
+const D_MER = km(TOWN, MERSIN), D_CY = km(TOWN, CY_COAST), D_LEF = km(TOWN, LEFKOSA), D_OLY = km(CAPE, OLYMPOS);
+const D_ROMA = kmLat(LAT_N - ROMA[1]);
+// ufuk: göz 2 m; gizlenen = (d − √(2Rh))² / 2R
+const EYE = 2, HOR = Math.sqrt(2 * R_EARTH * EYE / 1000);
+const HID = Math.pow(D_OLY - HOR, 2) / (2 * R_EARTH) * 1000, VIS = OLY_M - HID;
+// durdur-bul: il · aynı enlemdeki başkent · bayrak · fark km (veri/hys-10/enlem-esleri.json)
+const ES = [["Sinop","Üsküp","mk",2.6],["Kırklareli","Tiflis","ge",1.8],["Edirne","Tiflis","ge",6.3],["Bartın","Tiflis","ge",10.3],["Zonguldak","Tiran","al",11.4],["Kastamonu","Tiran","al",6.8],["Samsun","Taşkent","uz",2.6],["Karabük","Taşkent","uz",11.5],["Artvin","Taşkent","uz",13.4],["Ardahan","Taşkent","uz",21.5],["Rize","Taşkent","uz",31.5],["İstanbul","Taşkent","uz",31.8],["Ordu","Taşkent","uz",33.7],["Tekirdağ","Taşkent","uz",34.8],["Trabzon","Taşkent","uz",36],["Giresun","Taşkent","uz",43.5],["Düzce","Madrid","es",49.1],["Kocaeli","Madrid","es",41.6],["Sakarya","Madrid","es",40.6],["Bolu","Madrid","es",37.2],["Amasya","Madrid","es",28],["Yalova","Madrid","es",27.6],["Kars","Madrid","es",23],["Çankırı","Madrid","es",22.8],["Çorum","Madrid","es",13.1],["Gümüşhane","Madrid","es",6.9],["Tokat","Bakü","az",10.1],["Bayburt","Erivan","am",8],["Bursa","Erivan","am",2.1],["Bilecik","Erivan","am",3.7],["Çanakkale","Erivan","am",4.1],["Ankara","Pekin","cn",3.1],["Iğdır","Pekin","cn",2.4],["Erzurum","Pekin","cn",2.1],["Kırıkkale","Pekin","cn",5.7],["Yozgat","Pekin","cn",9.3],["Eskişehir","Pekin","cn",11.9],["Erzincan","Pekin","cn",16.6],["Sivas","Pekin","cn",17.4],["Ağrı","Pekin","cn",20.2],["Balıkesir","Pekin","cn",27.9],["Kütahya","Pyongyang","kp",44.3],["Kırşehir","Pyongyang","kp",13.4],["Tunceli","Pyongyang","kp",10.6],["Bingöl","Washington","us",1.8],["Afyonkarahisar","Lizbon","pt",2.9],["Muş","Lizbon","pt",2.7],["Kayseri","Lizbon","pt",1.1],["Uşak","Lizbon","pt",4.9],["Elazığ","Lizbon","pt",5],["Manisa","Duşanbe","tj",7.8],["Nevşehir","Duşanbe","tj",7.1],["Van","Duşanbe","tj",7.2],["İzmir","Duşanbe","tj",13.6],["Bitlis","Duşanbe","tj",18.5],["Malatya","Duşanbe","tj",21.1],["Aksaray","Duşanbe","tj",21.3],["Niğde","Atina","gr",1],["Siirt","Aşkabat","tm",0.7],["Diyarbakır","Aşkabat","tm",3.3],["Batman","Aşkabat","tm",6.6],["Konya","Aşkabat","tm",8.1],["Aydın","Aşkabat","tm",11.1],["Denizli","Aşkabat","tm",20],["Adıyaman","Aşkabat","tm",20],["Isparta","Aşkabat","tm",20],["Burdur","Seul","kr",16.5],["Kahramanmaraş","Seul","kr",4.6],["Hakkari","Seul","kr",0.7],["Şırnak","Seul","kr",5.8],["Mardin","Seul","kr",28.6],["Muğla","Seul","kr",39.1],["Karaman","Tunus","tn",42.1],["Şanlıurfa","Tunus","tn",40.8],["Gaziantep","Tunus","tn",30.5],["Osmaniye","Tunus","tn",30.2],["Adana","Tunus","tn",21.6],["Antalya","Tunus","tn",9.9],["Mersin","Tunus","tn",0.3],["Kilis","Cezayir","dz",5],["Hatay","Valletta","mt",37.1]];
+
+const f1 = v => fmtNum(v, 1), f0 = v => fmtNum(Math.round(v));
+const deg = v => fmtNum(v, 2) + '° K';
+let T;
+// kesikli çizginin kayması: süre boyunca tam sayıda desen → son kare ilk kareyle aynı
+const DASH = [22, 16], DASHP = 38;
+const dashOff = t => -t * Math.round(VO.duration * 46 / DASHP) * DASHP / VO.duration;
+
+function latLine(path, lat, { color = C.accent, alpha = 1, t = 0, width = 5 } = {}) {
+  if (alpha <= .001) return;
+  ctx.save(); ctx.lineDashOffset = dashOff(t);
+  line(path, Array.from({ length: 121 }, (_, i) => [-30 + i * .7, lat]), { color, width, dash: DASH, alpha, outline: true });
+  ctx.restore();
+}
+function bracket(x, y0, y1, str, a, { side = 1, color = C.text, size = 40 } = {}) {
+  if (a <= .001) return;
+  ctx.save(); ctx.globalAlpha = a; ctx.strokeStyle = color; ctx.lineWidth = 3; ctx.lineCap = 'round';
+  ctx.beginPath(); ctx.moveTo(x - 10, y0); ctx.lineTo(x + 10, y0); ctx.moveTo(x, y0); ctx.lineTo(x, y1);
+  ctx.moveTo(x - 10, y1); ctx.lineTo(x + 10, y1); ctx.stroke(); ctx.restore();
+  label(str, x, (y0 + y1) / 2, { size, alpha: a, color, dx: side > 0 ? 24 : -24, dy: size * .35 });
+}
+function qmark(x, y, a, s = 1) {
+  if (a <= .001) return;
+  text('?', x, y, 64 * s, { alpha: a, color: C.accent, align: 'center' });
+}
+
+// ── yan kesit: Anamur kıyısından Olimpos'a (dikey ölçek abartılı) ──
+const SX0 = 150, SX1 = 930, SDMAX = 140, SY = 860, VS = .2;            // px/km yatay, px/m dikey
+const sxp = d => SX0 + (SX1 - SX0) * d / SDMAX;
+const drop = d => d * d / (2 * R_EARTH) * 1000;                         // m, yerel teğetin altı
+const sightM = d => EYE - d * HOR / R_EARTH * 1000;                     // ufku sıyıran görüş çizgisi (m)
+const syp = m => SY - m * VS;
+const MW = 24;                                                           // dağ eteği yarı genişliği (km, şematik)
+const mount = d => OLY_M * Math.max(0, 1 - Math.abs(d - D_OLY) / MW) ** 1.25;
+function section(t, o) {
+  const { a = 1, grow = 1, mystery = false, hid = 0, peak = 0, sight = 0, notes = 0 } = o;
+  if (a <= .001) return;
+  ctx.save(); ctx.globalAlpha = a;
+  ctx.translate(0, SY); ctx.scale(1, Math.max(.001, grow)); ctx.translate(0, -SY);
+  // deniz
+  const N = 140;
+  ctx.fillStyle = C.ocean; ctx.beginPath(); ctx.moveTo(0, syp(-drop(0)));
+  for (let i = 0; i <= N; i++) { const d = -12 + (SDMAX + 30) * i / N; ctx.lineTo(sxp(d), syp(-drop(Math.abs(d)))); }
+  ctx.lineTo(W, 1300); ctx.lineTo(0, 1300); ctx.closePath(); ctx.fill();
+  ctx.strokeStyle = 'rgba(232,226,212,.55)'; ctx.lineWidth = 3; ctx.beginPath();
+  for (let i = 0; i <= N; i++) { const d = -12 + (SDMAX + 30) * i / N; const x = sxp(d), y = syp(-drop(Math.abs(d))); i ? ctx.lineTo(x, y) : ctx.moveTo(x, y); }
+  ctx.stroke();
+  // dağ: görüş çizgisinin altı (gizlenen) ve üstü (görünen)
+  const poly = (clipTop) => {
+    ctx.beginPath();
+    for (let i = 0; i <= 80; i++) { const d = D_OLY - MW + 2 * MW * i / 80; const x = sxp(d), y = syp(-drop(d) + mount(d)); i ? ctx.lineTo(x, y) : ctx.moveTo(x, y); }
+    for (let i = 80; i >= 0; i--) { const d = D_OLY - MW + 2 * MW * i / 80; ctx.lineTo(sxp(d), syp(-drop(d))); }
+    ctx.closePath();
+  };
+  ctx.save(); poly(); ctx.clip();
+  ctx.fillStyle = C.land; ctx.fillRect(0, 0, W, H);
+  if (hid > 0) {   // gizlenen bölge: alttan yükselen koyu dolgu (görüş çizgisine kadar)
+    const top = lerp(syp(-drop(D_OLY)), syp(sightM(D_OLY)), hid);
+    ctx.fillStyle = 'rgba(15,28,38,.62)'; ctx.fillRect(0, top, W, H);
+    ctx.strokeStyle = 'rgba(232,226,212,.25)'; ctx.lineWidth = 2;
+    for (let x = -H; x < W; x += 18) { ctx.beginPath(); ctx.moveTo(x, H); ctx.lineTo(x + H, 0); ctx.stroke(); }
+    ctx.fillStyle = C.bg; ctx.globalAlpha = a * .0; ctx.fillRect(0, 0, W, top); ctx.globalAlpha = a;
+    ctx.fillStyle = C.land; ctx.fillRect(0, 0, W, top);
+  }
+  if (peak > 0) { ctx.globalAlpha = a * peak; ctx.fillStyle = C.accent; ctx.fillRect(0, 0, W, syp(sightM(D_OLY)) + 0); ctx.globalAlpha = a; }
+  ctx.restore();
+  // gözlemci (şematik insan) ve Anamur
+  const ox = sxp(0), oy = syp(0);
+  ctx.fillStyle = C.text; ctx.beginPath(); ctx.arc(ox, oy - 52, 11, 0, 2 * Math.PI); ctx.fill();
+  ctx.strokeStyle = C.text; ctx.lineWidth = 6; ctx.lineCap = 'round';
+  ctx.beginPath(); ctx.moveTo(ox, oy - 40); ctx.lineTo(ox, oy - 14); ctx.moveTo(ox, oy - 14); ctx.lineTo(ox - 9, oy); ctx.moveTo(ox, oy - 14); ctx.lineTo(ox + 9, oy);
+  ctx.moveTo(ox, oy - 34); ctx.lineTo(ox + 14, oy - 24); ctx.stroke();
+  text('Anamur', ox, oy + 62, 40, { weight: 600, align: 'center', alpha: a * (mystery ? 0 : 1) });
+  // görüş çizgisi
+  if (sight > 0) {
+    const dEnd = lerp(0, D_OLY + 6, sight);
+    ctx.setLineDash([14, 10]); ctx.strokeStyle = mystery ? 'rgba(244,241,234,.6)' : C.text; ctx.lineWidth = 3;
+    ctx.beginPath(); ctx.moveTo(ox + 14, syp(sightM(0)) - 46); ctx.lineTo(sxp(dEnd), syp(sightM(dEnd)) - 46 * (1 - dEnd / (D_OLY + 6)));
+    ctx.stroke(); ctx.setLineDash([]);
+  }
+  if (mystery) qmark(sxp(D_OLY), syp(-drop(D_OLY) + OLY_M) - 40, a);
+  // notlar
+  if (notes > 0) {
+    const nA = a * notes;
+    text('Olimpos · ' + fmtNum(OLY_M) + ' m', sxp(D_OLY), syp(-drop(D_OLY) + OLY_M) - 34, 40, { font: MONO, weight: 500, align: 'center', alpha: nA });
+    // ufuk işareti
+    const hx = sxp(HOR), hy = syp(-drop(HOR));
+    ctx.globalAlpha = nA; ctx.strokeStyle = C.mute; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(hx, hy - 16); ctx.lineTo(hx, hy + 16); ctx.stroke(); ctx.globalAlpha = 1;
+    text('ufuk ' + fmtNum(HOR, 0) + ' km', hx + 64, hy + 50, 34, { font: MONO, weight: 500, color: C.mute, alpha: nA });
+    // mesafe
+    const my = 1180;
+    ctx.globalAlpha = nA * .9; ctx.strokeStyle = C.mute; ctx.lineWidth = 3; ctx.beginPath();
+    ctx.moveTo(ox, my - 10); ctx.lineTo(ox, my + 10); ctx.moveTo(ox, my); ctx.lineTo(sxp(D_OLY), my); ctx.moveTo(sxp(D_OLY), my - 10); ctx.lineTo(sxp(D_OLY), my + 10); ctx.stroke(); ctx.globalAlpha = 1;
+    text(f0(D_OLY) + ' km · Kıbrıs', (ox + sxp(D_OLY)) / 2, my - 18, 36, { font: MONO, weight: 500, color: C.mute, align: 'center', alpha: nA });
+    text('dikey ölçek abartılı', SX0 - 60, 1240, 30, { weight: 600, color: C.mute, alpha: nA * .9 });
+  }
+  ctx.restore();
+}
+
+HYS.run({
+  vo: VO, cover: 1.6, flat: true, seed: 10,
+  captionSkip: [7],
+  times(L, at, DUR) {
+    T = {
+      s2: at(1) - .2, s3: at(2) - .15, reveal: at(2) + .05, pull: at(2) + 1.9,
+      s4: at(3), hat: at(3) + 1.25, s5: at(4) - .2, grow: at(4) + .9,
+      s6: at(5) - .1, oly: at(5) + .15, sq: at(5) + 1.3, rise: at(5) + 2.0, riseEnd: at(5, 'end') - .2,
+      s7: at(6) - .05, peak: at(6) + .85, s8: at(7) - .25, s9: at(8) - .15, up: at(8) + .25,
+      roma: at(8) + 1.6, loop: DUR - 1.1, DUR,
+    };
+    return T;
+  },
+  scenes: (T, at, DUR) => [
+    { name: 'cold open', start: 0, end: T.s2 }, { name: 'ufukta ?', start: T.s2, end: T.s3 },
+    { name: 'kimlik', start: T.s3, end: T.s4 }, { name: 'ters köşe', start: T.s4, end: T.s5 },
+    { name: 'o ülke', start: T.s5, end: T.s6 }, { name: 'gerilim', start: T.s6, end: T.s7 },
+    { name: 'büyük an', start: T.s7, end: T.s8 }, { name: 'durdur-bul', start: T.s8, end: T.s9 },
+    { name: 'cliffhanger', start: T.s9, end: T.loop }, { name: 'döngü', start: T.loop, end: DUR },
+  ],
+  keys: (T, at, DUR) => [
+    [0, 18.3, 37.6, 8.8], [T.s2, 18.3, 37.6, 9.2], [T.s2 + 1.2, 32.8, 36.3, 34], [T.pull, 32.8, 36.3, 34],
+    [T.pull + 1.1, 20.5, 37.6, 8.8], [T.s4, 20.5, 37.6, 8.8], [T.s4 + 1.1, 34.75, 36.0, 66], [T.s5, 34.75, 36.0, 66],
+    [T.s5 + 1.0, 33.6, 35.75, 50], [T.sq, 33.4, 35.65, 50], [T.s9, 33.4, 35.65, 50], [T.s9 + .01, 18.3, 37.6, 8.8],
+    [T.up, 18.3, 37.6, 8.8], [T.up + 1.3, 21.5, 39.6, 9.2], [T.loop, 21.5, 39.6, 9.2], [DUR, 18.3, 37.6, 8.8],
+  ],
+  draw(t, g) {
+    const { path, pr, T, DUR, cam } = g;
+    // haritanın yatması (kesite geçiş) ve kesit görünürlüğü
+    const toSec1 = prog(t, T.s2, T.s2 + .6), back1 = prog(t, T.s3 - .1, T.s3 + .45);
+    const toSec2 = prog(t, T.sq, T.sq + .6);
+    const secA = Math.max(toSec1 * (1 - back1), toSec2 * (1 - prog(t, T.s8 + .15, T.s8 + .4)));
+    const listA = win(t, T.s8, T.s9 + .25, .3);
+    const hideMid = t > T.sq + .65 && t < T.s9 ? 1 : 0;           // kesit ve liste boyunca harita yok
+    const mapA = (1 - Math.max(secA, listA)) * (1 - hideMid);
+    if (mapA > .001) {
+      ctx.save();
+      const fold = Math.max(toSec1 * (1 - back1), t < T.s8 ? toSec2 : 0);
+      ctx.globalAlpha = mapA; ctx.translate(0, SY); ctx.scale(1, 1 - .85 * fold); ctx.translate(0, -SY);
+      drawMap(t, g, mapA);
+      ctx.restore();
+    }
+    // kesit
+    if (secA > .001) {
+      const first = t < T.s5;
+      section(t, first
+        ? { a: secA, grow: .25 + .75 * ease.outCubic(toSec1), mystery: true, sight: prog(t, T.s2 + .5, T.s2 + 1.6) }
+        : { a: secA, grow: .25 + .75 * ease.outCubic(toSec2), hid: ease.inOutCubic(prog(t, T.rise, T.riseEnd)),
+            peak: prog(t, T.peak - .15, T.peak + .25), sight: prog(t, T.s7 + .05, T.peak - .1), notes: prog(t, T.sq + .4, T.sq + .9) });
+      // sayılar
+      const hA = win(t, T.rise + .2, T.s8, .3) * secA;
+      if (hA > 0 && t >= T.s5) {
+        const shown = HID * ease.inOutCubic(prog(t, T.rise, T.riseEnd));
+        const x = sxp(D_OLY) - 250, y = syp(-drop(D_OLY)) - 40;
+        text('gizlenen ' + f0(shown) + ' m', x, y, 44, { font: MONO, weight: 500, color: C.text, alpha: hA, align: 'center' });
+      }
+      const pA = prog(t, T.peak, T.peak + .3) * secA;
+      if (pA > 0) text('görünen ' + f0(VIS) + ' m', sxp(D_OLY) - 250, syp(sightM(D_OLY) + VIS * .55), 48, { font: MONO, weight: 500, color: C.accent, alpha: pA, align: 'center' });
+      const nA = prog(t, T.peak + .6, T.peak + 1.0) * secA;
+      text('kırılma hariç · görünürlük havaya bağlı', SX0 - 60, 1282, 30, { weight: 600, color: C.mute, alpha: nA });
+    }
+    if (listA > .001) drawList(t, listA);
+  },
+  header(t, g) {
+    const { T, DUR } = g;
+    const Y1 = SAFE.y0 + 40 + 80, Y2 = Y1 + 78;
+    // kanca (başta ve döngüde aynı)
+    const hookA = Math.max(1 - prog(t, T.s2 - .2, T.s2 + .2), prog(t, T.loop + .2, DUR - .2));
+    text('Türkiye’de bir yer', SAFE.x0, Y1, 76, { alpha: hookA });
+    text('Tunus’tan güneyde?', SAFE.x0, Y2, 64, { weight: 800, color: C.accent, alpha: hookA });
+    const h2 = win(t, T.s2 + .1, T.s3 + .1, .3);
+    text('Ufukta başka bir ülke', SAFE.x0, Y1, 72, { alpha: h2 });
+    text('Hangisi?', SAFE.x0, Y2, 56, { weight: 600, color: C.mute, alpha: h2 });
+    const h3 = win(t, T.reveal, T.s4 + .1, .3);
+    text('ANAMUR', SAFE.x0, Y1 + 6, 92, { color: C.accent, alpha: h3 });
+    const sub1 = Math.min(h3, 1 - prog(t, T.pull - .1, T.pull + .2)), sub2 = Math.min(h3, prog(t, T.pull + .3, T.pull + .6));
+    text('Anadolu’nun en güney ucu', SAFE.x0, Y2 + 6, 52, { weight: 600, color: C.text, alpha: sub1 });
+    text('Tunus’tan ' + f0(D_TUN) + ' km güneyde', SAFE.x0, Y2 + 6, 52, { weight: 600, color: C.text, alpha: sub2 });
+    text('Mersin merkezi ' + deg(MERSIN[1]) + ' · Tunus ' + deg(TUNUS[1]), SAFE.x0, Y2 + 62, 30, { font: MONO, weight: 500, color: C.mute, alpha: sub2 });
+    const h4 = win(t, T.s4 + .05, T.s5 + .1, .3);
+    text('Ama dur.', SAFE.x0, Y1, 80, { alpha: h4 });
+    text('En güney nokta: Hatay', SAFE.x0, Y2, 56, { weight: 600, color: C.accent, alpha: Math.min(h4, prog(t, T.hat, T.hat + .3)) });
+    // uzaklık çubukları
+    const h5 = win(t, T.s5 + .1, T.s6 + .2, .3);
+    if (h5 > 0) {
+      const k = ease.inOutCubic(prog(t, T.grow, T.grow + 1.2)), full = 520;
+      const bar = (y, d, col, name) => {
+        ctx.globalAlpha = h5; ctx.fillStyle = col; ctx.fillRect(SAFE.x0, y, full * d / D_MER * k, 34); ctx.globalAlpha = 1;
+        text(name, SAFE.x0, y - 14, 42, { weight: 600, alpha: h5 });
+        HYS.text(f0(d * k) + ' km', SAFE.x0 + full * d / D_MER * k + 18, y + 31, 40, { font: MONO, weight: 500, color: col, alpha: h5 });
+      };
+      bar(Y1 - 16, D_MER, C.land, 'Anamur → Mersin merkezi');
+      bar(Y1 + 96, D_CY, C.accent, 'Anamur → Kıbrıs kıyısı');
+    }
+    const h6 = win(t, T.s6 + .1, T.s7 + .1, .3);
+    text('Ama Dünya yuvarlak', SAFE.x0, Y1, 72, { alpha: h6 });
+    text('Kıbrıs’ın en yüksek dağı', SAFE.x0, Y2, 52, { weight: 600, color: C.mute, alpha: h6 });
+    const h7 = win(t, T.s7 + .1, T.s8, .3);
+    text('Zirve ufkun üstünde', SAFE.x0, Y1, 72, { alpha: h7 });
+    text('Anamur’dan Kıbrıs görünür', SAFE.x0, Y2, 52, { weight: 600, color: C.accent, alpha: Math.min(h7, prog(t, T.peak + .2, T.peak + .5)) });
+    const h8 = win(t, T.s8 + .1, T.s9, .3);
+    text('İlin hangi başkentle', SAFE.x0, Y1 - 10, 64, { alpha: h8 });
+    text('aynı enlemde? Durdur, bul', SAFE.x0, Y2 - 18, 50, { weight: 600, color: C.accent, alpha: h8 });
+    const h9 = win(t, T.s9 + .1, T.loop + .3, .3);
+    text('Peki en kuzey ucu?', SAFE.x0, Y1, 76, { alpha: h9 });
+    text('Roma’dan bile kuzeyde', SAFE.x0, Y2, 56, { weight: 600, color: C.accent, alpha: Math.min(h9, prog(t, T.roma, T.roma + .3)) });
+  },
+  sounds(T) {
+    return [
+      { t: .25, type: 'tick', gain: .18, f: 1100 }, { t: .4, type: 'tick', gain: .18, f: 1250 },
+      { t: T.s2, type: 'whoosh', dur: .7, gain: .12 },
+      { t: T.s3, type: 'whoosh', dur: .5, gain: .09 },
+      { t: T.reveal, type: 'ping', gain: .32, f: 659 },
+      { t: T.pull + 1.0, type: 'tick', gain: .2, f: 1400 },
+      { t: T.hat + .3, type: 'ping', gain: .32, f: 523 },
+      { t: T.grow + 1.2, type: 'tick', gain: .22, f: 1500 },
+      { t: T.sq, type: 'whoosh', dur: .7, gain: .12 },
+      { t: T.riseEnd, type: 'tick', gain: .18, f: 700 },
+      { t: T.peak, type: 'ping2', gain: .5 },
+      ...Array.from({ length: 9 }, (_, i) => ({ t: T.s8 + .1 + i * .07, type: 'tick', gain: .08, f: 1300 + i * 30 })),
+      { t: T.roma, type: 'ping', gain: .3, f: 784 },
+      { t: T.loop, type: 'whoosh', dur: .9, gain: .08 },
+    ];
+  },
+});
+
+function drawMap(t, g, mapA) {
+  const { path, pr, T, DUR, cam } = g;
+  HYS.baseMap(path, { sphere: false, fine: cam.k > 3 });
+  const xy = p => pr(p);
+  // Türkiye vurgusu yok: kanca adı gizler. Kıbrıs sahnesinde ada hafif vurgulu.
+  const cyA = win(t, T.s5, T.s9, .4);
+  if (cyA > 0) { ['Cyprus', 'N. Cyprus'].forEach(n => { const f = HYS.D.country(n); if (f) fillFeature(path, f, { color: C.accent, alpha: .22 * cyA }); }); }
+
+  // enlem çizgisi (36,03° K): başta, kimlikte, ters köşede, döngüde
+  const lineA = Math.max(1 - prog(t, T.s2 - .1, T.s2 + .3), win(t, T.s3, T.s5, .3), prog(t, T.loop, T.loop + .5));
+  // döngü sahnesinde çizgi kuzey ucuna çıkıp geri iner
+  let lat = LAT_A;
+  if (t > T.s9) lat = lerp(LAT_A, LAT_N, ease.inOutCubic(prog(t, T.up, T.up + 1.3)) * (1 - ease.inOutCubic(prog(t, T.loop, DUR - .15))));
+  const upA = t > T.s9 ? win(t, T.s9, DUR + 1, .3) : 0;
+  latLine(path, lat, { alpha: Math.max(lineA, upA), t });
+  if (t > T.s9 && t < DUR) {
+    const p = xy([-2, lat]);
+    text(deg(lat), SAFE.x0, p[1] - 18, 36, { font: MONO, weight: 500, color: C.accent, alpha: upA });
+  }
+
+  // Tunus ve Cezayir: kanca + kimlik (çekilince) + döngü sonu
+  const capA = Math.max(1 - prog(t, T.s2, T.s2 + .4), win(t, T.pull + .6, T.s4 + .3, .3), prog(t, T.loop + .3, DUR - .15));
+  [[TUNUS, 'tn', 'Tunus', D_TUN, .1], [CEZAYIR, 'dz', 'Cezayir', D_CEZ, .22]].forEach(([p, kod, ad, d, t0]) => {
+    const q = xy(p); if (!q || capA <= 0) return;
+    const pp = t < 2 ? IKON.pop(t, t0, .4) : { olcek: 1, alpha: 1 };
+    pin(q, { color: C.land, r: 10, alpha: capA });
+    IKON.bayrak(ctx, kod, q[0], q[1] - 6, 40, { bicim: 'direk', olcek: pp.olcek, alpha: capA * pp.alpha, dalga: t });
+    IKON.etiket(ctx, ad, q[0] + 26, q[1] - 112, { boyut: 34, alpha: capA * pp.alpha });
+    // ölçü: çizgiyle başkent arası
+    const mA = win(t, T.pull + 1.0, T.s4 + .2, .3);
+    if (mA > 0) { const b = xy([p[0], LAT_A]); bracket(q[0] + (kod === 'dz' ? -30 : 30), q[1], b[1], f0(d) + ' km', mA, { color: C.accent, size: 36, side: kod === 'dz' ? -1 : 1 }); }
+  });
+
+  // Anamur noktası: önce "?", sonra ad + muz
+  const c = xy(CAPE);
+  const capeA = Math.max(1 - prog(t, T.s9, T.s9 + .3), prog(t, T.loop + .3, DUR - .15));
+  const named = t >= T.reveal && t < T.s9;
+  pin(c, { color: C.accent, r: 13, alpha: capeA, pulse: (t * 1.1) % 1 });
+  if (!named) qmark(c[0] + 2, c[1] + 82, capeA * (t < T.s2 + .4 || t > T.loop ? 1 : 0));
+  if (named) {
+    const nA = win(t, T.reveal, T.s5 + .5, .3);
+    const p = IKON.pop(t, T.reveal + .25, .45);
+    IKON.ciz(ctx, 'f:banana', c[0] - 70, c[1] - 92, 86 * p.olcek, { alpha: nA * p.alpha, aci: p.aci });
+    const zA = win(t, T.reveal + .3, T.pull + .1, .25);
+    IKON.etiket(ctx, 'Anamur Burnu · ' + deg(CAPE[1]), c[0], c[1] + 70, { boyut: 38, alpha: zA });
+    IKON.etiket(ctx, 'Anamur muzu', c[0] - 70, c[1] - 30, { boyut: 28, alpha: zA * p.alpha });
+    const sA = win(t, T.s4 + .8, T.s5 + .3, .3);
+    IKON.etiket(ctx, 'Anamur Burnu', c[0] + 20, c[1] + 104, { boyut: 34, alpha: sA });
+  }
+
+  // ters köşe: Hatay
+  const hA = win(t, T.s4 + .6, T.s5 + .3, .3);
+  if (hA > 0) {
+    const k = ease.inOutCubic(prog(t, T.hat, T.hat + .7));
+    latLine(path, lerp(LAT_A, LAT_S, k), { alpha: hA * prog(t, T.hat - .2, T.hat), t, color: C.text, width: 4 });
+    const s = xy(TR_S), a = xy([TR_S[0], LAT_A]);
+    const pA = hA * prog(t, T.hat + .5, T.hat + .8);
+    pin(s, { color: C.accent, r: 12, alpha: pA, pulse: pA > .9 ? (t * 1.1) % 1 : 0 });
+    const ip = IKON.pop(t, T.hat + .55, .45), hat = IKON.il('Hatay');
+    IKON.ciz(ctx, hat.ikon, s[0] - 150, s[1] + 40, 84 * ip.olcek, { alpha: hA * ip.alpha, aci: ip.aci });
+    IKON.etiket(ctx, 'Hatay · ' + deg(LAT_S), s[0] - 40, s[1] + 110, { boyut: 36, alpha: pA });
+    bracket(s[0] + 34, a[1], s[1], f0(D_HAT) + ' km', pA, { side: -1, color: C.accent, size: 38 });
+  }
+
+  // o ülke: Mersin ve Kıbrıs çizgileri
+  const oA = win(t, T.s5 + .2, T.s9, .3);
+  if (oA > 0) {
+    const town = xy(TOWN), mer = xy(MERSIN);
+    const k = ease.inOutCubic(prog(t, T.grow, T.grow + 1.2));
+    pin(mer, { color: C.land, r: 11, alpha: oA });
+    IKON.etiket(ctx, 'Mersin', mer[0], mer[1] - 48, { boyut: 34, alpha: oA });
+    line(path, greatCircle(TOWN, MERSIN, k), { color: C.land, width: 6, outline: true, alpha: oA });
+    line(path, greatCircle(TOWN, CY_COAST, k), { color: C.accent, width: 7, outline: true, alpha: oA });
+    const lA = oA * prog(t, T.grow + 1.0, T.grow + 1.3);
+    const m1 = xy(d3.geoInterpolate(TOWN, MERSIN)(.55)), m2 = xy(d3.geoInterpolate(TOWN, CY_COAST)(.5));
+    text(f0(D_MER) + ' km', m1[0], m1[1] - 22, 40, { font: MONO, weight: 500, align: 'center', alpha: lA });
+    text(f0(D_CY) + ' km', m2[0] + 26, m2[1] + 12, 44, { font: MONO, weight: 500, color: C.accent, alpha: lA });
+    pin(town, { color: C.accent, r: 12, alpha: oA });
+    // bayraklar: ada iki yönetimli; ikisi de küçük
+    const f1p = IKON.pop(t, T.s5 + .5, .4), f2p = IKON.pop(t, T.s5 + .62, .4);
+    const cyF = xy([32.75, 34.95]), knF = xy([34.1, 35.38]);
+    IKON.bayrak(ctx, 'cy', cyF[0], cyF[1], 38, { bicim: 'direk', olcek: f1p.olcek, alpha: oA * f1p.alpha * (1 - prog(t, T.oly, T.oly + .3)), dalga: t });
+    IKON.bayrak(ctx, 'kktc', knF[0], knF[1], 38, { bicim: 'direk', olcek: f2p.olcek, alpha: oA * f2p.alpha, dalga: t });
+    const lef = xy(LEFKOSA), lefA = oA * win(t, T.grow + 1.4, T.s6 + .4, .3);
+    pin(lef, { color: C.land, r: 8, alpha: lefA });
+    text('Lefkoşa ' + f0(D_LEF) + ' km', lef[0] + 14, lef[1] + 52, 32, { font: MONO, weight: 500, color: C.text, alpha: lefA });
+    text('Ankara ' + f0(km(TOWN, [32.8624, 39.9292])) + ' km ↑', mer[0] - 40, mer[1] - 330, 30, { font: MONO, weight: 500, color: C.mute, alpha: oA * win(t, T.grow + 1.4, T.s6 + .4, .3) });
+    // Olimpos'a uzayan çizgi
+    const ok = ease.inOutCubic(prog(t, T.oly, T.oly + .9));
+    if (ok > 0) {
+      line(path, greatCircle(CAPE, OLYMPOS, ok), { color: C.accent, width: 6, dash: [12, 10], outline: true, alpha: oA });
+      const o = xy(OLYMPOS), oa = oA * prog(t, T.oly + .8, T.oly + 1.0);
+      pin(o, { color: C.text, r: 10, alpha: oa });
+      IKON.etiket(ctx, 'Olimpos · ' + f0(D_OLY) + ' km', o[0], o[1] + 52, { boyut: 34, alpha: oa });
+    }
+  }
+
+  // cliffhanger: Roma ve kuzey ucu
+  if (t > T.s9) {
+    const rA = win(t, T.roma - .2, T.loop + .4, .3);
+    const r = xy(ROMA), n = xy(TR_N), rp = IKON.pop(t, T.roma - .2, .4);
+    pin(r, { color: C.land, r: 10, alpha: rA });
+    IKON.bayrak(ctx, 'it', r[0], r[1] - 6, 40, { bicim: 'direk', olcek: rp.olcek, alpha: rA * rp.alpha, dalga: t });
+    IKON.etiket(ctx, 'Roma · ' + deg(ROMA[1]), r[0], r[1] + 52, { boyut: 32, alpha: rA });
+    const nA = win(t, T.up + 1.0, T.loop + .4, .3);
+    pin(n, { color: C.accent, r: 12, alpha: nA, pulse: (t * 1.1) % 1 });
+    qmark(n[0], n[1] - 30, nA, .9);
+  }
+}
+
+function drawList(t, a) {
+  const cols = 3, rows = 27, x0 = SAFE.x0 - 6, colW = (SAFE.x1 - SAFE.x0 + 12) / cols, y0 = 520, rowH = 37.5;
+  ctx.save(); ctx.globalAlpha = a; ctx.fillStyle = C.bg; ctx.fillRect(0, 480, W, H - 480); ctx.restore();
+  ES.forEach(([il, bas, kod, d], i) => {
+    const c = Math.floor(i / rows), r = i % rows, x = x0 + c * colW, y = y0 + r * rowH;
+    const k = prog(t, T.s8 + .05 + i * .008, T.s8 + .25 + i * .008), al = a * k;
+    if (al <= .001) return;
+    const hl = il === 'Mersin';
+    if (hl) { ctx.globalAlpha = al * (.72 + .28 * Math.sin(t * 6.3)); ctx.fillStyle = C.accent; ctx.beginPath(); ctx.roundRect(x - 6, y - 26, colW - 6, 35, 8); ctx.fill(); ctx.globalAlpha = 1; }
+    IKON.bayrak(ctx, kod, x + 16, y - 9, 18, { alpha: al });
+    let size = 26;
+    const s1 = il, s2 = ' ' + bas;
+    ctx.font = `600 ${size}px ${SANS}`;
+    const need = ctx.measureText(s1 + s2).width, room = colW - 50;
+    if (need > room) size = Math.max(19, size * room / need);
+    const w1 = text(s1, x + 40, y, size, { weight: 600, color: hl ? C.ocean : C.text, alpha: al });
+    text(s2, x + 40 + w1, y, size, { weight: 600, color: hl ? C.ocean : C.mute, alpha: al });
+  });
+  text('İl merkezi ile başkent arası enlem farkı ' + (ES.every(e => e[3] < 50) ? '< 50 km' : ''), SAFE.x0, y0 + rows * rowH + 6, 26, { weight: 600, color: C.mute, alpha: a });
+}
+</script>
+</body>
+</html>

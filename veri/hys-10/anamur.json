@@ -25,11 +25,15 @@
   ]
  },
  "anamur": {
-  "mersin_km": 178.7,
-  "ankara_km": 428.6,
-  "lefkosa_km": 111.8,
-  "girne_km": 94.6,
-  "kibrisKiyi_km": 75.7
+  "mersin_km": 178.9,
+  "ankara_km": 428,
+  "lefkosa_km": 112.5,
+  "girne_km": 95.3,
+  "kibrisKiyi_km": 76.3,
+  "kibrisKiyi": [
+   32.920421,
+   35.397773
+  ]
  },
  "enlem": {
   "anamurBurnu": 36.027167,
@@ -70,8 +74,8 @@
   "olimposUfuk_km": 157.7,
   "gozUfuk_km": 5.05,
   "gorunurMu": true,
-  "gizlenen_m": 1062,
-  "gorunen_m": 890
+  "gizlenen_m": 1063,
+  "gorunen_m": 889
  },
  "kuzeydeKalanBaskentler": [
   {

@@ -1,16 +1,16 @@
 {
   "voice": "Charon",
   "style": "enerjik ve merak uyandıran, gizemli başlayıp hızlanan, önemli kelimeleri vurgulayan, izleyiciye sır veriyormuş gibi",
-  "tempo": 1.12, "lead": 0.15, "gap": 0.3, "tail": 3.5,
+  "tempo": 1.12, "lead": 0.15, "gap": 0.3, "tail": 2.6,
   "lines": [
     { "id": "l1", "text": "Türkiye'de öyle bir yer var ki, Afrika'nın İKİ başkentinden daha güneyde.", "caption": "Türkiye'de öyle bir yer var ki, Afrika'nın 2 başkentinden daha güneyde." },
-    { "id": "l2", "text": "Ama asıl tuhaf olan bu değil: sahilinden bakınca ufukta BAŞKA bir ülke görünüyor." },
-    { "id": "l3", "text": "Burası Mersin'in ANAMUR'u. <short pause> Anamur Burnu, Anadolu'nun en güney ucu: Tunus'tan seksen altı kilometre daha güneyde.", "caption": "Burası Mersin'in Anamur'u. Anamur Burnu, Anadolu'nun en güney ucu: Tunus'tan 86 km daha güneyde." },
-    { "id": "l4", "text": "Ama dur. <short pause> Türkiye'nin en güney noktası burası DEĞİL. Hatay, yirmi üç kilometre daha aşağıda.", "caption": "Ama dur. Türkiye'nin en güney noktası burası değil. Hatay, 23 km daha aşağıda.", "holdAfter": 0.3 },
-    { "id": "l5", "text": "Gelelim o ülkeye. Anamur'dan Mersin merkeze yüz yetmiş dokuz kilometre. Kıbrıs kıyısına ise sadece YETMİŞ ALTI.", "caption": "Gelelim o ülkeye. Anamur'dan Mersin merkeze 179 km. Kıbrıs kıyısına ise sadece 76." },
-    { "id": "l6", "text": "Ama Dünya yuvarlak. Kıbrıs'ın en yüksek dağı Olimpos'un bin metreden fazlası ufkun ARKASINDA kalıyor.", "caption": "Ama Dünya yuvarlak. Kıbrıs'ın en yüksek dağı Olimpos'un 1.000 metreden fazlası ufkun arkasında kalıyor.", "holdAfter": 0.5 },
-    { "id": "l7", "text": "Geriye kalan sekiz yüz doksan metre ise... ufkun ÜSTÜNDE. Açık bir günde Anamur'dan Kıbrıs görünür.", "caption": "Geriye kalan 890 metre ise ufkun üstünde. Açık bir günde Anamur'dan Kıbrıs görünür.", "holdAfter": 0.3 },
-    { "id": "l8", "text": "Peki senin ilin hangi başkentle aynı hizada? Durdur, bul.", "holdAfter": 0.6 },
-    { "id": "l9", "text": "Türkiye'nin en KUZEY ucu ise Roma'dan bile kuzeyde. Neresi? Yaz." }
+    { "id": "l2", "text": "Üstelik oradan bakınca, ufukta BAŞKA bir ülke görünüyor.", "caption": "Üstelik oradan bakınca, ufukta başka bir ülke görünüyor." },
+    { "id": "l3", "text": "Burası ANAMUR. <short pause> Anadolu'nun en güney ucu: Tunus'tan bile güneyde.", "caption": "Burası Anamur. Anadolu'nun en güney ucu: Tunus'tan bile güneyde." },
+    { "id": "l4", "text": "Ama dur. <short pause> Türkiye'nin en güneyi burası DEĞİL: Hatay.", "caption": "Ama dur. Türkiye'nin en güneyi burası değil: Hatay.", "holdAfter": 0.3 },
+    { "id": "l5", "text": "Gelelim o ülkeye: Kıbrıs, Anamur'a kendi il merkezinden İKİ kat daha yakın.", "caption": "Gelelim o ülkeye: Kıbrıs, Anamur'a kendi il merkezinden 2 kat daha yakın." },
+    { "id": "l6", "text": "Ama Dünya yuvarlak. Kıbrıs'ın en yüksek dağının bin metresi ufkun ARKASINDA kalıyor.", "caption": "Ama Dünya yuvarlak. Kıbrıs'ın en yüksek dağının 1.000 metresi ufkun arkasında kalıyor.", "holdAfter": 0.5 },
+    { "id": "l7", "text": "Ama zirvesi... ufkun ÜSTÜNDE. Açık havada Anamur'dan Kıbrıs görünür.", "caption": "Ama zirvesi ufkun üstünde. Açık havada Anamur'dan Kıbrıs görünür.", "holdAfter": 0.3 },
+    { "id": "l8", "text": "Senin ilin hangi başkentle aynı hizada? Durdur, bul.", "holdAfter": 0.6 },
+    { "id": "l9", "text": "Peki Türkiye'nin en KUZEY ucu? O da Roma'dan kuzeyde. Neresi? Yaz.", "caption": "Peki Türkiye'nin en kuzey ucu? O da Roma'dan kuzeyde. Neresi? Yaz." }
   ]
 }
