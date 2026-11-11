@@ -1,0 +1,14 @@
+{
+  "voice": "Charon",
+  "style": "enerjik ve merak uyandıran, hızlı tempolu, önemli kelimeleri vurgulayan, izleyiciye meydan okur gibi",
+  "tempo": 1.12, "lead": 0.15, "gap": 0.3, "tail": 4.5,
+  "lines": [
+    { "id": "l1", "text": "Saat sekiz. Hakkari'de güneş ÇOKTAN doğdu; Edirne'de hâlâ gece.", "holdAfter": 0.4 },
+    { "id": "l2", "text": "Türkiye'nin tamamı aynı saati kullanıyor. Güneş KULLANMIYOR." },
+    { "id": "l3", "text": "Yılın en kısa günü, yirmi bir Aralık. Güneş ilk Hakkari'de doğuyor: yedi on altı.", "caption": "Yılın en kısa günü, 21 Aralık. Güneş ilk Hakkari'de doğuyor: 07:16." },
+    { "id": "l4", "text": "Sonra gece ile gündüzün sınırı batıya kayıyor ve iller tek tek aydınlanıyor.", "holdAfter": 1.2 },
+    { "id": "l5", "text": "Edirne'ye ancak sekiz otuz yedide ulaşıyor. <short pause> Arada tam SEKSEN BİR dakika.", "caption": "Edirne'ye ancak 08:37'de ulaşıyor. Arada tam 81 dakika.", "holdAfter": 0.5 },
+    { "id": "l6", "text": "Akşam tersine: Iğdır'da güneş on altı kırk ikide batıyor, İzmir'de on yedi elli dörtte.", "caption": "Akşam tersine: Iğdır'da güneş 16:42'de batıyor, İzmir'de 17:54'te." },
+    { "id": "l7", "text": "Peki senin ilinde kaçta? Durdur, bak." }
+  ]
+}
