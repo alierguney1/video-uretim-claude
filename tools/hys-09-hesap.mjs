@@ -2,8 +2,8 @@
 // Bağımlılık yok. Girdi: veri/hys-09/iller.topo.json (Natural Earth 1:10m il sınırları + il merkezleri),
 // veri/hys-09/baskentler.json (Natural Earth 1:10m başkentler). Çıktı: tablo + veri/hys-09/sonuc.json.
 //
-//   node tools/hys-09-hesap.mjs              # Lefkoşa hariç (ana sayı)
-//   node tools/hys-09-hesap.mjs --lefkosa    # Lefkoşa dahil (dürüstlük notu)
+//   node tools/hys-09-hesap.mjs                  # Lefkoşa dahil (ana sayı, kullanıcı kararı)
+//   node tools/hys-09-hesap.mjs --lefkosa-haric  # Lefkoşa hariç (karşılaştırma)
 //
 // Mesafe: büyük daire (haversine), R = 6371,0088 km; d3.geoDistance ile aynı formül.
 import fs from 'node:fs';
@@ -12,7 +12,7 @@ import path from 'node:path';
 const ROOT = path.resolve(path.dirname(new URL(import.meta.url).pathname), '..');
 const DIR = path.join(ROOT, 'veri/hys-09');
 const R = 6371.0088, RAD = Math.PI / 180;
-const LEFKOSA = process.argv.includes('--lefkosa');
+const LEFKOSA = !process.argv.includes('--lefkosa-haric');
 
 const TR = {
   Nicosia: 'Lefkoşa', Beirut: 'Beyrut', Bucharest: 'Bükreş', Damascus: 'Şam', Athens: 'Atina', 'Chișinău': 'Kişinev',
@@ -87,7 +87,7 @@ for (const s of boyali) sayac[s.baskent] = (sayac[s.baskent] || 0) + 1;
 console.log('\nBaşkent başına boyalı il:', Object.entries(sayac).sort((a, b) => b[1] - a[1]).map(([k, v]) => `${k} ${v}`).join(' · '));
 console.log('● boyalı · ≈ boyalı ama fark < 30 km (kıl payı) · · boyasız ama fark < 60 km');
 
-const out = path.join(DIR, LEFKOSA ? 'sonuc-lefkosa.json' : 'sonuc.json');
+const out = path.join(DIR, LEFKOSA ? 'sonuc.json' : 'sonuc-lefkosa-haric.json');
 fs.writeFileSync(out, JSON.stringify({ lefkosa: LEFKOSA, boyaliSayisi: boyali.length, ilSayisi: satirlar.length,
   alanYuzde: +alanYuzde.toFixed(1), baskentBasina: sayac, iller: satirlar }, null, 1));
 console.log('→', path.relative(ROOT, out));
