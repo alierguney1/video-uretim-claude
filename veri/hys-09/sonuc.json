@@ -1,0 +1,816 @@
+{
+ "lefkosa": false,
+ "boyaliSayisi": 41,
+ "ilSayisi": 80,
+ "alanYuzde": 43.8,
+ "baskentBasina": {
+  "Erivan": 23,
+  "Sofya": 2,
+  "Beyrut": 8,
+  "Atina": 6,
+  "Bükreş": 1,
+  "Şam": 1
+ },
+ "iller": [
+  {
+   "il": "Iğdır",
+   "ankaraKm": 953,
+   "baskent": "Erivan",
+   "baskentKm": 49,
+   "farkKm": 904,
+   "ikinci": "Tiflis",
+   "ikinciKm": 210,
+   "kaynak": "geonames"
+  },
+  {
+   "il": "Kars",
+   "ankaraKm": 871,
+   "baskent": "Erivan",
+   "baskentKm": 129,
+   "farkKm": 742,
+   "ikinci": "Tiflis",
+   "ikinciKm": 188,
+   "kaynak": "naturalearth"
+  },
+  {
+   "il": "Ağrı",
+   "ankaraKm": 870,
+   "baskent": "Erivan",
+   "baskentKm": 135,
+   "farkKm": 735,
+   "ikinci": "Tiflis",
+   "ikinciKm": 267,
+   "kaynak": "naturalearth"
+  },
+  {
+   "il": "Van",
+   "ankaraKm": 921,
+   "baskent": "Erivan",
+   "baskentKm": 211,
+   "farkKm": 711,
+   "ikinci": "Tiflis",
+   "ikinciKm": 378,
+   "kaynak": "naturalearth"
+  },
+  {
+   "il": "Hakkari",
+   "ankaraKm": 978,
+   "baskent": "Erivan",
+   "baskentKm": 298,
+   "farkKm": 681,
+   "ikinci": "Tiflis",
+   "ikinciKm": 470,
+   "kaynak": "naturalearth"
+  },
+  {
+   "il": "Ardahan",
+   "ankaraKm": 842,
+   "baskent": "Erivan",
+   "baskentKm": 184,
+   "farkKm": 657,
+   "ikinci": "Tiflis",
+   "ikinciKm": 187,
+   "kaynak": "geonames"
+  },
+  {
+   "il": "Bitlis",
+   "ankaraKm": 816,
+   "baskent": "Erivan",
+   "baskentKm": 286,
+   "farkKm": 530,
+   "ikinci": "Tiflis",
+   "ikinciKm": 434,
+   "kaynak": "naturalearth"
+  },
+  {
+   "il": "Şırnak",
+   "ankaraKm": 874,
+   "baskent": "Erivan",
+   "baskentKm": 346,
+   "farkKm": 529,
+   "ikinci": "Bağdat",
+   "ikinciKm": 496,
+   "kaynak": "geonames"
+  },
+  {
+   "il": "Artvin",
+   "ankaraKm": 769,
+   "baskent": "Erivan",
+   "baskentKm": 253,
+   "farkKm": 516,
+   "ikinci": "Tiflis",
+   "ikinciKm": 255,
+   "kaynak": "naturalearth"
+  },
+  {
+   "il": "Siirt",
+   "ankaraKm": 815,
+   "baskent": "Erivan",
+   "baskentKm": 334,
+   "farkKm": 481,
+   "ikinci": "Tiflis",
+   "ikinciKm": 486,
+   "kaynak": "naturalearth"
+  },
+  {
+   "il": "Muş",
+   "ankaraKm": 754,
+   "baskent": "Erivan",
+   "baskentKm": 304,
+   "farkKm": 450,
+   "ikinci": "Tiflis",
+   "ikinciKm": 433,
+   "kaynak": "naturalearth"
+  },
+  {
+   "il": "Erzurum",
+   "ankaraKm": 718,
+   "baskent": "Erivan",
+   "baskentKm": 276,
+   "farkKm": 443,
+   "ikinci": "Tiflis",
+   "ikinciKm": 356,
+   "kaynak": "naturalearth"
+  },
+  {
+   "il": "Batman",
+   "ankaraKm": 751,
+   "baskent": "Erivan",
+   "baskentKm": 387,
+   "farkKm": 364,
+   "ikinci": "Tiflis",
+   "ikinciKm": 528,
+   "kaynak": "naturalearth"
+  },
+  {
+   "il": "Rize",
+   "ankaraKm": 659,
+   "baskent": "Erivan",
+   "baskentKm": 349,
+   "farkKm": 309,
+   "ikinci": "Tiflis",
+   "ikinciKm": 365,
+   "kaynak": "naturalearth"
+  },
+  {
+   "il": "Bingöl",
+   "ankaraKm": 666,
+   "baskent": "Erivan",
+   "baskentKm": 373,
+   "farkKm": 293,
+   "ikinci": "Tiflis",
+   "ikinciKm": 482,
+   "kaynak": "naturalearth"
+  },
+  {
+   "il": "Mardin",
+   "ankaraKm": 744,
+   "baskent": "Erivan",
+   "baskentKm": 457,
+   "farkKm": 287,
+   "ikinci": "Bağdat",
+   "ikinciKm": 552,
+   "kaynak": "naturalearth"
+  },
+  {
+   "il": "Edirne",
+   "ankaraKm": 564,
+   "baskent": "Sofya",
+   "baskentKm": 291,
+   "farkKm": 273,
+   "ikinci": "Bükreş",
+   "ikinciKm": 310,
+   "kaynak": "naturalearth"
+  },
+  {
+   "il": "Bayburt",
+   "ankaraKm": 627,
+   "baskent": "Erivan",
+   "baskentKm": 364,
+   "farkKm": 263,
+   "ikinci": "Tiflis",
+   "ikinciKm": 416,
+   "kaynak": "geonames"
+  },
+  {
+   "il": "Hatay",
+   "ankaraKm": 500,
+   "baskent": "Beyrut",
+   "baskentKm": 268,
+   "farkKm": 232,
+   "ikinci": "Şam",
+   "ikinciKm": 304,
+   "kaynak": "naturalearth"
+  },
+  {
+   "il": "Diyarbakır",
+   "ankaraKm": 675,
+   "baskent": "Erivan",
+   "baskentKm": 447,
+   "farkKm": 228,
+   "ikinci": "Tiflis",
+   "ikinciKm": 575,
+   "kaynak": "naturalearth"
+  },
+  {
+   "il": "Çanakkale",
+   "ankaraKm": 550,
+   "baskent": "Atina",
+   "baskentKm": 333,
+   "farkKm": 217,
+   "ikinci": "Sofya",
+   "ikinciKm": 382,
+   "kaynak": "naturalearth"
+  },
+  {
+   "il": "İzmir",
+   "ankaraKm": 519,
+   "baskent": "Atina",
+   "baskentKm": 303,
+   "farkKm": 217,
+   "ikinci": "Sofya",
+   "ikinciKm": 573,
+   "kaynak": "naturalearth"
+  },
+  {
+   "il": "Kırklareli",
+   "ankaraKm": 515,
+   "baskent": "Bükreş",
+   "baskentKm": 313,
+   "farkKm": 202,
+   "ikinci": "Sofya",
+   "ikinciKm": 339,
+   "kaynak": "naturalearth"
+  },
+  {
+   "il": "Trabzon",
+   "ankaraKm": 592,
+   "baskent": "Erivan",
+   "baskentKm": 414,
+   "farkKm": 178,
+   "ikinci": "Tiflis",
+   "ikinciKm": 431,
+   "kaynak": "naturalearth"
+  },
+  {
+   "il": "Kilis",
+   "ankaraKm": 515,
+   "baskent": "Beyrut",
+   "baskentKm": 349,
+   "farkKm": 166,
+   "ikinci": "Şam",
+   "ikinciKm": 366,
+   "kaynak": "naturalearth"
+  },
+  {
+   "il": "Manisa",
+   "ankaraKm": 488,
+   "baskent": "Atina",
+   "baskentKm": 331,
+   "farkKm": 157,
+   "ikinci": "Sofya",
+   "ikinciKm": 569,
+   "kaynak": "naturalearth"
+  },
+  {
+   "il": "Gümüşhane",
+   "ankaraKm": 565,
+   "baskent": "Erivan",
+   "baskentKm": 427,
+   "farkKm": 138,
+   "ikinci": "Tiflis",
+   "ikinciKm": 466,
+   "kaynak": "naturalearth"
+  },
+  {
+   "il": "Tunceli",
+   "ankaraKm": 579,
+   "baskent": "Erivan",
+   "baskentKm": 442,
+   "farkKm": 137,
+   "ikinci": "Tiflis",
+   "ikinciKm": 531,
+   "kaynak": "naturalearth"
+  },
+  {
+   "il": "Erzincan",
+   "ankaraKm": 566,
+   "baskent": "Erivan",
+   "baskentKm": 430,
+   "farkKm": 136,
+   "ikinci": "Tiflis",
+   "ikinciKm": 497,
+   "kaynak": "naturalearth"
+  },
+  {
+   "il": "Şanlıurfa",
+   "ankaraKm": 600,
+   "baskent": "Şam",
+   "baskentKm": 466,
+   "farkKm": 134,
+   "ikinci": "Beyrut",
+   "ikinciKm": 472,
+   "kaynak": "naturalearth"
+  },
+  {
+   "il": "Aydın",
+   "ankaraKm": 491,
+   "baskent": "Atina",
+   "baskentKm": 362,
+   "farkKm": 130,
+   "ikinci": "Sofya",
+   "ikinciKm": 661,
+   "kaynak": "naturalearth"
+  },
+  {
+   "il": "Gaziantep",
+   "ankaraKm": 505,
+   "baskent": "Beyrut",
+   "baskentKm": 395,
+   "farkKm": 111,
+   "ikinci": "Şam",
+   "ikinciKm": 410,
+   "kaynak": "naturalearth"
+  },
+  {
+   "il": "Elazığ",
+   "ankaraKm": 565,
+   "baskent": "Erivan",
+   "baskentKm": 483,
+   "farkKm": 82,
+   "ikinci": "Tiflis",
+   "ikinciKm": 581,
+   "kaynak": "naturalearth"
+  },
+  {
+   "il": "Muğla",
+   "ankaraKm": 494,
+   "baskent": "Atina",
+   "baskentKm": 417,
+   "farkKm": 77,
+   "ikinci": "Sofya",
+   "ikinciKm": 745,
+   "kaynak": "naturalearth"
+  },
+  {
+   "il": "Tekirdağ",
+   "ankaraKm": 468,
+   "baskent": "Sofya",
+   "baskentKm": 395,
+   "farkKm": 73,
+   "ikinci": "Bükreş",
+   "ikinciKm": 400,
+   "kaynak": "naturalearth"
+  },
+  {
+   "il": "Osmaniye",
+   "ankaraKm": 433,
+   "baskent": "Beyrut",
+   "baskentKm": 362,
+   "farkKm": 71,
+   "ikinci": "Şam",
+   "ikinciKm": 397,
+   "kaynak": "geonames"
+  },
+  {
+   "il": "Mersin",
+   "ankaraKm": 380,
+   "baskent": "Beyrut",
+   "baskentKm": 335,
+   "farkKm": 45,
+   "ikinci": "Şam",
+   "ikinciKm": 397,
+   "kaynak": "naturalearth"
+  },
+  {
+   "il": "Adana",
+   "ankaraKm": 390,
+   "baskent": "Beyrut",
+   "baskentKm": 348,
+   "farkKm": 42,
+   "ikinci": "Şam",
+   "ikinciKm": 399,
+   "kaynak": "naturalearth"
+  },
+  {
+   "il": "Adıyaman",
+   "ankaraKm": 527,
+   "baskent": "Beyrut",
+   "baskentKm": 500,
+   "farkKm": 27,
+   "ikinci": "Şam",
+   "ikinciKm": 507,
+   "kaynak": "naturalearth"
+  },
+  {
+   "il": "Balıkesir",
+   "ankaraKm": 426,
+   "baskent": "Atina",
+   "baskentKm": 405,
+   "farkKm": 21,
+   "ikinci": "Sofya",
+   "ikinciKm": 510,
+   "kaynak": "naturalearth"
+  },
+  {
+   "il": "Kahramanmaraş",
+   "ankaraKm": 438,
+   "baskent": "Beyrut",
+   "baskentKm": 435,
+   "farkKm": 3,
+   "ikinci": "Şam",
+   "ikinciKm": 461,
+   "kaynak": "naturalearth"
+  },
+  {
+   "il": "Giresun",
+   "ankaraKm": 480,
+   "baskent": "Erivan",
+   "baskentKm": 523,
+   "farkKm": -43,
+   "ikinci": "Tiflis",
+   "ikinciKm": 542,
+   "kaynak": "naturalearth"
+  },
+  {
+   "il": "Malatya",
+   "ankaraKm": 500,
+   "baskent": "Beyrut",
+   "baskentKm": 559,
+   "farkKm": -59,
+   "ikinci": "Şam",
+   "ikinciKm": 571,
+   "kaynak": "naturalearth"
+  },
+  {
+   "il": "Denizli",
+   "ankaraKm": 406,
+   "baskent": "Atina",
+   "baskentKm": 470,
+   "farkKm": -64,
+   "ikinci": "Beyrut",
+   "ikinciKm": 723,
+   "kaynak": "naturalearth"
+  },
+  {
+   "il": "İstanbul",
+   "ankaraKm": 350,
+   "baskent": "Bükreş",
+   "baskentKm": 447,
+   "farkKm": -96,
+   "ikinci": "Sofya",
+   "ikinciKm": 504,
+   "kaynak": "naturalearth"
+  },
+  {
+   "il": "Karaman",
+   "ankaraKm": 307,
+   "baskent": "Beyrut",
+   "baskentKm": 422,
+   "farkKm": -115,
+   "ikinci": "Şam",
+   "ikinciKm": 496,
+   "kaynak": "naturalearth"
+  },
+  {
+   "il": "Ordu",
+   "ankaraKm": 440,
+   "baskent": "Erivan",
+   "baskentKm": 568,
+   "farkKm": -128,
+   "ikinci": "Tiflis",
+   "ikinciKm": 583,
+   "kaynak": "naturalearth"
+  },
+  {
+   "il": "Antalya",
+   "ankaraKm": 387,
+   "baskent": "Beyrut",
+   "baskentKm": 550,
+   "farkKm": -163,
+   "ikinci": "Atina",
+   "ikinciKm": 627,
+   "kaynak": "naturalearth"
+  },
+  {
+   "il": "Uşak",
+   "ankaraKm": 327,
+   "baskent": "Atina",
+   "baskentKm": 502,
+   "farkKm": -175,
+   "ikinci": "Sofya",
+   "ikinciKm": 680,
+   "kaynak": "naturalearth"
+  },
+  {
+   "il": "Yalova",
+   "ankaraKm": 315,
+   "baskent": "Bükreş",
+   "baskentKm": 494,
+   "farkKm": -179,
+   "ikinci": "Sofya",
+   "ikinciKm": 544,
+   "kaynak": "geonames"
+  },
+  {
+   "il": "Niğde",
+   "ankaraKm": 269,
+   "baskent": "Beyrut",
+   "baskentKm": 462,
+   "farkKm": -193,
+   "ikinci": "Şam",
+   "ikinciKm": 518,
+   "kaynak": "naturalearth"
+  },
+  {
+   "il": "Bursa",
+   "ankaraKm": 324,
+   "baskent": "Atina",
+   "baskentKm": 522,
+   "farkKm": -198,
+   "ikinci": "Bükreş",
+   "ikinciKm": 530,
+   "kaynak": "naturalearth"
+  },
+  {
+   "il": "Burdur",
+   "ankaraKm": 332,
+   "baskent": "Atina",
+   "baskentKm": 576,
+   "farkKm": -244,
+   "ikinci": "Beyrut",
+   "ikinciKm": 636,
+   "kaynak": "naturalearth"
+  },
+  {
+   "il": "Kocaeli",
+   "ankaraKm": 266,
+   "baskent": "Bükreş",
+   "baskentKm": 514,
+   "farkKm": -248,
+   "ikinci": "Sofya",
+   "ikinciKm": 588,
+   "kaynak": "naturalearth"
+  },
+  {
+   "il": "Kayseri",
+   "ankaraKm": 262,
+   "baskent": "Beyrut",
+   "baskentKm": 541,
+   "farkKm": -278,
+   "ikinci": "Şam",
+   "ikinciKm": 586,
+   "kaynak": "naturalearth"
+  },
+  {
+   "il": "Sivas",
+   "ankaraKm": 357,
+   "baskent": "Erivan",
+   "baskentKm": 639,
+   "farkKm": -282,
+   "ikinci": "Beyrut",
+   "ikinciKm": 667,
+   "kaynak": "naturalearth"
+  },
+  {
+   "il": "Isparta",
+   "ankaraKm": 314,
+   "baskent": "Atina",
+   "baskentKm": 597,
+   "farkKm": -283,
+   "ikinci": "Beyrut",
+   "ikinciKm": 624,
+   "kaynak": "naturalearth"
+  },
+  {
+   "il": "Konya",
+   "ankaraKm": 231,
+   "baskent": "Beyrut",
+   "baskentKm": 522,
+   "farkKm": -292,
+   "ikinci": "Şam",
+   "ikinciKm": 597,
+   "kaynak": "naturalearth"
+  },
+  {
+   "il": "Kütahya",
+   "ankaraKm": 257,
+   "baskent": "Atina",
+   "baskentKm": 561,
+   "farkKm": -304,
+   "ikinci": "Bükreş",
+   "ikinciKm": 641,
+   "kaynak": "naturalearth"
+  },
+  {
+   "il": "Sakarya",
+   "ankaraKm": 229,
+   "baskent": "Bükreş",
+   "baskentKm": 539,
+   "farkKm": -310,
+   "ikinci": "Sofya",
+   "ikinciKm": 625,
+   "kaynak": "naturalearth"
+  },
+  {
+   "il": "Aksaray",
+   "ankaraKm": 201,
+   "baskent": "Beyrut",
+   "baskentKm": 517,
+   "farkKm": -316,
+   "ikinci": "Şam",
+   "ikinciKm": 578,
+   "kaynak": "geonames"
+  },
+  {
+   "il": "Nevşehir",
+   "ankaraKm": 216,
+   "baskent": "Beyrut",
+   "baskentKm": 533,
+   "farkKm": -317,
+   "ikinci": "Şam",
+   "ikinciKm": 587,
+   "kaynak": "naturalearth"
+  },
+  {
+   "il": "Bilecik",
+   "ankaraKm": 246,
+   "baskent": "Bükreş",
+   "baskentKm": 574,
+   "farkKm": -327,
+   "ikinci": "Atina",
+   "ikinciKm": 591,
+   "kaynak": "naturalearth"
+  },
+  {
+   "il": "Tokat",
+   "ankaraKm": 317,
+   "baskent": "Erivan",
+   "baskentKm": 675,
+   "farkKm": -357,
+   "ikinci": "Tiflis",
+   "ikinciKm": 708,
+   "kaynak": "naturalearth"
+  },
+  {
+   "il": "Afyonkarahisar",
+   "ankaraKm": 238,
+   "baskent": "Atina",
+   "baskentKm": 600,
+   "farkKm": -362,
+   "ikinci": "Beyrut",
+   "ikinciKm": 701,
+   "kaynak": "naturalearth"
+  },
+  {
+   "il": "Samsun",
+   "ankaraKm": 330,
+   "baskent": "Erivan",
+   "baskentKm": 699,
+   "farkKm": -369,
+   "ikinci": "Tiflis",
+   "ikinciKm": 705,
+   "kaynak": "naturalearth"
+  },
+  {
+   "il": "Zonguldak",
+   "ankaraKm": 190,
+   "baskent": "Bükreş",
+   "baskentKm": 570,
+   "farkKm": -380,
+   "ikinci": "Kişinev",
+   "ikinciKm": 662,
+   "kaynak": "naturalearth"
+  },
+  {
+   "il": "Düzce",
+   "ankaraKm": 177,
+   "baskent": "Bükreş",
+   "baskentKm": 575,
+   "farkKm": -398,
+   "ikinci": "Sofya",
+   "ikinciKm": 682,
+   "kaynak": "geonames"
+  },
+  {
+   "il": "Bartın",
+   "ankaraKm": 195,
+   "baskent": "Bükreş",
+   "baskentKm": 595,
+   "farkKm": -400,
+   "ikinci": "Kişinev",
+   "ikinciKm": 658,
+   "kaynak": "geonames"
+  },
+  {
+   "il": "Eskişehir",
+   "ankaraKm": 200,
+   "baskent": "Atina",
+   "baskentKm": 622,
+   "farkKm": -422,
+   "ikinci": "Bükreş",
+   "ikinciKm": 632,
+   "kaynak": "naturalearth"
+  },
+  {
+   "il": "Sinop",
+   "ankaraKm": 302,
+   "baskent": "Kişinev",
+   "baskentKm": 745,
+   "farkKm": -443,
+   "ikinci": "Bükreş",
+   "ikinciKm": 781,
+   "kaynak": "naturalearth"
+  },
+  {
+   "il": "Kırşehir",
+   "ankaraKm": 142,
+   "baskent": "Beyrut",
+   "baskentKm": 598,
+   "farkKm": -456,
+   "ikinci": "Şam",
+   "ikinciKm": 655,
+   "kaynak": "naturalearth"
+  },
+  {
+   "il": "Bolu",
+   "ankaraKm": 139,
+   "baskent": "Bükreş",
+   "baskentKm": 610,
+   "farkKm": -471,
+   "ikinci": "Sofya",
+   "ikinciKm": 721,
+   "kaynak": "naturalearth"
+  },
+  {
+   "il": "Amasya",
+   "ankaraKm": 265,
+   "baskent": "Erivan",
+   "baskentKm": 736,
+   "farkKm": -472,
+   "ikinci": "Beyrut",
+   "ikinciKm": 754,
+   "kaynak": "naturalearth"
+  },
+  {
+   "il": "Karabük",
+   "ankaraKm": 143,
+   "baskent": "Bükreş",
+   "baskentKm": 641,
+   "farkKm": -497,
+   "ikinci": "Kişinev",
+   "ikinciKm": 711,
+   "kaynak": "naturalearth"
+  },
+  {
+   "il": "Yozgat",
+   "ankaraKm": 167,
+   "baskent": "Beyrut",
+   "baskentKm": 664,
+   "farkKm": -497,
+   "ikinci": "Şam",
+   "ikinciKm": 715,
+   "kaynak": "naturalearth"
+  },
+  {
+   "il": "Kastamonu",
+   "ankaraKm": 180,
+   "baskent": "Bükreş",
+   "baskentKm": 711,
+   "farkKm": -531,
+   "ikinci": "Kişinev",
+   "ikinciKm": 737,
+   "kaynak": "naturalearth"
+  },
+  {
+   "il": "Çorum",
+   "ankaraKm": 189,
+   "baskent": "Beyrut",
+   "baskentKm": 741,
+   "farkKm": -552,
+   "ikinci": "Şam",
+   "ikinciKm": 789,
+   "kaynak": "naturalearth"
+  },
+  {
+   "il": "Kırıkkale",
+   "ankaraKm": 58,
+   "baskent": "Beyrut",
+   "baskentKm": 687,
+   "farkKm": -630,
+   "ikinci": "Şam",
+   "ikinciKm": 748,
+   "kaynak": "naturalearth"
+  },
+  {
+   "il": "Çankırı",
+   "ankaraKm": 99,
+   "baskent": "Bükreş",
+   "baskentKm": 749,
+   "farkKm": -650,
+   "ikinci": "Beyrut",
+   "ikinciKm": 767,
+   "kaynak": "naturalearth"
+  }
+ ]
+}

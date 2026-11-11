@@ -1,0 +1,378 @@
+[
+ {
+  "ad": "Vatican City",
+  "ulke": "Vatican",
+  "k": [
+   12.4534,
+   41.9033
+  ]
+ },
+ {
+  "ad": "San Marino",
+  "ulke": "San Marino",
+  "k": [
+   12.4418,
+   43.9361
+  ]
+ },
+ {
+  "ad": "Vaduz",
+  "ulke": "Liechtenstein",
+  "k": [
+   9.5167,
+   47.1337
+  ]
+ },
+ {
+  "ad": "Monaco",
+  "ulke": "Monaco",
+  "k": [
+   7.4069,
+   43.7396
+  ]
+ },
+ {
+  "ad": "Ljubljana",
+  "ulke": "Slovenia",
+  "k": [
+   14.515,
+   46.0553
+  ]
+ },
+ {
+  "ad": "Bratislava",
+  "ulke": "Slovakia",
+  "k": [
+   17.117,
+   48.15
+  ]
+ },
+ {
+  "ad": "Podgorica",
+  "ulke": "Montenegro",
+  "k": [
+   19.2663,
+   42.466
+  ]
+ },
+ {
+  "ad": "Bern",
+  "ulke": "Switzerland",
+  "k": [
+   7.467,
+   46.9167
+  ]
+ },
+ {
+  "ad": "Pristina",
+  "ulke": "Kosovo",
+  "k": [
+   21.166,
+   42.6667
+  ]
+ },
+ {
+  "ad": "Skopje",
+  "ulke": "North Macedonia",
+  "k": [
+   21.4335,
+   42
+  ]
+ },
+ {
+  "ad": "Tunis",
+  "ulke": "Tunisia",
+  "k": [
+   10.1797,
+   36.8028
+  ]
+ },
+ {
+  "ad": "Chișinău",
+  "ulke": "Moldova",
+  "k": [
+   28.8577,
+   47.005
+  ]
+ },
+ {
+  "ad": "Amman",
+  "ulke": "Jordan",
+  "k": [
+   35.9314,
+   31.952
+  ]
+ },
+ {
+  "ad": "Vilnius",
+  "ulke": "Lithuania",
+  "k": [
+   25.3166,
+   54.6834
+  ]
+ },
+ {
+  "ad": "Riga",
+  "ulke": "Latvia",
+  "k": [
+   24.1,
+   56.95
+  ]
+ },
+ {
+  "ad": "Zagreb",
+  "ulke": "Croatia",
+  "k": [
+   16,
+   45.8
+  ]
+ },
+ {
+  "ad": "Beirut",
+  "ulke": "Lebanon",
+  "k": [
+   35.5078,
+   33.8739
+  ]
+ },
+ {
+  "ad": "Tbilisi",
+  "ulke": "Georgia",
+  "k": [
+   44.7888,
+   41.727
+  ]
+ },
+ {
+  "ad": "Belgrade",
+  "ulke": "Serbia",
+  "k": [
+   20.466,
+   44.8206
+  ]
+ },
+ {
+  "ad": "Tirana",
+  "ulke": "Albania",
+  "k": [
+   19.8189,
+   41.3275
+  ]
+ },
+ {
+  "ad": "Yerevan",
+  "ulke": "Armenia",
+  "k": [
+   44.5116,
+   40.1831
+  ]
+ },
+ {
+  "ad": "Baku",
+  "ulke": "Azerbaijan",
+  "k": [
+   49.8603,
+   40.3972
+  ]
+ },
+ {
+  "ad": "Sofia",
+  "ulke": "Bulgaria",
+  "k": [
+   23.3147,
+   42.6853
+  ]
+ },
+ {
+  "ad": "Minsk",
+  "ulke": "Belarus",
+  "k": [
+   27.5647,
+   53.9019
+  ]
+ },
+ {
+  "ad": "Sarajevo",
+  "ulke": "Bosnia and Herzegovina",
+  "k": [
+   18.383,
+   43.85
+  ]
+ },
+ {
+  "ad": "Valletta",
+  "ulke": "Malta",
+  "k": [
+   14.5147,
+   35.8997
+  ]
+ },
+ {
+  "ad": "Jerusalem",
+  "ulke": "Israel",
+  "k": [
+   35.2066,
+   31.7784
+  ]
+ },
+ {
+  "ad": "Nicosia",
+  "ulke": "Cyprus",
+  "k": [
+   33.3666,
+   35.1667
+  ]
+ },
+ {
+  "ad": "Ankara",
+  "ulke": "Turkey",
+  "k": [
+   32.8624,
+   39.9292
+  ]
+ },
+ {
+  "ad": "Budapest",
+  "ulke": "Hungary",
+  "k": [
+   19.0814,
+   47.502
+  ]
+ },
+ {
+  "ad": "Bucharest",
+  "ulke": "Romania",
+  "k": [
+   26.098,
+   44.4353
+  ]
+ },
+ {
+  "ad": "Damascus",
+  "ulke": "Syria",
+  "k": [
+   36.2981,
+   33.502
+  ]
+ },
+ {
+  "ad": "Warsaw",
+  "ulke": "Poland",
+  "k": [
+   21.0053,
+   52.2309
+  ]
+ },
+ {
+  "ad": "Prague",
+  "ulke": "Czechia",
+  "k": [
+   14.4229,
+   50.087
+  ]
+ },
+ {
+  "ad": "Kuwait City",
+  "ulke": "Kuwait",
+  "k": [
+   47.9764,
+   29.3717
+  ]
+ },
+ {
+  "ad": "Tripoli",
+  "ulke": "Libya",
+  "k": [
+   13.18,
+   32.8925
+  ]
+ },
+ {
+  "ad": "Tel Aviv",
+  "ulke": "Israel",
+  "k": [
+   34.7681,
+   32.0819
+  ]
+ },
+ {
+  "ad": "Kyiv",
+  "ulke": "Ukraine",
+  "k": [
+   30.5147,
+   50.4353
+  ]
+ },
+ {
+  "ad": "Berlin",
+  "ulke": "Germany",
+  "k": [
+   13.3996,
+   52.5238
+  ]
+ },
+ {
+  "ad": "Athens",
+  "ulke": "Greece",
+  "k": [
+   23.7314,
+   37.9853
+  ]
+ },
+ {
+  "ad": "Baghdad",
+  "ulke": "Iraq",
+  "k": [
+   44.3919,
+   33.3406
+  ]
+ },
+ {
+  "ad": "Tehran",
+  "ulke": "Iran",
+  "k": [
+   51.4224,
+   35.6739
+  ]
+ },
+ {
+  "ad": "Vienna",
+  "ulke": "Austria",
+  "k": [
+   16.3647,
+   48.202
+  ]
+ },
+ {
+  "ad": "Riyadh",
+  "ulke": "Saudi Arabia",
+  "k": [
+   46.7205,
+   24.6345
+  ]
+ },
+ {
+  "ad": "Moscow",
+  "ulke": "Russia",
+  "k": [
+   37.6136,
+   55.7541
+  ]
+ },
+ {
+  "ad": "Rome",
+  "ulke": "Italy",
+  "k": [
+   12.4813,
+   41.8979
+  ]
+ },
+ {
+  "ad": "Cairo",
+  "ulke": "Egypt",
+  "k": [
+   31.248,
+   30.0519
+  ]
+ }
+]
