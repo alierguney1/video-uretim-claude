@@ -25,6 +25,7 @@ harita doğal olarak başladığı yere döner (döngü).
 | **Vurgu = gerçek** | `#FF6B2C`. Yalnızca "gerçek" olan şey vurgu renginde: gerçek boyut, gerçek rota, gerçek sayı. Yanıltıcı olan kâğıt renginde kalır. |
 | Yazı tipleri | Inter 800/600 (başlık, ana metin) · IBM Plex Mono 500 (sayılar, koordinat, km) |
 | Doku | Yok. Düz, keskin, harita gibi. Gölge yok, parlama yok. |
+| İkon / bayrak | Çıkartma (die-cut) görünüm: düz renkli ikon, kâğıt beyazı kenar, ince koyu dış çizgi. Ülkeye bayrak, ile ikon (MOTION_RULES §3b). Haritaya saplanan bayrak (`direk`) serinin imzası. |
 | Kapak düzeni | Üstte soru (2 satır, sola hizalı), altında harita, sorulan nesne vurgu renginde kontur, köşede "?" |
 
 ## Hareket dili

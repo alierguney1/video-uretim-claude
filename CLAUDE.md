@@ -51,6 +51,11 @@ her piksel kodla çizilir. Her işte **[MOTION_RULES.md](MOTION_RULES.md)** geç
 - **WebGL/Three.js:** `preserveDrawingBuffer: true`, döngü yerine `__setTime(t)` içinde `renderer.render`.
 - **Gerçek veri:** Kullanıcının vermediği sayı, özellik, müşteri, arayüz uydurma. Emin olmadığın
   bilgiyi ekrana yazma; hesaplanabiliyorsa kodda hesapla (ör. `1.01 ** 365`).
+- **Bayrak ve ikon:** haritada geçen her ülke/il `lib/ikon-katmani.js` ile bayrağını/ikonunu alır (MOTION_RULES §3b).
+  Dört script'i (`ikonlar.js`, `ikon-seti.js`, `iller.js`, `ikon-katmani.js`) `harita-motoru.js`'den önce ekle; motor
+  `IKON.hazirla()`'yı kendisi bekler. Yeni il ikonu `lib/ikonlar.js`'e kendi SVG'miz olarak (32x32, düz renk) eklenir,
+  `npm run ikonlar` ile katalogda göz ile kontrol edilir.
+- **CDN engelliyse:** `tools/lib.mjs` jsDelivr isteklerini aynı sürümün npm paketinden sunar (`.cache/cdn/`); bulut ortamında render bu yüzden çalışır.
 
 ## Düzeltme dili
 

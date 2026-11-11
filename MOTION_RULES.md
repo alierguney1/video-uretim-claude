@@ -84,6 +84,29 @@ Algoritmanın ölçtüğü şey 3–5 arası; "AI ile yapılmış" olması ne ö
 * Büyük anlardan önce 300–600 ms durgunluk bırak.
 * **Güvenli alan (1080x1920):** üst %12, alt %20, sağ %12 boş. Kontak sayfasında kırmızı görünür.
 
+## 3b) Bayrak ve ikon katmanı
+
+Çıplak harita "ders kitabı" gibi durur. Yer adı geçen her sahnede o yer **görsel bir kimlikle** gelir:
+ülke → bayrak, il/şehir → ikon. Araç: [lib/ikon-katmani.js](lib/ikon-katmani.js), örnek: [animasyonlar/ornek-ikonlar.html](animasyonlar/ornek-ikonlar.html),
+gözden geçirme: `npm run ikonlar` → `out/ikon-katalogu.png`.
+
+* **Ne zaman:** bir ülke ya da il ekranda **ilk kez adıyla** geçtiğinde ikonu/bayrağı `IKON.pop` ile düşer; seslendirmede
+  tekrar geçerse `IKON.zipla` ile bir kez zıplar. Harita "durdur-bul" karesiyse 81 ikonun hepsi (`IKON.iller81`).
+* **İkon seçimi:** ilin kendi insanının gururla anlattığı, herkesin bildiği şey (yemek, ürün, hayvan, doğa, yapı, isim
+  şakası). Yasak: kişi, din, siyaset, etnik köken, kulüp logosu, afet/terör çağrışımı, telifli karakter/marka, aşağılayıcı
+  kalıp yargı ("X'li cimri" türü). Komiklik nesneden ve hareketten gelir, ilden alay etmekten değil.
+  Emin değilsen sor: "Bu ilden biri bunu görünce güler mi, alınır mı?"
+* **Lisans:** yalnızca kendi çizimimiz (`lib/ikonlar.js`) ya da MIT/kamu malı setler (`lib/ikon-seti.js`: Fluent Emoji Flat,
+  flag-icons). İnternetten görsel indirip koymak yok.
+* **Renk kuralı korunur:** ikon ve bayrak süstür, gerçeği taşımaz. Turuncu vurgu (`#FF6B2C`) ikonun içinde ya da çerçevesinde
+  kullanılmaz; çıkartma kenarı kâğıt beyazı + koyu çizgi.
+* **Boyut (dikey 1080):** tek başına ikon ≥ 90 px, kalabalık haritada ≥ 44 px, bayrak yüksekliği ≥ 40 px. Daha küçüğü telefonda okunmaz.
+* **Kalabalık:** aynı anda en fazla 1 vurgulu (büyük + etiketli) ikon. Vurgu varken diğerleri %40'a çekilir.
+  Etiket `il · etiket` biçiminde, güvenli alanın içinde (kütüphane kırpar).
+* **Hareket:** giriş hafif taşmalı (`pop`, ≤ %10), bu bir olaydır; sürekli sallanma/zıplama yok. Bayrak dalgası sadece `direk` biçiminde ve yavaş.
+* **Doğruluk önce:** ikon iddia taşımaz ("en büyük", "ilk" gibi). Etikette sayı ya da tarih yazacaksan kaynağı brifte olsun.
+* Brifte sahne listesinin yanına **hangi sahnede hangi bayrak/ikon** sütunu eklenir.
+
 ## 4) Ses
 
 * **Ses kapalıyken de anlaşılmalı.** Ses güçlendirir, taşımaz.
@@ -144,3 +167,4 @@ Her video şu paketle çıkar (`animasyonlar/<ad>.brief.md` sonunda):
 * `npm run check -- <dosya>`: sözleşme denetimi, ölü zaman, kanca hareketi.
 * `npm run contact -- <dosya>`: her sahneden ve geçişten kare, `out/<ad>/contact.png`.
 * `npm run render -- <dosya>`: kare kare PNG + FFmpeg ile H.264 MP4, −14 LUFS ses, `cover.png`.
+* `npm run ikonlar`: 81 il ikonu + bayraklar tek sayfada (`out/ikon-katalogu.png`). Yeni bayrak/emoji: `npm run ikon-seti -- --bayrak jp,kr --emoji camel`.
