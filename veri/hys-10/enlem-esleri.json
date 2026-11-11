@@ -1,0 +1,569 @@
+[
+ {
+  "il": "Sinop",
+  "enlem": 42.023,
+  "baskent": "Skopje",
+  "ulke": "North Macedonia",
+  "farkKm": 2.6
+ },
+ {
+  "il": "Kırklareli",
+  "enlem": 41.743,
+  "baskent": "Tbilisi",
+  "ulke": "Georgia",
+  "farkKm": 1.8
+ },
+ {
+  "il": "Edirne",
+  "enlem": 41.6704,
+  "baskent": "Tbilisi",
+  "ulke": "Georgia",
+  "farkKm": 6.3
+ },
+ {
+  "il": "Bartın",
+  "enlem": 41.6344,
+  "baskent": "Tbilisi",
+  "ulke": "Georgia",
+  "farkKm": 10.3
+ },
+ {
+  "il": "Zonguldak",
+  "enlem": 41.4304,
+  "baskent": "Tirana",
+  "ulke": "Albania",
+  "farkKm": 11.4
+ },
+ {
+  "il": "Kastamonu",
+  "enlem": 41.389,
+  "baskent": "Tirana",
+  "ulke": "Albania",
+  "farkKm": 6.8
+ },
+ {
+  "il": "Samsun",
+  "enlem": 41.28,
+  "baskent": "Tashkent",
+  "ulke": "Uzbekistan",
+  "farkKm": 2.6
+ },
+ {
+  "il": "Karabük",
+  "enlem": 41.2,
+  "baskent": "Tashkent",
+  "ulke": "Uzbekistan",
+  "farkKm": 11.5
+ },
+ {
+  "il": "Artvin",
+  "enlem": 41.183,
+  "baskent": "Tashkent",
+  "ulke": "Uzbekistan",
+  "farkKm": 13.4
+ },
+ {
+  "il": "Ardahan",
+  "enlem": 41.1105,
+  "baskent": "Tashkent",
+  "ulke": "Uzbekistan",
+  "farkKm": 21.5
+ },
+ {
+  "il": "Rize",
+  "enlem": 41.0208,
+  "baskent": "Tashkent",
+  "ulke": "Uzbekistan",
+  "farkKm": 31.5
+ },
+ {
+  "il": "İstanbul",
+  "enlem": 41.0176,
+  "baskent": "Tashkent",
+  "ulke": "Uzbekistan",
+  "farkKm": 31.8
+ },
+ {
+  "il": "Ordu",
+  "enlem": 41.0004,
+  "baskent": "Tashkent",
+  "ulke": "Uzbekistan",
+  "farkKm": 33.7
+ },
+ {
+  "il": "Tekirdağ",
+  "enlem": 40.9909,
+  "baskent": "Tashkent",
+  "ulke": "Uzbekistan",
+  "farkKm": 34.8
+ },
+ {
+  "il": "Trabzon",
+  "enlem": 40.98,
+  "baskent": "Tashkent",
+  "ulke": "Uzbekistan",
+  "farkKm": 36
+ },
+ {
+  "il": "Giresun",
+  "enlem": 40.913,
+  "baskent": "Tashkent",
+  "ulke": "Uzbekistan",
+  "farkKm": 43.5
+ },
+ {
+  "il": "Düzce",
+  "enlem": 40.8438,
+  "baskent": "Madrid",
+  "ulke": "Spain",
+  "farkKm": 49.1
+ },
+ {
+  "il": "Kocaeli",
+  "enlem": 40.776,
+  "baskent": "Madrid",
+  "ulke": "Spain",
+  "farkKm": 41.6
+ },
+ {
+  "il": "Sakarya",
+  "enlem": 40.7667,
+  "baskent": "Madrid",
+  "ulke": "Spain",
+  "farkKm": 40.6
+ },
+ {
+  "il": "Bolu",
+  "enlem": 40.7363,
+  "baskent": "Madrid",
+  "ulke": "Spain",
+  "farkKm": 37.2
+ },
+ {
+  "il": "Amasya",
+  "enlem": 40.6537,
+  "baskent": "Madrid",
+  "ulke": "Spain",
+  "farkKm": 28
+ },
+ {
+  "il": "Yalova",
+  "enlem": 40.65,
+  "baskent": "Madrid",
+  "ulke": "Spain",
+  "farkKm": 27.6
+ },
+ {
+  "il": "Kars",
+  "enlem": 40.6085,
+  "baskent": "Madrid",
+  "ulke": "Spain",
+  "farkKm": 23
+ },
+ {
+  "il": "Çankırı",
+  "enlem": 40.607,
+  "baskent": "Madrid",
+  "ulke": "Spain",
+  "farkKm": 22.8
+ },
+ {
+  "il": "Çorum",
+  "enlem": 40.52,
+  "baskent": "Madrid",
+  "ulke": "Spain",
+  "farkKm": 13.1
+ },
+ {
+  "il": "Gümüşhane",
+  "enlem": 40.464,
+  "baskent": "Madrid",
+  "ulke": "Spain",
+  "farkKm": 6.9
+ },
+ {
+  "il": "Tokat",
+  "enlem": 40.306,
+  "baskent": "Baku",
+  "ulke": "Azerbaijan",
+  "farkKm": 10.1
+ },
+ {
+  "il": "Bayburt",
+  "enlem": 40.2552,
+  "baskent": "Yerevan",
+  "ulke": "Armenia",
+  "farkKm": 8
+ },
+ {
+  "il": "Bursa",
+  "enlem": 40.2019,
+  "baskent": "Yerevan",
+  "ulke": "Armenia",
+  "farkKm": 2.1
+ },
+ {
+  "il": "Bilecik",
+  "enlem": 40.15,
+  "baskent": "Yerevan",
+  "ulke": "Armenia",
+  "farkKm": 3.7
+ },
+ {
+  "il": "Çanakkale",
+  "enlem": 40.1459,
+  "baskent": "Yerevan",
+  "ulke": "Armenia",
+  "farkKm": 4.1
+ },
+ {
+  "il": "Ankara",
+  "enlem": 39.9292,
+  "baskent": "Beijing",
+  "ulke": "China",
+  "farkKm": 3.1
+ },
+ {
+  "il": "Iğdır",
+  "enlem": 39.9237,
+  "baskent": "Beijing",
+  "ulke": "China",
+  "farkKm": 2.4
+ },
+ {
+  "il": "Erzurum",
+  "enlem": 39.9204,
+  "baskent": "Beijing",
+  "ulke": "China",
+  "farkKm": 2.1
+ },
+ {
+  "il": "Kırıkkale",
+  "enlem": 39.8504,
+  "baskent": "Beijing",
+  "ulke": "China",
+  "farkKm": 5.7
+ },
+ {
+  "il": "Yozgat",
+  "enlem": 39.818,
+  "baskent": "Beijing",
+  "ulke": "China",
+  "farkKm": 9.3
+ },
+ {
+  "il": "Eskişehir",
+  "enlem": 39.795,
+  "baskent": "Beijing",
+  "ulke": "China",
+  "farkKm": 11.9
+ },
+ {
+  "il": "Erzincan",
+  "enlem": 39.7527,
+  "baskent": "Beijing",
+  "ulke": "China",
+  "farkKm": 16.6
+ },
+ {
+  "il": "Sivas",
+  "enlem": 39.7454,
+  "baskent": "Beijing",
+  "ulke": "China",
+  "farkKm": 17.4
+ },
+ {
+  "il": "Ağrı",
+  "enlem": 39.7198,
+  "baskent": "Beijing",
+  "ulke": "China",
+  "farkKm": 20.2
+ },
+ {
+  "il": "Balıkesir",
+  "enlem": 39.6504,
+  "baskent": "Beijing",
+  "ulke": "China",
+  "farkKm": 27.9
+ },
+ {
+  "il": "Kütahya",
+  "enlem": 39.42,
+  "baskent": "Pyongyang",
+  "ulke": "North Korea",
+  "farkKm": 44.3
+ },
+ {
+  "il": "Kırşehir",
+  "enlem": 39.142,
+  "baskent": "Pyongyang",
+  "ulke": "North Korea",
+  "farkKm": 13.4
+ },
+ {
+  "il": "Tunceli",
+  "enlem": 39.1167,
+  "baskent": "Pyongyang",
+  "ulke": "North Korea",
+  "farkKm": 10.6
+ },
+ {
+  "il": "Bingöl",
+  "enlem": 38.885,
+  "baskent": "Washington,  D.C.",
+  "ulke": "United States of America",
+  "farkKm": 1.8
+ },
+ {
+  "il": "Afyonkarahisar",
+  "enlem": 38.7504,
+  "baskent": "Lisbon",
+  "ulke": "Portugal",
+  "farkKm": 2.9
+ },
+ {
+  "il": "Muş",
+  "enlem": 38.749,
+  "baskent": "Lisbon",
+  "ulke": "Portugal",
+  "farkKm": 2.7
+ },
+ {
+  "il": "Kayseri",
+  "enlem": 38.735,
+  "baskent": "Lisbon",
+  "ulke": "Portugal",
+  "farkKm": 1.1
+ },
+ {
+  "il": "Uşak",
+  "enlem": 38.6804,
+  "baskent": "Lisbon",
+  "ulke": "Portugal",
+  "farkKm": 4.9
+ },
+ {
+  "il": "Elazığ",
+  "enlem": 38.68,
+  "baskent": "Lisbon",
+  "ulke": "Portugal",
+  "farkKm": 5
+ },
+ {
+  "il": "Manisa",
+  "enlem": 38.6304,
+  "baskent": "Dushanbe",
+  "ulke": "Tajikistan",
+  "farkKm": 7.8
+ },
+ {
+  "il": "Nevşehir",
+  "enlem": 38.624,
+  "baskent": "Dushanbe",
+  "ulke": "Tajikistan",
+  "farkKm": 7.1
+ },
+ {
+  "il": "Van",
+  "enlem": 38.4954,
+  "baskent": "Dushanbe",
+  "ulke": "Tajikistan",
+  "farkKm": 7.2
+ },
+ {
+  "il": "İzmir",
+  "enlem": 38.4381,
+  "baskent": "Dushanbe",
+  "ulke": "Tajikistan",
+  "farkKm": 13.6
+ },
+ {
+  "il": "Bitlis",
+  "enlem": 38.394,
+  "baskent": "Dushanbe",
+  "ulke": "Tajikistan",
+  "farkKm": 18.5
+ },
+ {
+  "il": "Malatya",
+  "enlem": 38.3704,
+  "baskent": "Dushanbe",
+  "ulke": "Tajikistan",
+  "farkKm": 21.1
+ },
+ {
+  "il": "Aksaray",
+  "enlem": 38.3687,
+  "baskent": "Dushanbe",
+  "ulke": "Tajikistan",
+  "farkKm": 21.3
+ },
+ {
+  "il": "Niğde",
+  "enlem": 37.976,
+  "baskent": "Athens",
+  "ulke": "Greece",
+  "farkKm": 1
+ },
+ {
+  "il": "Siirt",
+  "enlem": 37.944,
+  "baskent": "Ashgabat",
+  "ulke": "Turkmenistan",
+  "farkKm": 0.7
+ },
+ {
+  "il": "Diyarbakır",
+  "enlem": 37.9204,
+  "baskent": "Ashgabat",
+  "ulke": "Turkmenistan",
+  "farkKm": 3.3
+ },
+ {
+  "il": "Batman",
+  "enlem": 37.8904,
+  "baskent": "Ashgabat",
+  "ulke": "Turkmenistan",
+  "farkKm": 6.6
+ },
+ {
+  "il": "Konya",
+  "enlem": 37.877,
+  "baskent": "Ashgabat",
+  "ulke": "Turkmenistan",
+  "farkKm": 8.1
+ },
+ {
+  "il": "Aydın",
+  "enlem": 37.85,
+  "baskent": "Ashgabat",
+  "ulke": "Turkmenistan",
+  "farkKm": 11.1
+ },
+ {
+  "il": "Denizli",
+  "enlem": 37.7704,
+  "baskent": "Ashgabat",
+  "ulke": "Turkmenistan",
+  "farkKm": 20
+ },
+ {
+  "il": "Adıyaman",
+  "enlem": 37.7704,
+  "baskent": "Ashgabat",
+  "ulke": "Turkmenistan",
+  "farkKm": 20
+ },
+ {
+  "il": "Isparta",
+  "enlem": 37.77,
+  "baskent": "Ashgabat",
+  "ulke": "Turkmenistan",
+  "farkKm": 20
+ },
+ {
+  "il": "Burdur",
+  "enlem": 37.7167,
+  "baskent": "Seoul",
+  "ulke": "South Korea",
+  "farkKm": 16.5
+ },
+ {
+  "il": "Kahramanmaraş",
+  "enlem": 37.61,
+  "baskent": "Seoul",
+  "ulke": "South Korea",
+  "farkKm": 4.6
+ },
+ {
+  "il": "Hakkari",
+  "enlem": 37.5744,
+  "baskent": "Seoul",
+  "ulke": "South Korea",
+  "farkKm": 0.7
+ },
+ {
+  "il": "Şırnak",
+  "enlem": 37.5164,
+  "baskent": "Seoul",
+  "ulke": "South Korea",
+  "farkKm": 5.8
+ },
+ {
+  "il": "Mardin",
+  "enlem": 37.3115,
+  "baskent": "Seoul",
+  "ulke": "South Korea",
+  "farkKm": 28.6
+ },
+ {
+  "il": "Muğla",
+  "enlem": 37.2164,
+  "baskent": "Seoul",
+  "ulke": "South Korea",
+  "farkKm": 39.1
+ },
+ {
+  "il": "Karaman",
+  "enlem": 37.1815,
+  "baskent": "Tunis",
+  "ulke": "Tunisia",
+  "farkKm": 42.1
+ },
+ {
+  "il": "Şanlıurfa",
+  "enlem": 37.17,
+  "baskent": "Tunis",
+  "ulke": "Tunisia",
+  "farkKm": 40.8
+ },
+ {
+  "il": "Gaziantep",
+  "enlem": 37.0769,
+  "baskent": "Tunis",
+  "ulke": "Tunisia",
+  "farkKm": 30.5
+ },
+ {
+  "il": "Osmaniye",
+  "enlem": 37.0742,
+  "baskent": "Tunis",
+  "ulke": "Tunisia",
+  "farkKm": 30.2
+ },
+ {
+  "il": "Adana",
+  "enlem": 36.9969,
+  "baskent": "Tunis",
+  "ulke": "Tunisia",
+  "farkKm": 21.6
+ },
+ {
+  "il": "Antalya",
+  "enlem": 36.8919,
+  "baskent": "Tunis",
+  "ulke": "Tunisia",
+  "farkKm": 9.9
+ },
+ {
+  "il": "Mersin",
+  "enlem": 36.8,
+  "baskent": "Tunis",
+  "ulke": "Tunisia",
+  "farkKm": 0.3
+ },
+ {
+  "il": "Kilis",
+  "enlem": 36.7204,
+  "baskent": "Algiers",
+  "ulke": "Algeria",
+  "farkKm": 5
+ },
+ {
+  "il": "Hatay",
+  "enlem": 36.2333,
+  "baskent": "Valletta",
+  "ulke": "Malta",
+  "farkKm": 37.1
+ }
+]

@@ -10,6 +10,10 @@ her piksel kodla çizilir. Her işte **[MOTION_RULES.md](MOTION_RULES.md)** geç
    `animasyonlar/<ad>.brief.md` olarak kaydet. Kanca türü, ara ödüller, gönderilme sebebi ve
    farklılık satırları zorunlu: `animasyonlar/` içindeki son brifleri ve `yayinlar.csv`'yi oku,
    aynı kanca türünü art arda 2'den fazla kullanma. `STYLE.md` varsa sabit kimliğe uy.
+   **Senaryo her zaman merak motoruyla yazılır:** [promptlar/03-senaryo.md](promptlar/03-senaryo.md).
+   Cold open, merak boşluğu, katmanlı açık döngüler, gizem, gerilim, ters köşe ve cliffhanger/döngü
+   araçlarından en az 5'i kullanılır; brifte "merak haritası" tablosu zorunludur. Bilgi vermek yetmez,
+   izleyici her an bir cevap beklemeli.
 2. **Sahne listesi + süreler + geçiş nesneleri.** Göster, **onay al**. Onaydan önce kod yazma.
 3. **Kod.** `template.html` dosyasını `animasyonlar/<ad>.html` olarak kopyala. `CONFIG`, `SCENES`,
    `SOUNDS` ve çizim fonksiyonlarını değiştir. Sözleşme kısmına (en alttaki blok) dokunma.

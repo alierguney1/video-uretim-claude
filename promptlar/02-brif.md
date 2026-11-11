@@ -12,7 +12,9 @@ ne istediğini bulunca uzun yaz.
 6. **Hareket dili:** Hareketin anlamı, sabit kurallar (ör. sağa = ilerleme, büyüme = önem).
 7. **Yasaklar:** MOTION_RULES.md + bu işe özel olanlar.
 8. **Kanca türü:** MOTION_RULES.md §2 kataloğundan biri. Aynı tür art arda en fazla 2 kez.
-9. **Ara ödüller:** Açık döngü boyunca her 3–5 sn'de gelen küçük "aaa"ların listesi ve saniyeleri.
+9. **Ara ödüller + merak haritası:** Açık döngü boyunca her 3–5 sn'de gelen küçük "aaa"ların listesi ve
+   saniyeleri. Altına [03-senaryo.md](03-senaryo.md) §4'teki **merak haritası** tablosu (hangi soru hangi
+   saniyede açılıp kapanıyor), **ters köşe** satırı ve **cliffhanger/döngü** satırı. Hiçbiri boş kalamaz.
 10. **Gönderilme sebebi:** "Bunu kime, neden gönderir?" Tek cümle. Yazılamıyorsa fikir zayıf.
 11. **Farklılık:** Son 5 videodan kanca türü ve yapı olarak nasıl ayrılıyor.
 12. **Yayın paketi:** kapak saniyesi, başlık, açıklama, 3–5 etiket, AI etiketi (gerekli mi), kaynak.
@@ -35,8 +37,11 @@ SAHNELER:
 SANAT YÖNÜ: [arka plan], [palet + tek vurgu rengi], [yazı tipi], [doku], referans: [varsa].
 HAREKET DİLİ: [3 kural, her sahnede tutarlı].
 YASAKLAR: MOTION_RULES.md + [bu işe özel].
-KANCA TÜRÜ: [sayı şoku / yanlış inanış / sonuçtan başla / görsel paradoks / ya …olursa / yarım hareket]
+KANCA TÜRÜ: [sayı şoku / yanlış inanış / sonuçtan başla / görsel paradoks / ya …olursa / yarım hareket / tahmin et / gizem]
 ARA ÖDÜLLER: [sn: ne] · [sn: ne] · …
+MERAK HARİTASI: A [açılış sn → kapanış sn: soru] · B [...] · C/cliffhanger [...]
+TERS KÖŞE: [sn: kırılan varsayım]
+CLIFFHANGER / DÖNGÜ: [son cümle ne açıyor / nereye bağlanıyor]
 GÖNDERİLME SEBEBİ: [kime, neden]
 FARKLILIK: [son videolardan farkı].
 PAKET: kapak [sn] · başlık [...] · açıklama [...] · etiketler [...] · AI etiketi [evet/hayır, neden] · kaynak [...]
