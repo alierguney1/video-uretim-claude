@@ -1,0 +1,16 @@
+{
+  "voice": "Charon",
+  "style": "enerjik ve merak uyandıran, hızlı tempolu, önemli kelimeleri vurgulayan, izleyiciye meydan okur gibi",
+  "tempo": 1.12, "lead": 0.15, "gap": 0.3, "tail": 2.2,
+  "lines": [
+    { "id": "l1", "text": "Seksen bir ilin KAÇI, Ankara'dan çok yabancı bir başkente yakın? Tahmin et.", "caption": "81 ilin kaçı, Ankara'dan çok yabancı bir başkente yakın? Tahmin et.", "holdAfter": 0.6 },
+    { "id": "l2", "text": "Kural basit: il merkezinden kuşuçuşu. Ankara mı yakın, komşu başkent mi?" },
+    { "id": "l3", "text": "Batıdan başlayalım: Edirne Sofya'ya, Kırklareli Bükreş'e, İzmir Atina'ya daha yakın." },
+    { "id": "l4", "text": "Güneyde Lefkoşa, Beyrut ve Şam: Antalya'dan Hatay'a, on bir il daha." },
+    { "id": "l5", "text": "Ama asıl sürpriz doğuda. <short pause> Tek bir başkent, yirmi üç ile Ankara'dan yakın: ERİVAN.", "caption": "Ama asıl sürpriz doğuda. Tek bir başkent, 23 ile Ankara'dan yakın: Erivan.", "holdAfter": 0.5 },
+    { "id": "l6", "text": "Iğdır'dan Erivan, kırk dokuz kilometre. Ankara, dokuz yüz elli üç.", "caption": "Iğdır'dan Erivan 49 km. Ankara 953." },
+    { "id": "l7", "text": "Kahramanmaraş ise kıl payı: fark sadece on sekiz kilometre.", "caption": "Kahramanmaraş ise kıl payı: fark sadece 18 km." },
+    { "id": "l8", "text": "Sonuç: seksen bir ilin kırk üçü. Türkiye'nin YARISINDAN fazlası.", "caption": "Sonuç: 81 ilin 43'ü. Türkiye'nin yarısından fazlası.", "holdAfter": 0.4 },
+    { "id": "l9", "text": "Senin ilin boyalı mı?" }
+  ]
+}

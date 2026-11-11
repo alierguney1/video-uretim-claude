@@ -1,0 +1,590 @@
+{
+ "tarih": "2026-12-21",
+ "tz": "UTC+3",
+ "yontem": "NOAA, ufuk 90.833°, deniz seviyesi",
+ "ilkDogan": [
+  "Hakkari",
+  "07:16"
+ ],
+ "sonDogan": [
+  "Edirne",
+  "08:37"
+ ],
+ "ilkBatan": [
+  "Iğdır",
+  "16:42"
+ ],
+ "sonBatan": [
+  "İzmir",
+  "17:54"
+ ],
+ "iller": [
+  {
+   "il": "Adana",
+   "dogus": "07:48",
+   "ogle": "12:37",
+   "batis": "17:25",
+   "gunBoyu": "9 sa 37 dk"
+  },
+  {
+   "il": "Adıyaman",
+   "dogus": "07:38",
+   "ogle": "12:25",
+   "batis": "17:11",
+   "gunBoyu": "9 sa 33 dk"
+  },
+  {
+   "il": "Afyonkarahisar",
+   "dogus": "08:12",
+   "ogle": "12:56",
+   "batis": "17:39",
+   "gunBoyu": "9 sa 27 dk"
+  },
+  {
+   "il": "Ağrı",
+   "dogus": "07:25",
+   "ogle": "12:06",
+   "batis": "16:46",
+   "gunBoyu": "9 sa 21 dk"
+  },
+  {
+   "il": "Aksaray",
+   "dogus": "07:57",
+   "ogle": "12:42",
+   "batis": "17:26",
+   "gunBoyu": "9 sa 29 dk"
+  },
+  {
+   "il": "Amasya",
+   "dogus": "07:57",
+   "ogle": "12:34",
+   "batis": "17:12",
+   "gunBoyu": "9 sa 16 dk"
+  },
+  {
+   "il": "Ankara",
+   "dogus": "08:06",
+   "ogle": "12:46",
+   "batis": "17:26",
+   "gunBoyu": "9 sa 20 dk"
+  },
+  {
+   "il": "Antalya",
+   "dogus": "08:06",
+   "ogle": "12:55",
+   "batis": "17:44",
+   "gunBoyu": "9 sa 38 dk"
+  },
+  {
+   "il": "Ardahan",
+   "dogus": "07:31",
+   "ogle": "12:07",
+   "batis": "16:43",
+   "gunBoyu": "9 sa 13 dk"
+  },
+  {
+   "il": "Artvin",
+   "dogus": "07:34",
+   "ogle": "12:11",
+   "batis": "16:47",
+   "gunBoyu": "9 sa 12 dk"
+  },
+  {
+   "il": "Aydın",
+   "dogus": "08:20",
+   "ogle": "13:06",
+   "batis": "17:53",
+   "gunBoyu": "9 sa 32 dk"
+  },
+  {
+   "il": "Balıkesir",
+   "dogus": "08:25",
+   "ogle": "13:06",
+   "batis": "17:47",
+   "gunBoyu": "9 sa 22 dk"
+  },
+  {
+   "il": "Bartın",
+   "dogus": "08:14",
+   "ogle": "12:48",
+   "batis": "17:23",
+   "gunBoyu": "9 sa 9 dk"
+  },
+  {
+   "il": "Batman",
+   "dogus": "07:27",
+   "ogle": "12:13",
+   "batis": "16:59",
+   "gunBoyu": "9 sa 32 dk"
+  },
+  {
+   "il": "Bayburt",
+   "dogus": "07:38",
+   "ogle": "12:17",
+   "batis": "16:56",
+   "gunBoyu": "9 sa 18 dk"
+  },
+  {
+   "il": "Bilecik",
+   "dogus": "08:19",
+   "ogle": "12:58",
+   "batis": "17:37",
+   "gunBoyu": "9 sa 19 dk"
+  },
+  {
+   "il": "Bingöl",
+   "dogus": "07:33",
+   "ogle": "12:16",
+   "batis": "16:59",
+   "gunBoyu": "9 sa 26 dk"
+  },
+  {
+   "il": "Bitlis",
+   "dogus": "07:25",
+   "ogle": "12:09",
+   "batis": "16:54",
+   "gunBoyu": "9 sa 29 dk"
+  },
+  {
+   "il": "Bolu",
+   "dogus": "08:14",
+   "ogle": "12:51",
+   "batis": "17:29",
+   "gunBoyu": "9 sa 15 dk"
+  },
+  {
+   "il": "Burdur",
+   "dogus": "08:10",
+   "ogle": "12:57",
+   "batis": "17:43",
+   "gunBoyu": "9 sa 33 dk"
+  },
+  {
+   "il": "Bursa",
+   "dogus": "08:22",
+   "ogle": "13:02",
+   "batis": "17:41",
+   "gunBoyu": "9 sa 18 dk"
+  },
+  {
+   "il": "Çanakkale",
+   "dogus": "08:33",
+   "ogle": "13:12",
+   "batis": "17:52",
+   "gunBoyu": "9 sa 19 dk"
+  },
+  {
+   "il": "Çankırı",
+   "dogus": "08:05",
+   "ogle": "12:43",
+   "batis": "17:21",
+   "gunBoyu": "9 sa 16 dk"
+  },
+  {
+   "il": "Çorum",
+   "dogus": "08:00",
+   "ogle": "12:38",
+   "batis": "17:16",
+   "gunBoyu": "9 sa 16 dk"
+  },
+  {
+   "il": "Denizli",
+   "dogus": "08:15",
+   "ogle": "13:02",
+   "batis": "17:48",
+   "gunBoyu": "9 sa 33 dk"
+  },
+  {
+   "il": "Diyarbakır",
+   "dogus": "07:31",
+   "ogle": "12:17",
+   "batis": "17:03",
+   "gunBoyu": "9 sa 32 dk"
+  },
+  {
+   "il": "Düzce",
+   "dogus": "08:16",
+   "ogle": "12:53",
+   "batis": "17:30",
+   "gunBoyu": "9 sa 14 dk"
+  },
+  {
+   "il": "Edirne",
+   "dogus": "08:37",
+   "ogle": "13:12",
+   "batis": "17:46",
+   "gunBoyu": "9 sa 9 dk"
+  },
+  {
+   "il": "Elazığ",
+   "dogus": "07:37",
+   "ogle": "12:21",
+   "batis": "17:05",
+   "gunBoyu": "9 sa 28 dk"
+  },
+  {
+   "il": "Erzincan",
+   "dogus": "07:39",
+   "ogle": "12:20",
+   "batis": "17:00",
+   "gunBoyu": "9 sa 21 dk"
+  },
+  {
+   "il": "Erzurum",
+   "dogus": "07:33",
+   "ogle": "12:13",
+   "batis": "16:53",
+   "gunBoyu": "9 sa 20 dk"
+  },
+  {
+   "il": "Eskişehir",
+   "dogus": "08:15",
+   "ogle": "12:56",
+   "batis": "17:36",
+   "gunBoyu": "9 sa 21 dk"
+  },
+  {
+   "il": "Gaziantep",
+   "dogus": "07:40",
+   "ogle": "12:28",
+   "batis": "17:17",
+   "gunBoyu": "9 sa 37 dk"
+  },
+  {
+   "il": "Giresun",
+   "dogus": "07:47",
+   "ogle": "12:24",
+   "batis": "17:01",
+   "gunBoyu": "9 sa 14 dk"
+  },
+  {
+   "il": "Gümüşhane",
+   "dogus": "07:42",
+   "ogle": "12:20",
+   "batis": "16:58",
+   "gunBoyu": "9 sa 17 dk"
+  },
+  {
+   "il": "Hakkari",
+   "dogus": "07:16",
+   "ogle": "12:03",
+   "batis": "16:50",
+   "gunBoyu": "9 sa 34 dk"
+  },
+  {
+   "il": "Hatay",
+   "dogus": "07:43",
+   "ogle": "12:33",
+   "batis": "17:24",
+   "gunBoyu": "9 sa 41 dk"
+  },
+  {
+   "il": "Iğdır",
+   "dogus": "07:22",
+   "ogle": "12:02",
+   "batis": "16:42",
+   "gunBoyu": "9 sa 20 dk"
+  },
+  {
+   "il": "Isparta",
+   "dogus": "08:09",
+   "ogle": "12:56",
+   "batis": "17:42",
+   "gunBoyu": "9 sa 33 dk"
+  },
+  {
+   "il": "İstanbul",
+   "dogus": "08:25",
+   "ogle": "13:02",
+   "batis": "17:39",
+   "gunBoyu": "9 sa 13 dk"
+  },
+  {
+   "il": "İzmir",
+   "dogus": "08:25",
+   "ogle": "13:09",
+   "batis": "17:54",
+   "gunBoyu": "9 sa 29 dk"
+  },
+  {
+   "il": "Kahramanmaraş",
+   "dogus": "07:43",
+   "ogle": "12:30",
+   "batis": "17:17",
+   "gunBoyu": "9 sa 34 dk"
+  },
+  {
+   "il": "Karabük",
+   "dogus": "08:11",
+   "ogle": "12:47",
+   "batis": "17:23",
+   "gunBoyu": "9 sa 12 dk"
+  },
+  {
+   "il": "Karaman",
+   "dogus": "07:57",
+   "ogle": "12:45",
+   "batis": "17:33",
+   "gunBoyu": "9 sa 36 dk"
+  },
+  {
+   "il": "Kars",
+   "dogus": "07:28",
+   "ogle": "12:05",
+   "batis": "16:43",
+   "gunBoyu": "9 sa 16 dk"
+  },
+  {
+   "il": "Kastamonu",
+   "dogus": "08:07",
+   "ogle": "12:43",
+   "batis": "17:18",
+   "gunBoyu": "9 sa 11 dk"
+  },
+  {
+   "il": "Kayseri",
+   "dogus": "07:52",
+   "ogle": "12:36",
+   "batis": "17:19",
+   "gunBoyu": "9 sa 27 dk"
+  },
+  {
+   "il": "Kırıkkale",
+   "dogus": "08:03",
+   "ogle": "12:44",
+   "batis": "17:24",
+   "gunBoyu": "9 sa 21 dk"
+  },
+  {
+   "il": "Kırklareli",
+   "dogus": "08:35",
+   "ogle": "13:09",
+   "batis": "17:43",
+   "gunBoyu": "9 sa 9 dk"
+  },
+  {
+   "il": "Kırşehir",
+   "dogus": "07:59",
+   "ogle": "12:41",
+   "batis": "17:24",
+   "gunBoyu": "9 sa 25 dk"
+  },
+  {
+   "il": "Kilis",
+   "dogus": "07:40",
+   "ogle": "12:29",
+   "batis": "17:19",
+   "gunBoyu": "9 sa 39 dk"
+  },
+  {
+   "il": "Kocaeli",
+   "dogus": "08:21",
+   "ogle": "12:58",
+   "batis": "17:36",
+   "gunBoyu": "9 sa 15 dk"
+  },
+  {
+   "il": "Konya",
+   "dogus": "08:02",
+   "ogle": "12:48",
+   "batis": "17:34",
+   "gunBoyu": "9 sa 32 dk"
+  },
+  {
+   "il": "Kütahya",
+   "dogus": "08:17",
+   "ogle": "12:58",
+   "batis": "17:40",
+   "gunBoyu": "9 sa 23 dk"
+  },
+  {
+   "il": "Malatya",
+   "dogus": "07:40",
+   "ogle": "12:25",
+   "batis": "17:09",
+   "gunBoyu": "9 sa 29 dk"
+  },
+  {
+   "il": "Manisa",
+   "dogus": "08:24",
+   "ogle": "13:08",
+   "batis": "17:52",
+   "gunBoyu": "9 sa 28 dk"
+  },
+  {
+   "il": "Mardin",
+   "dogus": "07:27",
+   "ogle": "12:15",
+   "batis": "17:03",
+   "gunBoyu": "9 sa 35 dk"
+  },
+  {
+   "il": "Mersin",
+   "dogus": "07:50",
+   "ogle": "12:39",
+   "batis": "17:28",
+   "gunBoyu": "9 sa 38 dk"
+  },
+  {
+   "il": "Muğla",
+   "dogus": "08:16",
+   "ogle": "13:04",
+   "batis": "17:52",
+   "gunBoyu": "9 sa 36 dk"
+  },
+  {
+   "il": "Muş",
+   "dogus": "07:28",
+   "ogle": "12:12",
+   "batis": "16:55",
+   "gunBoyu": "9 sa 27 dk"
+  },
+  {
+   "il": "Nevşehir",
+   "dogus": "07:55",
+   "ogle": "12:39",
+   "batis": "17:23",
+   "gunBoyu": "9 sa 28 dk"
+  },
+  {
+   "il": "Niğde",
+   "dogus": "07:53",
+   "ogle": "12:39",
+   "batis": "17:25",
+   "gunBoyu": "9 sa 32 dk"
+  },
+  {
+   "il": "Ordu",
+   "dogus": "07:50",
+   "ogle": "12:26",
+   "batis": "17:03",
+   "gunBoyu": "9 sa 13 dk"
+  },
+  {
+   "il": "Osmaniye",
+   "dogus": "07:44",
+   "ogle": "12:33",
+   "batis": "17:21",
+   "gunBoyu": "9 sa 37 dk"
+  },
+  {
+   "il": "Rize",
+   "dogus": "07:39",
+   "ogle": "12:16",
+   "batis": "16:52",
+   "gunBoyu": "9 sa 13 dk"
+  },
+  {
+   "il": "Sakarya",
+   "dogus": "08:19",
+   "ogle": "12:56",
+   "batis": "17:34",
+   "gunBoyu": "9 sa 15 dk"
+  },
+  {
+   "il": "Samsun",
+   "dogus": "07:57",
+   "ogle": "12:32",
+   "batis": "17:08",
+   "gunBoyu": "9 sa 12 dk"
+  },
+  {
+   "il": "Siirt",
+   "dogus": "07:24",
+   "ogle": "12:10",
+   "batis": "16:56",
+   "gunBoyu": "9 sa 32 dk"
+  },
+  {
+   "il": "Sinop",
+   "dogus": "08:04",
+   "ogle": "12:37",
+   "batis": "17:11",
+   "gunBoyu": "9 sa 7 dk"
+  },
+  {
+   "il": "Sivas",
+   "dogus": "07:49",
+   "ogle": "12:30",
+   "batis": "17:10",
+   "gunBoyu": "9 sa 21 dk"
+  },
+  {
+   "il": "Şanlıurfa",
+   "dogus": "07:35",
+   "ogle": "12:23",
+   "batis": "17:11",
+   "gunBoyu": "9 sa 36 dk"
+  },
+  {
+   "il": "Şırnak",
+   "dogus": "07:21",
+   "ogle": "12:08",
+   "batis": "16:55",
+   "gunBoyu": "9 sa 34 dk"
+  },
+  {
+   "il": "Tekirdağ",
+   "dogus": "08:31",
+   "ogle": "13:08",
+   "batis": "17:45",
+   "gunBoyu": "9 sa 13 dk"
+  },
+  {
+   "il": "Tokat",
+   "dogus": "07:53",
+   "ogle": "12:32",
+   "batis": "17:10",
+   "gunBoyu": "9 sa 18 dk"
+  },
+  {
+   "il": "Trabzon",
+   "dogus": "07:42",
+   "ogle": "12:19",
+   "batis": "16:56",
+   "gunBoyu": "9 sa 14 dk"
+  },
+  {
+   "il": "Tunceli",
+   "dogus": "07:37",
+   "ogle": "12:20",
+   "batis": "17:02",
+   "gunBoyu": "9 sa 25 dk"
+  },
+  {
+   "il": "Uşak",
+   "dogus": "08:16",
+   "ogle": "13:00",
+   "batis": "17:44",
+   "gunBoyu": "9 sa 28 dk"
+  },
+  {
+   "il": "Van",
+   "dogus": "07:20",
+   "ogle": "12:04",
+   "batis": "16:49",
+   "gunBoyu": "9 sa 29 dk"
+  },
+  {
+   "il": "Yalova",
+   "dogus": "08:23",
+   "ogle": "13:01",
+   "batis": "17:39",
+   "gunBoyu": "9 sa 16 dk"
+  },
+  {
+   "il": "Yozgat",
+   "dogus": "07:58",
+   "ogle": "12:39",
+   "batis": "17:19",
+   "gunBoyu": "9 sa 21 dk"
+  },
+  {
+   "il": "Zonguldak",
+   "dogus": "08:15",
+   "ogle": "12:51",
+   "batis": "17:26",
+   "gunBoyu": "9 sa 11 dk"
+  }
+ ]
+}

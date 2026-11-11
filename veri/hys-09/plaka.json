@@ -1,0 +1,1308 @@
+{
+ "yontem": "kuşuçuşu, il merkezi; akıllı rota: en yakın komşu + 2-opt + or-opt, açık yol",
+ "plakaKm": 46555,
+ "dunyaCevreKm": 40075,
+ "akilliKm": 6948,
+ "kat": 6.7,
+ "cevreGecis": {
+  "plaka": 70,
+  "il": "Karaman",
+  "km": 40551
+ },
+ "akilliRota": [
+  22,
+  39,
+  59,
+  17,
+  10,
+  45,
+  35,
+  9,
+  48,
+  20,
+  7,
+  15,
+  32,
+  3,
+  64,
+  43,
+  26,
+  11,
+  16,
+  77,
+  34,
+  41,
+  54,
+  81,
+  14,
+  67,
+  74,
+  78,
+  6,
+  71,
+  18,
+  37,
+  57,
+  55,
+  52,
+  28,
+  29,
+  61,
+  53,
+  8,
+  75,
+  36,
+  76,
+  4,
+  65,
+  30,
+  73,
+  56,
+  13,
+  49,
+  72,
+  47,
+  21,
+  12,
+  25,
+  69,
+  24,
+  62,
+  23,
+  44,
+  2,
+  63,
+  27,
+  79,
+  46,
+  80,
+  31,
+  1,
+  33,
+  70,
+  42,
+  68,
+  51,
+  38,
+  50,
+  40,
+  66,
+  19,
+  5,
+  60,
+  58
+ ],
+ "iller": [
+  {
+   "plaka": 1,
+   "il": "Adana",
+   "durak": 68,
+   "merkez": [
+    35.3181,
+    36.9969
+   ]
+  },
+  {
+   "plaka": 2,
+   "il": "Adıyaman",
+   "durak": 61,
+   "merkez": [
+    38.2799,
+    37.7704
+   ]
+  },
+  {
+   "plaka": 3,
+   "il": "Afyonkarahisar",
+   "durak": 14,
+   "merkez": [
+    30.55,
+    38.7504
+   ]
+  },
+  {
+   "plaka": 4,
+   "il": "Ağrı",
+   "durak": 44,
+   "merkez": [
+    43.0513,
+    39.7198
+   ]
+  },
+  {
+   "plaka": 5,
+   "il": "Amasya",
+   "durak": 79,
+   "merkez": [
+    35.833,
+    40.6537
+   ]
+  },
+  {
+   "plaka": 6,
+   "il": "Ankara",
+   "durak": 29,
+   "merkez": [
+    32.8624,
+    39.9292
+   ]
+  },
+  {
+   "plaka": 7,
+   "il": "Antalya",
+   "durak": 11,
+   "merkez": [
+    30.698,
+    36.8919
+   ]
+  },
+  {
+   "plaka": 8,
+   "il": "Artvin",
+   "durak": 40,
+   "merkez": [
+    41.818,
+    41.183
+   ]
+  },
+  {
+   "plaka": 9,
+   "il": "Aydın",
+   "durak": 8,
+   "merkez": [
+    27.85,
+    37.85
+   ]
+  },
+  {
+   "plaka": 10,
+   "il": "Balıkesir",
+   "durak": 5,
+   "merkez": [
+    27.89,
+    39.6504
+   ]
+  },
+  {
+   "plaka": 11,
+   "il": "Bilecik",
+   "durak": 18,
+   "merkez": [
+    29.983,
+    40.15
+   ]
+  },
+  {
+   "plaka": 12,
+   "il": "Bingöl",
+   "durak": 54,
+   "merkez": [
+    40.498,
+    38.885
+   ]
+  },
+  {
+   "plaka": 13,
+   "il": "Bitlis",
+   "durak": 49,
+   "merkez": [
+    42.123,
+    38.394
+   ]
+  },
+  {
+   "plaka": 14,
+   "il": "Bolu",
+   "durak": 25,
+   "merkez": [
+    31.6061,
+    40.7363
+   ]
+  },
+  {
+   "plaka": 15,
+   "il": "Burdur",
+   "durak": 12,
+   "merkez": [
+    30.2833,
+    37.7167
+   ]
+  },
+  {
+   "plaka": 16,
+   "il": "Bursa",
+   "durak": 19,
+   "merkez": [
+    29.0681,
+    40.2019
+   ]
+  },
+  {
+   "plaka": 17,
+   "il": "Çanakkale",
+   "durak": 4,
+   "merkez": [
+    26.4064,
+    40.1459
+   ]
+  },
+  {
+   "plaka": 18,
+   "il": "Çankırı",
+   "durak": 31,
+   "merkez": [
+    33.621,
+    40.607
+   ]
+  },
+  {
+   "plaka": 19,
+   "il": "Çorum",
+   "durak": 78,
+   "merkez": [
+    34.95,
+    40.52
+   ]
+  },
+  {
+   "plaka": 20,
+   "il": "Denizli",
+   "durak": 10,
+   "merkez": [
+    29.08,
+    37.7704
+   ]
+  },
+  {
+   "plaka": 21,
+   "il": "Diyarbakır",
+   "durak": 53,
+   "merkez": [
+    40.23,
+    37.9204
+   ]
+  },
+  {
+   "plaka": 22,
+   "il": "Edirne",
+   "durak": 1,
+   "merkez": [
+    26.57,
+    41.6704
+   ]
+  },
+  {
+   "plaka": 23,
+   "il": "Elazığ",
+   "durak": 59,
+   "merkez": [
+    39.23,
+    38.68
+   ]
+  },
+  {
+   "plaka": 24,
+   "il": "Erzincan",
+   "durak": 57,
+   "merkez": [
+    39.4928,
+    39.7527
+   ]
+  },
+  {
+   "plaka": 25,
+   "il": "Erzurum",
+   "durak": 55,
+   "merkez": [
+    41.29,
+    39.9204
+   ]
+  },
+  {
+   "plaka": 26,
+   "il": "Eskişehir",
+   "durak": 17,
+   "merkez": [
+    30.53,
+    39.795
+   ]
+  },
+  {
+   "plaka": 27,
+   "il": "Gaziantep",
+   "durak": 63,
+   "merkez": [
+    37.383,
+    37.0769
+   ]
+  },
+  {
+   "plaka": 28,
+   "il": "Giresun",
+   "durak": 36,
+   "merkez": [
+    38.39,
+    40.913
+   ]
+  },
+  {
+   "plaka": 29,
+   "il": "Gümüşhane",
+   "durak": 37,
+   "merkez": [
+    39.484,
+    40.464
+   ]
+  },
+  {
+   "plaka": 30,
+   "il": "Hakkari",
+   "durak": 46,
+   "merkez": [
+    43.7408,
+    37.5744
+   ]
+  },
+  {
+   "plaka": 31,
+   "il": "Hatay",
+   "durak": 67,
+   "merkez": [
+    36.1167,
+    36.2333
+   ]
+  },
+  {
+   "plaka": 32,
+   "il": "Isparta",
+   "durak": 13,
+   "merkez": [
+    30.53,
+    37.77
+   ]
+  },
+  {
+   "plaka": 33,
+   "il": "Mersin",
+   "durak": 69,
+   "merkez": [
+    34.62,
+    36.8
+   ]
+  },
+  {
+   "plaka": 34,
+   "il": "İstanbul",
+   "durak": 21,
+   "merkez": [
+    28.9743,
+    41.0176
+   ]
+  },
+  {
+   "plaka": 35,
+   "il": "İzmir",
+   "durak": 7,
+   "merkez": [
+    27.1498,
+    38.4381
+   ]
+  },
+  {
+   "plaka": 36,
+   "il": "Kars",
+   "durak": 42,
+   "merkez": [
+    43.0975,
+    40.6085
+   ]
+  },
+  {
+   "plaka": 37,
+   "il": "Kastamonu",
+   "durak": 32,
+   "merkez": [
+    33.783,
+    41.389
+   ]
+  },
+  {
+   "plaka": 38,
+   "il": "Kayseri",
+   "durak": 74,
+   "merkez": [
+    35.49,
+    38.735
+   ]
+  },
+  {
+   "plaka": 39,
+   "il": "Kırklareli",
+   "durak": 2,
+   "merkez": [
+    27.226,
+    41.743
+   ]
+  },
+  {
+   "plaka": 40,
+   "il": "Kırşehir",
+   "durak": 76,
+   "merkez": [
+    34.171,
+    39.142
+   ]
+  },
+  {
+   "plaka": 41,
+   "il": "Kocaeli",
+   "durak": 22,
+   "merkez": [
+    29.9306,
+    40.776
+   ]
+  },
+  {
+   "plaka": 42,
+   "il": "Konya",
+   "durak": 71,
+   "merkez": [
+    32.4731,
+    37.877
+   ]
+  },
+  {
+   "plaka": 43,
+   "il": "Kütahya",
+   "durak": 16,
+   "merkez": [
+    29.93,
+    39.42
+   ]
+  },
+  {
+   "plaka": 44,
+   "il": "Malatya",
+   "durak": 60,
+   "merkez": [
+    38.3,
+    38.3704
+   ]
+  },
+  {
+   "plaka": 45,
+   "il": "Manisa",
+   "durak": 6,
+   "merkez": [
+    27.44,
+    38.6304
+   ]
+  },
+  {
+   "plaka": 46,
+   "il": "Kahramanmaraş",
+   "durak": 65,
+   "merkez": [
+    36.945,
+    37.61
+   ]
+  },
+  {
+   "plaka": 47,
+   "il": "Mardin",
+   "durak": 52,
+   "merkez": [
+    40.7427,
+    37.3115
+   ]
+  },
+  {
+   "plaka": 48,
+   "il": "Muğla",
+   "durak": 9,
+   "merkez": [
+    28.3639,
+    37.2164
+   ]
+  },
+  {
+   "plaka": 49,
+   "il": "Muş",
+   "durak": 50,
+   "merkez": [
+    41.4969,
+    38.749
+   ]
+  },
+  {
+   "plaka": 50,
+   "il": "Nevşehir",
+   "durak": 75,
+   "merkez": [
+    34.724,
+    38.624
+   ]
+  },
+  {
+   "plaka": 51,
+   "il": "Niğde",
+   "durak": 73,
+   "merkez": [
+    34.694,
+    37.976
+   ]
+  },
+  {
+   "plaka": 52,
+   "il": "Ordu",
+   "durak": 35,
+   "merkez": [
+    37.8699,
+    41.0004
+   ]
+  },
+  {
+   "plaka": 53,
+   "il": "Rize",
+   "durak": 39,
+   "merkez": [
+    40.5219,
+    41.0208
+   ]
+  },
+  {
+   "plaka": 54,
+   "il": "Sakarya",
+   "durak": 23,
+   "merkez": [
+    30.4,
+    40.7667
+   ]
+  },
+  {
+   "plaka": 55,
+   "il": "Samsun",
+   "durak": 34,
+   "merkez": [
+    36.3437,
+    41.28
+   ]
+  },
+  {
+   "plaka": 56,
+   "il": "Siirt",
+   "durak": 48,
+   "merkez": [
+    41.933,
+    37.944
+   ]
+  },
+  {
+   "plaka": 57,
+   "il": "Sinop",
+   "durak": 33,
+   "merkez": [
+    35.153,
+    42.023
+   ]
+  },
+  {
+   "plaka": 58,
+   "il": "Sivas",
+   "durak": 81,
+   "merkez": [
+    37.035,
+    39.7454
+   ]
+  },
+  {
+   "plaka": 59,
+   "il": "Tekirdağ",
+   "durak": 3,
+   "merkez": [
+    27.51,
+    40.9909
+   ]
+  },
+  {
+   "plaka": 60,
+   "il": "Tokat",
+   "durak": 80,
+   "merkez": [
+    36.563,
+    40.306
+   ]
+  },
+  {
+   "plaka": 61,
+   "il": "Trabzon",
+   "durak": 38,
+   "merkez": [
+    39.72,
+    40.98
+   ]
+  },
+  {
+   "plaka": 62,
+   "il": "Tunceli",
+   "durak": 58,
+   "merkez": [
+    39.5333,
+    39.1167
+   ]
+  },
+  {
+   "plaka": 63,
+   "il": "Şanlıurfa",
+   "durak": 62,
+   "merkez": [
+    38.795,
+    37.17
+   ]
+  },
+  {
+   "plaka": 64,
+   "il": "Uşak",
+   "durak": 15,
+   "merkez": [
+    29.42,
+    38.6804
+   ]
+  },
+  {
+   "plaka": 65,
+   "il": "Van",
+   "durak": 45,
+   "merkez": [
+    43.4,
+    38.4954
+   ]
+  },
+  {
+   "plaka": 66,
+   "il": "Yozgat",
+   "durak": 77,
+   "merkez": [
+    34.815,
+    39.818
+   ]
+  },
+  {
+   "plaka": 67,
+   "il": "Zonguldak",
+   "durak": 26,
+   "merkez": [
+    31.78,
+    41.4304
+   ]
+  },
+  {
+   "plaka": 68,
+   "il": "Aksaray",
+   "durak": 72,
+   "merkez": [
+    34.037,
+    38.3687
+   ]
+  },
+  {
+   "plaka": 69,
+   "il": "Bayburt",
+   "durak": 56,
+   "merkez": [
+    40.2249,
+    40.2552
+   ]
+  },
+  {
+   "plaka": 70,
+   "il": "Karaman",
+   "durak": 70,
+   "merkez": [
+    33.215,
+    37.1815
+   ]
+  },
+  {
+   "plaka": 71,
+   "il": "Kırıkkale",
+   "durak": 30,
+   "merkez": [
+    33.53,
+    39.8504
+   ]
+  },
+  {
+   "plaka": 72,
+   "il": "Batman",
+   "durak": 51,
+   "merkez": [
+    41.14,
+    37.8904
+   ]
+  },
+  {
+   "plaka": 73,
+   "il": "Şırnak",
+   "durak": 47,
+   "merkez": [
+    42.4611,
+    37.5164
+   ]
+  },
+  {
+   "plaka": 74,
+   "il": "Bartın",
+   "durak": 27,
+   "merkez": [
+    32.3375,
+    41.6344
+   ]
+  },
+  {
+   "plaka": 75,
+   "il": "Ardahan",
+   "durak": 41,
+   "merkez": [
+    42.7022,
+    41.1105
+   ]
+  },
+  {
+   "plaka": 76,
+   "il": "Iğdır",
+   "durak": 43,
+   "merkez": [
+    44.045,
+    39.9237
+   ]
+  },
+  {
+   "plaka": 77,
+   "il": "Yalova",
+   "durak": 20,
+   "merkez": [
+    29.2667,
+    40.65
+   ]
+  },
+  {
+   "plaka": 78,
+   "il": "Karabük",
+   "durak": 28,
+   "merkez": [
+    32.6,
+    41.2
+   ]
+  },
+  {
+   "plaka": 79,
+   "il": "Kilis",
+   "durak": 64,
+   "merkez": [
+    37.12,
+    36.7204
+   ]
+  },
+  {
+   "plaka": 80,
+   "il": "Osmaniye",
+   "durak": 66,
+   "merkez": [
+    36.2478,
+    37.0742
+   ]
+  },
+  {
+   "plaka": 81,
+   "il": "Düzce",
+   "durak": 24,
+   "merkez": [
+    31.1565,
+    40.8438
+   ]
+  }
+ ],
+ "adimlar": [
+  {
+   "den": 1,
+   "ye": 2,
+   "km": 275,
+   "toplam": 275
+  },
+  {
+   "den": 2,
+   "ye": 3,
+   "km": 683,
+   "toplam": 959
+  },
+  {
+   "den": 3,
+   "ye": 4,
+   "km": 1081,
+   "toplam": 2040
+  },
+  {
+   "den": 4,
+   "ye": 5,
+   "km": 622,
+   "toplam": 2662
+  },
+  {
+   "den": 5,
+   "ye": 6,
+   "km": 265,
+   "toplam": 2926
+  },
+  {
+   "den": 6,
+   "ye": 7,
+   "km": 387,
+   "toplam": 3313
+  },
+  {
+   "den": 7,
+   "ye": 8,
+   "km": 1071,
+   "toplam": 4384
+  },
+  {
+   "den": 8,
+   "ye": 9,
+   "km": 1253,
+   "toplam": 5637
+  },
+  {
+   "den": 9,
+   "ye": 10,
+   "km": 200,
+   "toplam": 5837
+  },
+  {
+   "den": 10,
+   "ye": 11,
+   "km": 187,
+   "toplam": 6024
+  },
+  {
+   "den": 11,
+   "ye": 12,
+   "km": 912,
+   "toplam": 6936
+  },
+  {
+   "den": 12,
+   "ye": 13,
+   "km": 151,
+   "toplam": 7088
+  },
+  {
+   "den": 13,
+   "ye": 14,
+   "km": 938,
+   "toplam": 8025
+  },
+  {
+   "den": 14,
+   "ye": 15,
+   "km": 355,
+   "toplam": 8380
+  },
+  {
+   "den": 15,
+   "ye": 16,
+   "km": 296,
+   "toplam": 8676
+  },
+  {
+   "den": 16,
+   "ye": 17,
+   "km": 226,
+   "toplam": 8902
+  },
+  {
+   "den": 17,
+   "ye": 18,
+   "km": 613,
+   "toplam": 9515
+  },
+  {
+   "den": 18,
+   "ye": 19,
+   "km": 113,
+   "toplam": 9628
+  },
+  {
+   "den": 19,
+   "ye": 20,
+   "km": 591,
+   "toplam": 10219
+  },
+  {
+   "den": 20,
+   "ye": 21,
+   "km": 979,
+   "toplam": 11197
+  },
+  {
+   "den": 21,
+   "ye": 22,
+   "km": 1238,
+   "toplam": 12435
+  },
+  {
+   "den": 22,
+   "ye": 23,
+   "km": 1125,
+   "toplam": 13560
+  },
+  {
+   "den": 23,
+   "ye": 24,
+   "km": 121,
+   "toplam": 13681
+  },
+  {
+   "den": 24,
+   "ye": 25,
+   "km": 155,
+   "toplam": 13836
+  },
+  {
+   "den": 25,
+   "ye": 26,
+   "km": 918,
+   "toplam": 14754
+  },
+  {
+   "den": 26,
+   "ye": 27,
+   "km": 669,
+   "toplam": 15422
+  },
+  {
+   "den": 27,
+   "ye": 28,
+   "km": 435,
+   "toplam": 15858
+  },
+  {
+   "den": 28,
+   "ye": 29,
+   "km": 105,
+   "toplam": 15963
+  },
+  {
+   "den": 29,
+   "ye": 30,
+   "km": 488,
+   "toplam": 16451
+  },
+  {
+   "den": 30,
+   "ye": 31,
+   "km": 694,
+   "toplam": 17145
+  },
+  {
+   "den": 31,
+   "ye": 32,
+   "km": 525,
+   "toplam": 17669
+  },
+  {
+   "den": 32,
+   "ye": 33,
+   "km": 378,
+   "toplam": 18047
+  },
+  {
+   "den": 33,
+   "ye": 34,
+   "km": 677,
+   "toplam": 18724
+  },
+  {
+   "den": 34,
+   "ye": 35,
+   "km": 326,
+   "toplam": 19050
+  },
+  {
+   "den": 35,
+   "ye": 36,
+   "km": 1387,
+   "toplam": 20437
+  },
+  {
+   "den": 36,
+   "ye": 37,
+   "km": 786,
+   "toplam": 21223
+  },
+  {
+   "den": 37,
+   "ye": 38,
+   "km": 329,
+   "toplam": 21552
+  },
+  {
+   "den": 38,
+   "ye": 39,
+   "km": 777,
+   "toplam": 22329
+  },
+  {
+   "den": 39,
+   "ye": 40,
+   "km": 655,
+   "toplam": 22984
+  },
+  {
+   "den": 40,
+   "ye": 41,
+   "km": 404,
+   "toplam": 23388
+  },
+  {
+   "den": 41,
+   "ye": 42,
+   "km": 389,
+   "toplam": 23778
+  },
+  {
+   "den": 42,
+   "ye": 43,
+   "km": 280,
+   "toplam": 24057
+  },
+  {
+   "den": 43,
+   "ye": 44,
+   "km": 733,
+   "toplam": 24791
+  },
+  {
+   "den": 44,
+   "ye": 45,
+   "km": 945,
+   "toplam": 25736
+  },
+  {
+   "den": 45,
+   "ye": 46,
+   "km": 839,
+   "toplam": 26574
+  },
+  {
+   "den": 46,
+   "ye": 47,
+   "km": 337,
+   "toplam": 26911
+  },
+  {
+   "den": 47,
+   "ye": 48,
+   "km": 1095,
+   "toplam": 28006
+  },
+  {
+   "den": 48,
+   "ye": 49,
+   "km": 1163,
+   "toplam": 29169
+  },
+  {
+   "den": 49,
+   "ye": 50,
+   "km": 588,
+   "toplam": 29756
+  },
+  {
+   "den": 50,
+   "ye": 51,
+   "km": 72,
+   "toplam": 29829
+  },
+  {
+   "den": 51,
+   "ye": 52,
+   "km": 433,
+   "toplam": 30261
+  },
+  {
+   "den": 52,
+   "ye": 53,
+   "km": 223,
+   "toplam": 30484
+  },
+  {
+   "den": 53,
+   "ye": 54,
+   "km": 851,
+   "toplam": 31335
+  },
+  {
+   "den": 54,
+   "ye": 55,
+   "km": 502,
+   "toplam": 31836
+  },
+  {
+   "den": 55,
+   "ye": 56,
+   "km": 605,
+   "toplam": 32442
+  },
+  {
+   "den": 56,
+   "ye": 57,
+   "km": 734,
+   "toplam": 33176
+  },
+  {
+   "den": 57,
+   "ye": 58,
+   "km": 299,
+   "toplam": 33475
+  },
+  {
+   "den": 58,
+   "ye": 59,
+   "km": 818,
+   "toplam": 34293
+  },
+  {
+   "den": 59,
+   "ye": 60,
+   "km": 767,
+   "toplam": 35060
+  },
+  {
+   "den": 60,
+   "ye": 61,
+   "km": 277,
+   "toplam": 35337
+  },
+  {
+   "den": 61,
+   "ye": 62,
+   "km": 208,
+   "toplam": 35545
+  },
+  {
+   "den": 62,
+   "ye": 63,
+   "km": 226,
+   "toplam": 35770
+  },
+  {
+   "den": 63,
+   "ye": 64,
+   "km": 839,
+   "toplam": 36609
+  },
+  {
+   "den": 64,
+   "ye": 65,
+   "km": 1214,
+   "toplam": 37823
+  },
+  {
+   "den": 65,
+   "ye": 66,
+   "km": 754,
+   "toplam": 38578
+  },
+  {
+   "den": 66,
+   "ye": 67,
+   "km": 313,
+   "toplam": 38890
+  },
+  {
+   "den": 67,
+   "ye": 68,
+   "km": 391,
+   "toplam": 39281
+  },
+  {
+   "den": 68,
+   "ye": 69,
+   "km": 572,
+   "toplam": 39853
+  },
+  {
+   "den": 69,
+   "ye": 70,
+   "km": 697,
+   "toplam": 40551
+  },
+  {
+   "den": 70,
+   "ye": 71,
+   "km": 298,
+   "toplam": 40849
+  },
+  {
+   "den": 71,
+   "ye": 72,
+   "km": 694,
+   "toplam": 41542
+  },
+  {
+   "den": 72,
+   "ye": 73,
+   "km": 123,
+   "toplam": 41666
+  },
+  {
+   "den": 73,
+   "ye": 74,
+   "km": 980,
+   "toplam": 42646
+  },
+  {
+   "den": 74,
+   "ye": 75,
+   "km": 866,
+   "toplam": 43512
+  },
+  {
+   "den": 75,
+   "ye": 76,
+   "km": 174,
+   "toplam": 43686
+  },
+  {
+   "den": 76,
+   "ye": 77,
+   "km": 1255,
+   "toplam": 44941
+  },
+  {
+   "den": 77,
+   "ye": 78,
+   "km": 287,
+   "toplam": 45228
+  },
+  {
+   "den": 78,
+   "ye": 79,
+   "km": 633,
+   "toplam": 45861
+  },
+  {
+   "den": 79,
+   "ye": 80,
+   "km": 87,
+   "toplam": 45948
+  },
+  {
+   "den": 80,
+   "ye": 81,
+   "km": 608,
+   "toplam": 46555
+  }
+ ]
+}
