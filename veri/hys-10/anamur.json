@@ -1,0 +1,438 @@
+{
+ "turkiyeEnGuney": [
+  36.138497,
+  35.819779
+ ],
+ "anadoluEnGuney_AnamurBurnu": [
+  32.803722,
+  36.027167
+ ],
+ "enGuneyFarki_km": 23.1,
+ "kibris": {
+  "anamurBurnu_enYakinKiyi_km": 70.8,
+  "kiyi": [
+   32.920421,
+   35.397773
+  ],
+  "turkiyeKibris_enKisa_km": 70.8,
+  "turkiyeNoktasi": [
+   32.803722,
+   36.027167
+  ],
+  "kibrisNoktasi": [
+   32.920421,
+   35.397773
+  ]
+ },
+ "anamur": {
+  "mersin_km": 178.7,
+  "ankara_km": 428.6,
+  "lefkosa_km": 111.8,
+  "girne_km": 94.6,
+  "kibrisKiyi_km": 75.7
+ },
+ "enlem": {
+  "anamurBurnu": 36.027167,
+  "afrikaBaskentleri": [
+   {
+    "ad": "Tunis",
+    "ulke": "Tunisia",
+    "lat": 36.8028,
+    "lon": 10.1797,
+    "farkKm": 86
+   },
+   {
+    "ad": "Algiers",
+    "ulke": "Algeria",
+    "lat": 36.765,
+    "lon": 3.0486,
+    "farkKm": 82
+   }
+  ],
+  "kuzeydeKalanBaskentSayisi": 60,
+  "yakinEnlemBaskentler": [
+   {
+    "ad": "Valletta",
+    "lat": 35.8997
+   },
+   {
+    "ad": "Tokyo",
+    "lat": 35.687
+   },
+   {
+    "ad": "Tehran",
+    "lat": 35.6739
+   }
+  ]
+ },
+ "ufuk": {
+  "olimpos_km": 121.4,
+  "olimposUfuk_km": 157.7,
+  "gozUfuk_km": 5.05,
+  "gorunurMu": true,
+  "gizlenen_m": 1062,
+  "gorunen_m": 890
+ },
+ "kuzeydeKalanBaskentler": [
+  {
+   "ad": "Vatican City",
+   "ulke": "Vatican",
+   "lat": 41.9033,
+   "lon": 12.4534
+  },
+  {
+   "ad": "San Marino",
+   "ulke": "San Marino",
+   "lat": 43.9361,
+   "lon": 12.4418
+  },
+  {
+   "ad": "Vaduz",
+   "ulke": "Liechtenstein",
+   "lat": 47.1337,
+   "lon": 9.5167
+  },
+  {
+   "ad": "Luxembourg",
+   "ulke": "Luxembourg",
+   "lat": 49.6117,
+   "lon": 6.13
+  },
+  {
+   "ad": "Monaco",
+   "ulke": "Monaco",
+   "lat": 43.7396,
+   "lon": 7.4069
+  },
+  {
+   "ad": "Andorra",
+   "ulke": "Andorra",
+   "lat": 42.5108,
+   "lon": 1.5266
+  },
+  {
+   "ad": "Ljubljana",
+   "ulke": "Slovenia",
+   "lat": 46.0553,
+   "lon": 14.515
+  },
+  {
+   "ad": "Bratislava",
+   "ulke": "Slovakia",
+   "lat": 48.15,
+   "lon": 17.117
+  },
+  {
+   "ad": "Podgorica",
+   "ulke": "Montenegro",
+   "lat": 42.466,
+   "lon": 19.2663
+  },
+  {
+   "ad": "Bern",
+   "ulke": "Switzerland",
+   "lat": 46.9167,
+   "lon": 7.467
+  },
+  {
+   "ad": "Pristina",
+   "ulke": "Kosovo",
+   "lat": 42.6667,
+   "lon": 21.166
+  },
+  {
+   "ad": "Skopje",
+   "ulke": "North Macedonia",
+   "lat": 42,
+   "lon": 21.4335
+  },
+  {
+   "ad": "Tunis",
+   "ulke": "Tunisia",
+   "lat": 36.8028,
+   "lon": 10.1797
+  },
+  {
+   "ad": "Ashgabat",
+   "ulke": "Turkmenistan",
+   "lat": 37.95,
+   "lon": 58.3833
+  },
+  {
+   "ad": "Reykjavík",
+   "ulke": "Iceland",
+   "lat": 64.1435,
+   "lon": -21.9365
+  },
+  {
+   "ad": "Dushanbe",
+   "ulke": "Tajikistan",
+   "lat": 38.56,
+   "lon": 68.7739
+  },
+  {
+   "ad": "Chișinău",
+   "ulke": "Moldova",
+   "lat": 47.005,
+   "lon": 28.8577
+  },
+  {
+   "ad": "Ulaanbaatar",
+   "ulke": "Mongolia",
+   "lat": 47.9186,
+   "lon": 106.9147
+  },
+  {
+   "ad": "Vilnius",
+   "ulke": "Lithuania",
+   "lat": 54.6834,
+   "lon": 25.3166
+  },
+  {
+   "ad": "Riga",
+   "ulke": "Latvia",
+   "lat": 56.95,
+   "lon": 24.1
+  },
+  {
+   "ad": "Bishkek",
+   "ulke": "Kyrgyzstan",
+   "lat": 42.875,
+   "lon": 74.5833
+  },
+  {
+   "ad": "Zagreb",
+   "ulke": "Croatia",
+   "lat": 45.8,
+   "lon": 16
+  },
+  {
+   "ad": "Tallinn",
+   "ulke": "Estonia",
+   "lat": 59.4339,
+   "lon": 24.728
+  },
+  {
+   "ad": "Tbilisi",
+   "ulke": "Georgia",
+   "lat": 41.727,
+   "lon": 44.7888
+  },
+  {
+   "ad": "Nur-Sultan",
+   "ulke": "Kazakhstan",
+   "lat": 51.1811,
+   "lon": 71.4278
+  },
+  {
+   "ad": "Ottawa",
+   "ulke": "Canada",
+   "lat": 45.4186,
+   "lon": -75.702
+  },
+  {
+   "ad": "Belgrade",
+   "ulke": "Serbia",
+   "lat": 44.8206,
+   "lon": 20.466
+  },
+  {
+   "ad": "Tirana",
+   "ulke": "Albania",
+   "lat": 41.3275,
+   "lon": 19.8189
+  },
+  {
+   "ad": "Yerevan",
+   "ulke": "Armenia",
+   "lat": 40.1831,
+   "lon": 44.5116
+  },
+  {
+   "ad": "Baku",
+   "ulke": "Azerbaijan",
+   "lat": 40.3972,
+   "lon": 49.8603
+  },
+  {
+   "ad": "Sofia",
+   "ulke": "Bulgaria",
+   "lat": 42.6853,
+   "lon": 23.3147
+  },
+  {
+   "ad": "Minsk",
+   "ulke": "Belarus",
+   "lat": 53.9019,
+   "lon": 27.5647
+  },
+  {
+   "ad": "Sarajevo",
+   "ulke": "Bosnia and Herzegovina",
+   "lat": 43.85,
+   "lon": 18.383
+  },
+  {
+   "ad": "Budapest",
+   "ulke": "Hungary",
+   "lat": 47.502,
+   "lon": 19.0814
+  },
+  {
+   "ad": "Bucharest",
+   "ulke": "Romania",
+   "lat": 44.4353,
+   "lon": 26.098
+  },
+  {
+   "ad": "Lisbon",
+   "ulke": "Portugal",
+   "lat": 38.7247,
+   "lon": -9.1468
+  },
+  {
+   "ad": "Oslo",
+   "ulke": "Norway",
+   "lat": 59.9186,
+   "lon": 10.748
+  },
+  {
+   "ad": "Warsaw",
+   "ulke": "Poland",
+   "lat": 52.2309,
+   "lon": 21.0053
+  },
+  {
+   "ad": "Pyongyang",
+   "ulke": "North Korea",
+   "lat": 39.0214,
+   "lon": 125.7527
+  },
+  {
+   "ad": "Dublin",
+   "ulke": "Ireland",
+   "lat": 53.3467,
+   "lon": -6.257
+  },
+  {
+   "ad": "Prague",
+   "ulke": "Czechia",
+   "lat": 50.087,
+   "lon": 14.4229
+  },
+  {
+   "ad": "Helsinki",
+   "ulke": "Finland",
+   "lat": 60.1638,
+   "lon": 24.9325
+  },
+  {
+   "ad": "København",
+   "ulke": "Denmark",
+   "lat": 55.6805,
+   "lon": 12.5615
+  },
+  {
+   "ad": "Brussels",
+   "ulke": "Belgium",
+   "lat": 50.8353,
+   "lon": 4.3314
+  },
+  {
+   "ad": "Algiers",
+   "ulke": "Algeria",
+   "lat": 36.765,
+   "lon": 3.0486
+  },
+  {
+   "ad": "Kyiv",
+   "ulke": "Ukraine",
+   "lat": 50.4353,
+   "lon": 30.5147
+  },
+  {
+   "ad": "Tashkent",
+   "ulke": "Uzbekistan",
+   "lat": 41.3038,
+   "lon": 69.2688
+  },
+  {
+   "ad": "Madrid",
+   "ulke": "Spain",
+   "lat": 40.402,
+   "lon": -3.6853
+  },
+  {
+   "ad": "Stockholm",
+   "ulke": "Sweden",
+   "lat": 59.3241,
+   "lon": 18.0663
+  },
+  {
+   "ad": "Amsterdam",
+   "ulke": "Netherlands",
+   "lat": 52.3519,
+   "lon": 4.9147
+  },
+  {
+   "ad": "Seoul",
+   "ulke": "South Korea",
+   "lat": 37.5683,
+   "lon": 126.9978
+  },
+  {
+   "ad": "Berlin",
+   "ulke": "Germany",
+   "lat": 52.5238,
+   "lon": 13.3996
+  },
+  {
+   "ad": "Athens",
+   "ulke": "Greece",
+   "lat": 37.9853,
+   "lon": 23.7314
+  },
+  {
+   "ad": "Vienna",
+   "ulke": "Austria",
+   "lat": 48.202,
+   "lon": 16.3647
+  },
+  {
+   "ad": "Washington,  D.C.",
+   "ulke": "United States of America",
+   "lat": 38.9015,
+   "lon": -77.0114
+  },
+  {
+   "ad": "London",
+   "ulke": "United Kingdom",
+   "lat": 51.5019,
+   "lon": -0.1187
+  },
+  {
+   "ad": "Moscow",
+   "ulke": "Russia",
+   "lat": 55.7541,
+   "lon": 37.6136
+  },
+  {
+   "ad": "Rome",
+   "ulke": "Italy",
+   "lat": 41.8979,
+   "lon": 12.4813
+  },
+  {
+   "ad": "Beijing",
+   "ulke": "China",
+   "lat": 39.9017,
+   "lon": 116.3942
+  },
+  {
+   "ad": "Paris",
+   "ulke": "France",
+   "lat": 48.8581,
+   "lon": 2.353
+  }
+ ]
+}

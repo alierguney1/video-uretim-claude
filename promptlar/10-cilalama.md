@@ -14,7 +14,8 @@ Rolün değişiyor: sert bir motion tasarım direktörüsün. İlk sürümün fi
 Henüz kodu değiştirme.
 1. npm run contact ile kontak sayfası al (gerekirse --times ile geçiş ortalarını ekle), Read ile aç, incele.
 2. 1–10 puanla: hikaye netliği, zamanlama/ritim, easing, tipografi, hiyerarşi, kompozisyon,
-   geçiş sürekliliği, renk, okunabilirlik, KANCA (ilk 1 sn), DÖNGÜ (son→ilk kare).
+   geçiş sürekliliği, renk, okunabilirlik, KANCA (ilk 1 sn), MERAK (her an açık bir soru var mı,
+   ters köşe ve gerilim çalışıyor mu; promptlar/03-senaryo.md §5), DÖNGÜ (son→ilk kare).
 3. Listele: yapay zeka şablonu gibi duran anlar, aceleye gelen anlar, ölü zaman
    (0.5 sn'den uzun hiçbir şeyin olmadığı anlar), ses kapalıyken anlaşılmayan anlar.
 4. Her madde için saniye ve kare numarası ver.

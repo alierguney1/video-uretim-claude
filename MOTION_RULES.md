@@ -47,9 +47,17 @@ Algoritmanın ölçtüğü şey 3–5 arası; "AI ile yapılmış" olması ne ö
   | "Ya …olursa?" | "Dünya dönmeyi bıraksa ne olur?" |
   | Yarım hareket | Tamamlanmak üzere duran bir şey: göz bitişini bekler |
   | Tahmin et | "Grönland gerçekte Türkiye'nin kaç katı?" Cevaptan önce 600 ms durgunluk. Yorum ve gönderme getirir. |
+  | Gizem (cold open) | Konunun adı saklanır, en tuhaf an önce gelir: "Türkiye'de öyle bir yer var ki…" Ad 4–8. sn'de açılır. |
+
+* **Merak motoru (her videoda):** Senaryo [promptlar/03-senaryo.md](promptlar/03-senaryo.md)'ye göre
+  yazılır: cold open, merak boşluğu, katmanlı açık döngü, gizem, gerilim, ters köşe, cliffhanger/döngü
+  araçlarından en az 5'i. Kanca türü ne olursa olsun bu araçlar kullanılır; kanca türü sadece ilk saniyenin biçimidir.
 
 **Orta: neden kalsınlar?**
 * **Açık döngü.** Kancada vaat edilen sonuç en büyük ana kadar saklanır. Yolda her **3–5 sn'de (V) bir ara ödül** gelsin: yeni sayı, yeni ölçek, yeni "aaa".
+* **Döngüler katmanlanır.** Bir soru kapanmadan en az 1 sn önce bir sonraki açılır; videoda açık sorusu olmayan 1 sn'den uzun an olmaz (brifteki merak haritası).
+* **Ters köşe.** Ortada bir yerde izleyicinin varsayımı kırılır ("ama dur…"). Kırılan şey izleyicinin tahminidir, gerçek değil.
+* **Gerilim.** Büyük cevaptan önce cevaba engel gibi duran bir gerçek konur, ardından 400–600 ms durgunluk.
 * **Anlamlı görsel değişim** her 1.5–2.5 sn'de (V). Değişim anlam taşımalı (yeni bilgi, ölçek, durum); süs değil.
 * **Ölü zaman yok.** 0.7 sn'den uzun tamamen durağan an olmasın. Bilinçli durgunluk (aşağıda) hariç. `check` bunu ölçer.
 * **Süre: sonucu taşıyan en kısa süre.** Dolgu sahne, tekrar eden açıklama yok. Kısalabiliyorsa kısalt.
@@ -57,6 +65,7 @@ Algoritmanın ölçtüğü şey 3–5 arası; "AI ile yapılmış" olması ne ö
 **Son: tekrar izlet, gönderilsin**
 * Video **en büyük andan hemen sonra biter.** Outro, "abone ol" kartı, logo kapanışı yok.
 * Dikey videoda son kare ilk kareye bağlanır (döngü). İzleyici fark etmeden ikinci tura girer.
+* **Cliffhanger:** son cümle ya yeni bir soru açar (bir sonraki bölüm, yorum sorusu) ya da ilk cümleye geri akar. Cevabı önceden hesaplanmamış soruyla bitirme.
 * **Tek izlemede yakalanmayacak bir detay** koy (hızlı geçen bir sayı, köşede küçük bir not). Tekrar izlemeyi bu getirir.
 * **Gönderilme sebebi** brifte tek cümleyle yazılır: "Bunu kime, neden gönderir?" Cevap yoksa fikir zayıf.
 * Abartı içeren şokun yanına küçük bir dürüstlük notu ekle. Yorumlarda güven kazandırır.
