@@ -3,7 +3,7 @@
 Seri: Harita Yalan Söyler · Bölüm 11 · Ali'nin isteği (13 Kasım 2026): "Sinop İnceburun değilmiş aslında, Trakya'da daha kuzeyde bir yer varmış, bunu da videoda söyleyebiliriz."
 Bölüm 10'un (Anamur) cliffhanger'ının cevabı. Senaryo [promptlar/03-senaryo.md](../promptlar/03-senaryo.md) merak motoruyla yazıldı.
 
-Durum: **brif + sahne listesi onay bekliyor.** Onaydan önce `.html` yazılmaz (CLAUDE.md adım 2).
+Durum: **sahne listesi onaylandı** (Ali, 13 Kas 16:29: "En kuzeyi yapalım"). Onay turunda iki düzeltme: 27–32 sn'deki açık döngü boşluğu (döngü S eklendi) ve 3 farklı formülden kapak.
 
 ## Doğrulama: Ali haklı
 
@@ -54,10 +54,11 @@ Durum: **brif + sahne listesi onay bekliyor.** Onaydan önce `.html` yazılmaz (
 | B | 3,5 sn | "En kuzey İnceburun değilse neresi?" | 13 sn (Kofçaz) |
 | G (gerilim) | 15 sn | "Hangisi daha kuzeyde, çizgiler aynı görünüyor?" | 22 sn (800 m) |
 | T (ters köşe) | 24 sn | "O zaman İnceburun neyin ucu?" | 27 sn (Anadolu'nun) |
+| S (söz) | 26,5 sn | "Geçen videodaki 'Roma'dan kuzeyde' sözü hâlâ tutuyor mu?" | 31 sn (Roma 23 km, Chicago 25 km) |
 | D (durdur-bul) | 33 sn | "Benim ilimin kuzey ucu hangi şehirle aynı hizada?" | izleyici durdurunca |
 | C (cliffhanger) | 37 sn | "En batı ucu neresi? Babakale değilse?" | yorumlar + bölüm 12 |
 
-Açık döngüsüz 1 sn'den uzun aralık yok: A kapanmadan 1 sn önce B açılır, B kapanırken G'nin sorusu kurulur.
+Açık döngüsüz 1 sn'den uzun aralık yok: A kapanmadan 1 sn önce B açılır, B kapanırken G'nin sorusu kurulur, T kapanmadan S açılır, S kapanır kapanmaz (≤1,5 sn) D açılır.
 
 - **Kullanılan araçlar (7/7):** cold open (geçen videonun son karesi + damga), merak boşluğu ("Yanlıştı." ne yanlıştı?), katmanlı açık döngü (A→B→G), gizem (Trakya'daki "?" 13 sn'ye kadar adsız), gerilim ("iki çizgi aynı, hangisi?" + zoom + 500 ms durgunluk), ters köşe (İnceburun yanlış değil, sadece Anadolu'nun ucu), cliffhanger (en batı ucu: Babakale de değil).
 
@@ -69,8 +70,8 @@ Açık döngüsüz 1 sn'den uzun aralık yok: A kapanmadan 1 sn önce B açılı
 4. Kırklareli, Kofçaz. Bulgaristan sınırı. Türkiye'nin gerçek en kuzey noktası.
 5. Peki ne kadar kuzeyde? İki çizgi aynı görünüyor…
 6. Büyütelim. Fark sadece 800 metre. Yaklaşık 8 futbol sahası.
-7. Yani İnceburun yanlış değil: Anadolu'nun en kuzey ucu. Türkiye'nin değil. Anamur'da da aynısı olmuştu.
-8. Ve söz verdiğimiz gibi: ikisi de Roma'dan, hatta Chicago'dan kuzeyde.
+7. Yani İnceburun yanlış değil: Anadolu'nun en kuzey ucu. Türkiye'nin değil.
+8. Peki geçen videodaki söz tutuyor mu? Tutuyor: ikisi de Roma'dan, hatta Chicago'dan kuzeyde.
 9. Senin ilinin en kuzey ucu hangi şehirle aynı hizada? Durdur, bul.
 10. Peki en batı ucu? İpucu: Babakale de değil. Yaz.
 
@@ -81,9 +82,9 @@ Süreler tahmini; TTS sonrası cümle sürelerine oturtulur.
 | Sn | Sahne | Ekranda | Geçiş nesnesi |
 | --- | --- | --- | --- |
 | 0–3,5 | **Cold open** (A) | Bölüm 10'un son karesi birebir: kesikli çizgi 42,10° K, Roma altta, Sinop'ta turuncu "?". 0,8 sn'de kırmızı **YANLIŞ** damgası "tak" diye iner, harita hafif sarsılır. | "?" noktası |
-| 3,5–8 | **Herkesin bildiği** (A kapanır, B açılır) | "?" → **İNCEBURUN** etiketi + Sinop ikonu. Altında küçük "herkes burayı bilir". Damga solar. | Enlem çizgisi |
+| 3,5–8 | **Herkesin bildiği** (A kapanır, B açılır) | "?" → **İNCEBURUN** etiketi + Sinop ikonu (Diyojen'in fıçısı). Altında küçük "herkes burayı bilir". Damga solar. | Enlem çizgisi |
 | 8–13 | **Gizem** (B) | Kamera çizgi boyunca batıya kayar (636 km sayacı), Trakya'da Bulgaristan sınırında adsız ikinci nokta "?". Bulgaristan bayrağı sınırın üstünde. | Sınırdaki "?" |
-| 13–17 | **Kimlik** (B kapanır) | **KOFÇAZ · KIRKLARELİ** + Kırklareli ikonu. "Türkiye'nin en kuzey noktası". | İki nokta |
+| 13–17 | **Kimlik** (B kapanır) | **KOFÇAZ · KIRKLARELİ** + Kırklareli ikonu (hardaliye). "Türkiye'nin en kuzey noktası". Kaçan detay (yerel izleyici için): "Ahlatlı köyünün kuzeyi". | İki nokta |
 | 17–23 | **Gerilim + zoom** (G) | İki noktadan iki yatay çizgi: ekranda tek çizgi gibi üst üste. "Hangisi?" 500 ms durgunluk. Büyüteç dairesi çizgilere iner, ölçek çubuğu 100 km → 10 → 1 km; çizgiler ayrılır: arası **800 m** dikey ölçü, yanında 8 küçük futbol sahası. | Ölçek çubuğu |
 | 23–28 | **Ters köşe** (T) | Zoom geri açılır, Anadolu kara parçası kâğıt renginde parlar, İnceburun "Anadolu'nun en kuzeyi" etiketini alır, Kofçaz "Türkiye'nin". Sağ altta küçük Anamur kartı: "Anamur ≠ Hatay" (Bölüm 10'a bağ). | Enlem çizgisi |
 | 28–32,5 | **Söz tutuldu** | Kamera geniş açı: Roma (İtalya bayrağı) 23 km aşağıda, ekran kenarından Chicago oku (ABD bayrağı) "25 km aşağıda". Kaçan detay: "Üsküp 12 km aşağıda". | Çizgi |
@@ -92,12 +93,24 @@ Süreler tahmini; TTS sonrası cümle sürelerine oturtulur.
 
 ## Yayın paketi (taslak)
 
-- **Kapak:** İnceburun üstünde kırmızı çarpı, Trakya'da turuncu ok. Metin: "En kuzey Sinop değil" (2 satır, sol hizalı; ülke kıyası yok). Rehber: promptlar/12-kapak.md; render sonrası 3 varyant.
+- **Kapak** (promptlar/12-kapak.md, 3 farklı formül, ülke kıyası yok, cevap yok; render sonrası `hys-11-kuzey.kapak.json`):
+  - **Yanlış inanış** (önerilen): "EN KUZEY *SİNOP DEĞİL*" + alt "Neresi?" · İnceburun üstünde kırmızı çarpı, Sinop ikonu.
+  - **Gizem nesnesi:** "TÜRKİYE'NİN EN KUZEYİ *NERESİ?*" · Trakya'da tek "?" + halka, Karadeniz kıyısı boş.
+  - **Sayı şoku:** "*800 METRE* İLE KAYBETTİ" · zoom karesi: iki çizgi arası ölçü, 🤯.
 - **Başlık (YouTube Shorts):** Türkiye'nin en kuzeyi Sinop değilmiş
   - A/B: "Geçen videoda yanlış yeri gösterdik"
 - **Sabit yorum:** "Türkiye'nin en batı ucu neresi? İpucu: Babakale değil 👇"
 - **AI etiketi:** aç.
-- **Paylaşım:** Kırklareli ve Kofçaz sayfaları ("en kuzey biziz"), Sinop sayfaları (ters köşe: "Anadolu'nun en kuzeyi yine sizsiniz"), Bölüm 10'un yorumlarına cevap olarak link.
+## Memleket paylaşım planı (Anamur'da işe yarayan yöntem)
+
+Video yayından sonraki ilk 2 saatte, her gruba kendi cümlesiyle:
+
+1. **Kırklareli / Kofçaz önce:** Kofçaz Belediyesi ve Kaymakamlığı, Kırklareli Belediyesi, Kırklareli yerel haber sayfaları, "Kırklarelililer" / "Kofçazlılar" grupları, Kırklareli Üniversitesi öğrenci sayfaları. Mesaj: "Türkiye'nin en kuzey noktası Sinop değil, Kofçaz'da, Ahlatlı'nın kuzeyindeki Bulgaristan sınırı. 40 sn'lik kaynaklı video yaptık, paylaşmak isterseniz." Kanca: **"En kuzey biziz."**
+2. **Sinop:** Sinop Belediyesi, Sinop yerel haber, "Sinoplular" sayfaları. Kanca saygılı ters köşe: **"Anadolu'nun en kuzeyi yine Sinop, ama Türkiye'nin değil. Fark 800 metre."** Sinop–Kırklareli atışması yorum getirir; taraf tutmadan iki tarafa da doğruyu söyleriz.
+3. **Bölüm 10 izleyicisi:** Anamur videosunun (YT/IG/TikTok) sabit yorumuna "Cevap geldi 👉" + link. Anamur yorumlarında "Sinop" yazanlara toplu cevap.
+4. **Durdur-bul illeri:** kuzey ucu çarpıcı bir şehirle hizalanan iller kendi cümlesiyle (liste kod yazılınca hesaplanır).
+5. **Trakya genel:** Edirne/Tekirdağ/Trakya sayfaları, "Trakya Türkiye'nin en kuzeyi" kancasıyla.
+6. TikTok: il hashtag'leri (#kırklareli #kofçaz #sinop #trakya) ilk yorumda.
 
 ## Bölüm 12 tohumu (cliffhanger'ın cevabı, render öncesi doğrulanacak)
 
