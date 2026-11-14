@@ -1,0 +1,17 @@
+{
+  "voice": "Charon",
+  "style": "enerjik ve merak uyandıran, itiraf eder gibi başlayıp hızlanan, önemli kelimeleri vurgulayan, izleyiciye sır veriyormuş gibi",
+  "tempo": 1.12, "lead": 0.15, "gap": 0.3, "tail": 2.4,
+  "lines": [
+    { "id": "l1", "text": "Geçen videoda size bu noktayı gösterdik. <short pause> YANLIŞTI.", "caption": "Geçen videoda size bu noktayı gösterdik. Yanlıştı.", "holdAfter": 0.2 },
+    { "id": "l2", "text": "Sinop, İnceburun. Herkes Türkiye'nin en kuzey ucu sanır." },
+    { "id": "l3", "text": "Ama altı yüz kilometreden fazla batıda, denizi bile olmayan bir yer, daha KUZEYDE.", "caption": "Ama 600 km'den fazla batıda, denizi bile olmayan bir yer, daha kuzeyde." },
+    { "id": "l4", "text": "Kırklareli, Kofçaz. <short pause> Bulgaristan sınırı. Türkiye'nin GERÇEK en kuzey noktası.", "caption": "Kırklareli, Kofçaz. Bulgaristan sınırı. Türkiye'nin gerçek en kuzey noktası." },
+    { "id": "l5", "text": "Peki ne kadar kuzeyde? İki çizgi... aynı görünüyor.", "caption": "Peki ne kadar kuzeyde? İki çizgi aynı görünüyor.", "holdAfter": 0.5 },
+    { "id": "l6", "text": "Büyütelim. Fark sadece SEKİZ YÜZ metre. Yaklaşık sekiz futbol sahası.", "caption": "Büyütelim. Fark sadece 800 metre. Yaklaşık 8 futbol sahası." },
+    { "id": "l7", "text": "Yani İnceburun yanlış değil: ANADOLU'nun en kuzey ucu. <short pause> Türkiye'nin değil.", "caption": "Yani İnceburun yanlış değil: Anadolu'nun en kuzey ucu. Türkiye'nin değil." },
+    { "id": "l8", "text": "Peki geçen videodaki söz? Tutuyor: ikisi de Roma'dan, hatta Chicago'dan kuzeyde.", "caption": "Peki geçen videodaki söz? Tutuyor: ikisi de Roma'dan, hatta Chicago'dan kuzeyde." },
+    { "id": "l9", "text": "Senin ilinin en kuzey ucu hangi şehirle aynı hizada? Durdur, bul.", "holdAfter": 0.6 },
+    { "id": "l10", "text": "Peki en BATI ucu? İpucu: Babakale de değil. Yaz.", "caption": "Peki en batı ucu? İpucu: Babakale de değil. Yaz." }
+  ]
+}

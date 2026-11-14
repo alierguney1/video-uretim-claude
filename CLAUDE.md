@@ -25,8 +25,11 @@ her piksel kodla çizilir. Her işte **[MOTION_RULES.md](MOTION_RULES.md)** geç
    direktör turunu uygula (en fazla 3 tur, hedef her başlıkta 8+).
 7. **Render.** `npm run render -- animasyonlar/<ad>.html` → `out/<ad>/<ad>.mp4` + `cover.png`.
    Müzik/seslendirme dosyası varsa `--audio dosya.mp3`.
-8. **Kayıt.** `yayinlar.csv`'ye satır ekle (metrikler boş). Kullanıcı 48 saat / 7 gün metriklerini
-   verince doldur. Her 10 satırda bir kanca türü / süre / yapı karşılaştırması yap ve
+8. **Kapak.** [promptlar/12-kapak.md](promptlar/12-kapak.md): `animasyonlar/<ad>.kapak.json` (en az 3 varyant, farklı
+   formüller) → `npm run kapak -- animasyonlar/<ad>.kapak.json` → `out/<ad>/kapak-onizleme.png` dosyasını **Read ile aç**,
+   kontrol listesini uygula → seçileni `--sec <varyant>` ile 0. kareye göm; yayında `<ad>-kapakli.mp4` kullanılır.
+9. **Kayıt.** `yayinlar.csv`'ye satır ekle (metrikler boş). Kullanıcı 48 saat / 7 gün metriklerini
+   verince doldur. Her 10 satırda bir kanca türü / kapak formülü / süre / yapı karşılaştırması yap ve
    MOTION_RULES.md'deki (V) değerlerini güncellemeyi öner.
 
 "Kod çalışıyor" ile "görüntü doğru" aynı şey değil. Kontak sayfasına bakmadan "bitti" deme.
