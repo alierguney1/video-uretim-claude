@@ -1,0 +1,381 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>En batı</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@600;800&family=IBM+Plex+Mono:wght@500&display=block" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/d3-array@3.2.4/dist/d3-array.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/d3-geo@3.1.1/dist/d3-geo.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/topojson-client@3.1.0/dist/topojson-client.min.js"></script>
+<style>
+  html, body { margin: 0; height: 100%; background: #0b141b; }
+  body { display: grid; place-items: center; overflow: hidden; }
+  canvas { display: block; }
+  #hud { position: fixed; left: 12px; bottom: 10px; font: 12px/1.4 ui-monospace, monospace;
+         color: #bbb; background: rgba(0,0,0,.55); padding: 4px 8px; border-radius: 4px; user-select: none; }
+  body.render #hud { display: none; }
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div id="hud">yükleniyor…</div>
+<audio id="vo" src="../ses/hys-12-bati/voice.wav" preload="auto"></audio>
+<script src="../lib/ikonlar.js"></script>
+<script src="../lib/ikon-seti.js"></script>
+<script src="../lib/iller.js"></script>
+<script src="../lib/ikon-katmani.js"></script>
+<script src="../veri/hys-12/kiyi.js"></script>
+<script src="../lib/harita-motoru.js"></script>
+<script>
+'use strict';
+// Harita Yalan Söyler · Bölüm 12 — "Türkiye'nin en batısı Babakale değil" (Gökçeada İncirburnu).
+// Brif: hys-12-bati.brief.md. Kanca: yanlış inanış + geri sayım; merak motoru: promptlar/03-senaryo.md.
+// Kıyılar: tools/hys-12-kiyi.mjs → veri/hys-12/kiyi.js (NE 1:10m). Gün batımı: tools/hys-12-bati.mjs.
+
+/*VO:BEGIN*/ const VO = {"duration":42.01,"lines":[{"id":"l1","start":0.15,"end":4.314,"text":"En batı ucu deyince akla Babakale gelir. Ama Babakale dördüncü."},{"id":"l2","start":4.664,"end":7.962,"text":"Asya'nın en batı ucu, evet. Türkiye'nin değil."},{"id":"l3","start":8.212,"end":9.858,"text":"Üçüncü: Bozcaada."},{"id":"l4","start":10.108,"end":17.019,"text":"Ada saymazsak? İkinci: Enez, Meriç'in denize döküldüğü yer. Babakale'den 2 km'den fazla batıda."},{"id":"l5","start":17.269,"end":18.594,"text":"Peki birinci?"},{"id":"l6","start":19.344,"end":23.215,"text":"Gökçeada, İncirburnu. Babakale'den 34 km batıda."},{"id":"l7","start":23.465,"end":29.994,"text":"Neden önemli? Tek saat dilimindeyiz, ama güneş Iğdır'da 16.47'de, Gökçeada'da 18.00'de batıyor."},{"id":"l8","start":30.244,"end":31.813,"text":"73 dakika fark."},{"id":"l9","start":32.063,"end":34.728,"text":"Senin ilinde kaç dakika erken? Durdur, bul."},{"id":"l10","start":35.478,"end":39.613,"text":"Güney, kuzey, batı tamam. Peki en doğu ucu? Yaz."}]}; /*VO:END*/
+const { C, SANS, MONO, W, H, SAFE, R_EARTH, RAD, ctx, clamp, lerp, prog, win, ease, fmtNum, text, label, pin, line, baseMap, fillFeature } = HYS;
+
+// ── gerçekler (brif: hys-12-bati.brief.md · doğrulama tablosu) ──
+const GOK = [25.6656, 40.125];       // 1 · Gökçeada İncirburnu (Avlaka Burnu) 40°07′30″K 25°39′56″D: Türkiye'nin en batısı
+const BOZ = [25.9626, 39.8377];      // 2 · Bozcaada Batı Burnu 39°50,259′K 25°57,754′D (Resmî Gazete su ürünleri tebliği)
+const ENEZ = [26.0358, 40.7292];     // 3 · Enez, Meriç'in denize döküldüğü yer 40°43′45″K 26°02′09″D: anakaranın en batısı
+const BABA = [26.0633, 39.4797];     // 4 · Babakale, Baba Burnu 39°28′47″K 26°03′50″D: Anadolu'nun ve Asya'nın en batısı
+const HATAY = [36.1385, 35.8198], KOFCAZ = [27.241, 42.106], IGDIR = [44.045, 39.9237];
+// doğu-batı farkı: boylam farkı × cos(ortalama enlem)
+const ewKm = (a, b) => (b[0] - a[0]) * RAD * R_EARTH * Math.cos((a[1] + b[1]) / 2 * RAD);
+const D_GOK = ewKm(GOK, BABA), D_BOZ = ewKm(BOZ, BABA), D_ENEZ = ewKm(ENEZ, BABA);   // ≈34 · ≈8,6 · ≈2,3–2,4 km
+// durdur-bul: il · gün batımı (16 Kasım 2026, il merkezi, UTC+3) · Gökçeada İncirburnu'ndan kaç dk önce
+// tools/hys-12-bati.mjs → veri/hys-12/gun-batimi.json (NOAA/Meeus; Iğdır 4 ve 8 Kasım alpenglowapp.com ile aynı dakika)
+const GB = [["Iğdır","16:47",73],["Kars","16:49",71],["Ardahan","16:50",70],["Ağrı","16:51",69],["Artvin","16:53",67],["Van","16:53",67],["Hakkari","16:54",66],["Bitlis","16:58",62],["Erzurum","16:58",62],["Rize","16:59",61],["Şırnak","16:59",61],["Muş","17:00",60],["Siirt","17:00",60],["Bayburt","17:02",58],["Trabzon","17:02",58],["Batman","17:03",57],["Bingöl","17:04",56],["Gümüşhane","17:04",56],["Erzincan","17:06",54],["Mardin","17:06",54],["Diyarbakır","17:07",53],["Giresun","17:07",53],["Tunceli","17:07",53],["Elazığ","17:09",51],["Ordu","17:09",51],["Malatya","17:14",46],["Şanlıurfa","17:14",46],["Adıyaman","17:15",45],["Samsun","17:15",45],["Sivas","17:15",45],["Tokat","17:16",44],["Amasya","17:18",42],["Sinop","17:18",42],["Gaziantep","17:20",40],["Kahramanmaraş","17:21",39],["Çorum","17:22",38],["Kilis","17:22",38],["Kayseri","17:24",36],["Yozgat","17:24",36],["Kastamonu","17:25",35],["Osmaniye","17:25",35],["Çankırı","17:27",33],["Hatay","17:27",33],["Nevşehir","17:27",33],["Adana","17:28",32],["Kırşehir","17:28",32],["Kırıkkale","17:29",31],["Niğde","17:29",31],["Bartın","17:30",30],["Karabük","17:30",30],["Aksaray","17:31",29],["Ankara","17:32",28],["Mersin","17:32",28],["Zonguldak","17:32",28],["Bolu","17:35",25],["Düzce","17:36",24],["Karaman","17:36",24],["Konya","17:38",22],["Sakarya","17:40",20],["Eskişehir","17:41",19],["Kocaeli","17:41",19],["Bilecik","17:43",17],["Afyonkarahisar","17:44",16],["Yalova","17:44",16],["İstanbul","17:45",15],["Kütahya","17:45",15],["Bursa","17:46",14],["Isparta","17:46",14],["Antalya","17:47",13],["Burdur","17:47",13],["Uşak","17:48",12],["Kırklareli","17:50",10],["Tekirdağ","17:51",9],["Balıkesir","17:52",8],["Denizli","17:52",8],["Edirne","17:53",7],["Aydın","17:56",4],["Manisa","17:56",4],["Muğla","17:56",4],["Çanakkale","17:57",3],["İzmir","17:58",2]];
+const SET_GOK = 18 * 60, SET_IGDIR = 16 * 60 + 47;   // dk (UTC+3), aynı hesaptan
+
+// 16 Kasım 2026 için güneş sapması ve denklem zamanı (Meeus, tools/hys-12-bati.mjs ile aynı formül)
+const SUN = (() => {
+  const T = (Date.UTC(2026, 10, 16, 14) / 864e5 + 2440587.5 - 2451545) / 36525, R = RAD;
+  const L0 = (280.46646 + T * (36000.76983 + T * 0.0003032)) % 360, M = 357.52911 + T * (35999.05029 - 0.0001537 * T);
+  const e = 0.016708634 - T * (0.000042037 + 0.0000001267 * T);
+  const Cc = Math.sin(M * R) * (1.914602 - T * (0.004817 + 0.000014 * T)) + Math.sin(2 * M * R) * (0.019993 - 0.000101 * T) + Math.sin(3 * M * R) * 0.000289;
+  const om = 125.04 - 1934.136 * T, lam = L0 + Cc - 0.00569 - 0.00478 * Math.sin(om * R);
+  const eps = 23 + (26 + (21.448 - T * (46.815 + T * (0.00059 - T * 0.001813))) / 60) / 60 + 0.00256 * Math.cos(om * R);
+  const dec = Math.asin(Math.sin(eps * R) * Math.sin(lam * R)), yv = Math.tan(eps * R / 2) ** 2;
+  const eot = 4 / R * (yv * Math.sin(2 * L0 * R) - 2 * e * Math.sin(M * R) + 4 * e * yv * Math.sin(M * R) * Math.cos(2 * L0 * R) - .5 * yv * yv * Math.sin(4 * L0 * R) - 1.25 * e * e * Math.sin(2 * M * R));
+  return { dec, eot };
+})();
+// saat τ'da (dk, UTC+3) güneşin battığı boylam, verilen enlemde: bunun doğusu gece
+function nightEdge(lat, tau) {
+  const ha = Math.acos(Math.cos(90.833 * RAD) / (Math.cos(lat * RAD) * Math.cos(SUN.dec)) - Math.tan(lat * RAD) * Math.tan(SUN.dec)) / RAD;
+  return (720 - SUN.eot + 4 * ha - (tau - 180)) / 4;
+}
+
+const RED = '#E5484D';
+const hhmm = m => { const r = Math.round(m); return String(Math.floor(r / 60)).padStart(2, '0') + ':' + String(r % 60).padStart(2, '0'); };
+let T, ISL = [], MAIN = null;
+const DASH = [22, 16], DASHP = 38;
+const dashOff = t => -t * Math.round(VO.duration * 46 / DASHP) * DASHP / VO.duration;
+
+function lonLine(path, lon, { color = C.accent, alpha = 1, t = 0, width = 5, from = 30, to = 50 } = {}) {
+  if (alpha <= .001) return;
+  ctx.save(); ctx.lineDashOffset = dashOff(t);
+  const n = 80; line(path, Array.from({ length: n + 1 }, (_, i) => [lon, from + (to - from) * i / n]), { color, width, dash: DASH, alpha, outline: true });
+  ctx.restore();
+}
+// sıra rozeti: daire içinde "4." vb. t0'da büyükten iner
+function badge(x, y, n, t, t0, a, { color = C.land, ink = C.ocean, r = 46, empty = false } = {}) {
+  if (a <= .001 || t < t0) return;
+  const k = prog(t, t0, t0 + .18), s = lerp(1.9, 1, ease.outCubic(k));
+  ctx.save(); ctx.globalAlpha = a * Math.min(1, k * 1.8); ctx.translate(x, y); ctx.scale(s, s);
+  ctx.fillStyle = C.ocean; ctx.beginPath(); ctx.arc(0, 0, r + 6, 0, 2 * Math.PI); ctx.fill();
+  if (empty) { ctx.strokeStyle = color; ctx.lineWidth = 5; ctx.setLineDash([10, 8]); ctx.beginPath(); ctx.arc(0, 0, r - 3, 0, 2 * Math.PI); ctx.stroke(); ctx.setLineDash([]); }
+  else { ctx.fillStyle = color; ctx.beginPath(); ctx.arc(0, 0, r, 0, 2 * Math.PI); ctx.fill(); }
+  ctx.fillStyle = empty ? color : ink; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.font = `800 ${Math.round(r * 1.05)}px ${SANS}`; ctx.fillText(n + '.', r * .06, r * .06);
+  ctx.restore();
+}
+function qmark(x, y, a, s = 1) { if (a > .001) text('?', x, y, 64 * s, { alpha: a, color: C.accent, align: 'center' }); }
+function bracketH(x0, x1, y, str, a, { color = C.accent, size = 36 } = {}) {
+  if (a <= .001) return;
+  ctx.save(); ctx.globalAlpha = a; ctx.strokeStyle = color; ctx.lineWidth = 3; ctx.lineCap = 'round';
+  ctx.beginPath(); ctx.moveTo(x0, y - 10); ctx.lineTo(x0, y + 10); ctx.moveTo(x0, y); ctx.lineTo(x1, y); ctx.moveTo(x1, y - 10); ctx.lineTo(x1, y + 10); ctx.stroke();
+  ctx.restore();
+  text(str, (x0 + x1) / 2, y - 22, size, { font: MONO, weight: 500, color, alpha: a, align: 'center' });
+}
+
+// ── sıra şeridi: dört nokta Babakale'ye göre kaç km batıda (doğrusal ölçek) ──
+const RUL = { x1: 900, x0: 180, y: 900 };
+function ruler(t, a) {
+  if (a <= .001) return;
+  const pxKm = (RUL.x1 - RUL.x0) / D_GOK, X = d => RUL.x1 - d * pxKm;
+  ctx.save(); ctx.globalAlpha = a; ctx.fillStyle = C.bg;
+  ctx.beginPath(); ctx.roundRect(SAFE.x0 - 40, RUL.y - 330, SAFE.x1 - SAFE.x0 + 80, 600, 26); ctx.fill(); ctx.restore();
+  text('Babakale’ye göre kaç km batıda?', W / 2, RUL.y - 262, 38, { weight: 600, color: C.mute, alpha: a, align: 'center' });
+  const P = [[GOK, D_GOK, 1, 'Gökçeada', '34 km'], [BOZ, D_BOZ, 3, 'Bozcaada', '> 8 km'], [ENEZ, D_ENEZ, 2, 'Enez', '> 2 km'], [BABA, 0, 4, 'Babakale', '0']];
+  ctx.save(); ctx.globalAlpha = a; ctx.strokeStyle = C.text; ctx.lineWidth = 4;
+  ctx.beginPath(); ctx.moveTo(RUL.x0 - 30, RUL.y); ctx.lineTo(RUL.x1 + 30, RUL.y); ctx.stroke(); ctx.restore();
+  P.forEach(([p, d, n, ad, s], i) => {
+    const k = prog(t, T.rul + i * .18, T.rul + i * .18 + .3), x = X(d);
+    if (k <= 0) return;
+    const col = n === 1 ? C.accent : n === 4 ? RED : C.land;
+    ctx.save(); ctx.globalAlpha = a * k; ctx.strokeStyle = col; ctx.lineWidth = 5; ctx.setLineDash([14, 10]);
+    ctx.beginPath(); ctx.moveTo(x, RUL.y - 150); ctx.lineTo(x, RUL.y + 20); ctx.stroke(); ctx.restore();
+    // Enez ve Babakale çizgileri üst üste: rozetleri yana kaydır
+    const bx = n === 2 ? x - 70 : n === 3 ? x - 10 : n === 4 ? x + 10 : x;
+    badge(bx, RUL.y - 192, n, t, T.rul + i * .18, a * k, { color: col, r: 34 });
+    const ly = n === 2 ? RUL.y + 150 : RUL.y + 64, lx = n === 2 ? x - 40 : x;
+    text(ad, lx, ly, 32, { weight: 800, color: col === RED ? C.text : col, alpha: a * k, align: 'center' });
+    text(s, lx, ly + 40, 28, { font: MONO, weight: 500, color: C.mute, alpha: a * k, align: 'center' });
+  });
+}
+
+HYS.run({
+  vo: VO, cover: 1.4, flat: true, seed: 12,
+  captionSkip: [8],
+  init() {
+    // d3 küresel sarım: dış halka saat yönünde olmalı; NE GeoJSON tersini kullanır → alanı yarım küreden büyükse çevir
+    for (const f of Object.values(KIYI)) f.geometry.coordinates = f.geometry.coordinates.map(p =>
+      d3.geoArea({ type: 'Polygon', coordinates: p }) > 2 * Math.PI ? p.map(r => r.slice().reverse()) : p);
+    // NE 1:10m Türkiye: en büyük iki poligon Anadolu + Trakya (anakara), gerisi ada
+    const polys = KIYI.Turkey.geometry.coordinates.map(c => ({ c, n: c[0].length })).sort((a, b) => b.n - a.n);
+    MAIN = { type: 'Feature', geometry: { type: 'MultiPolygon', coordinates: polys.slice(0, 2).map(p => p.c) } };
+    ISL = polys.slice(2).map(p => ({ type: 'Feature', geometry: { type: 'Polygon', coordinates: p.c } }));
+  },
+  times(L, at, DUR) {
+    T = {
+      dort: at(0, 'end') - .75,
+      s2: at(1) - .15, asya: at(1) + .2, degil: at(1, 'end') - 1.15,
+      s3: at(2) - .15, boz: at(2) + .45,
+      s4: at(3) - .1, ada: at(3) + .1, pan: at(3) + .9, enez: at(3) + 1.6, br: at(3, 'end') - 2.2,
+      s5: at(4) - .1, soru: at(4) + .5,
+      s6: at(5) - .15, gok: at(5) + .05, rul: at(5) + 1.7,
+      s7: at(6) - .1, clk0: at(6) + 1.4, clk1: at(6, 'end') - .2,
+      s8: at(7) - .1, s9: at(8) - .2, s10: at(9) - .15, loop: DUR - 1.1, DUR,
+    };
+    return T;
+  },
+  scenes: (T, at, DUR) => [
+    { name: 'cold open', start: 0, end: T.s2 }, { name: 'doğru ama', start: T.s2, end: T.s3 },
+    { name: '3. bozcaada', start: T.s3, end: T.s4 }, { name: '2. enez', start: T.s4, end: T.s5 },
+    { name: 'gerilim', start: T.s5, end: T.s6 }, { name: '1. gökçeada', start: T.s6, end: T.s7 },
+    { name: 'paradoks', start: T.s7, end: T.s8 }, { name: '73 dk', start: T.s8, end: T.s9 },
+    { name: 'durdur-bul', start: T.s9, end: T.s10 }, { name: 'cliffhanger', start: T.s10, end: T.loop },
+    { name: 'döngü', start: T.loop, end: DUR },
+  ],
+  keys: (T, at, DUR) => [
+    [0, 26.10, 39.62, 260], [T.s3 - .3, 26.10, 39.62, 260], [T.s3 + .5, 26.00, 39.68, 220],
+    [T.pan, 26.00, 39.68, 220], [T.enez + .2, 26.06, 40.68, 260], [T.br - .3, 26.05, 40.73, 1400], [T.s5, 26.05, 40.73, 1400],
+    [T.s5 + 1.0, 25.82, 40.12, 190], [T.s7, 25.82, 40.12, 190],
+    [T.s7 + 1.3, 35.3, 39.6, 13], [T.loop, 35.3, 39.6, 13], [DUR, 26.10, 39.62, 260],
+  ],
+  draw(t, g) {
+    const listA = win(t, T.s9, T.s10 + .25, .3);
+    if (1 - listA > .001) { ctx.save(); ctx.globalAlpha = 1 - listA; drawMap(t, g); ctx.restore(); }
+    ruler(t, win(t, T.rul - .2, T.s7 + .2, .3));
+    if (listA > .001) drawList(t, listA);
+  },
+  header(t, g) {
+    const { T, DUR } = g;
+    const Y1 = SAFE.y0 + 40 + 80, Y2 = Y1 + 78;
+    const h1 = Math.max(1 - prog(t, T.s2 - .2, T.s2 + .1), prog(t, T.loop + .2, DUR - .2));
+    text('Türkiye’nin en batı ucu', SAFE.x0, Y1, 70, { alpha: h1 });
+    text('BABAKALE?', SAFE.x0, Y2 + 8, 76, { color: C.accent, alpha: h1 });
+    const h2 = win(t, T.s2 + .05, T.s3 + .1, .3);
+    text('Doğru ama…', SAFE.x0, Y1, 76, { alpha: h2 });
+    text('Asya’nın ucu, Türkiye’nin değil', SAFE.x0, Y2, 50, { weight: 600, color: C.accent, alpha: Math.min(h2, prog(t, T.degil, T.degil + .3)) });
+    const h3 = win(t, T.s3 + .05, T.s4 + .1, .3);
+    text('3. BOZCAADA', SAFE.x0, Y1 + 6, 88, { alpha: h3 });
+    text('Babakale’den 8 km’den fazla batıda', SAFE.x0, Y2 + 6, 46, { weight: 600, color: C.mute, alpha: h3 });
+    const h4a = win(t, T.s4 + .05, T.enez + .1, .3), h4 = win(t, T.enez, T.s5 + .1, .3);
+    text('Ada saymazsak?', SAFE.x0, Y1, 76, { alpha: h4a });
+    text('2. ENEZ', SAFE.x0, Y1 + 6, 88, { alpha: h4 });
+    text('Meriç’in ağzı · anakaranın en batısı', SAFE.x0, Y2 + 6, 46, { weight: 600, color: C.mute, alpha: h4 });
+    const h5 = win(t, T.s5 + .05, T.gok + .1, .3);
+    text('Peki 1. kim?', SAFE.x0, Y1, 80, { alpha: h5 });
+    const h6 = win(t, T.gok, T.s7 + .1, .3);
+    text('1. GÖKÇEADA', SAFE.x0, Y1 + 6, 88, { color: C.accent, alpha: h6 });
+    text('İncirburnu · Türkiye’nin en batısı', SAFE.x0, Y2 + 6, 46, { weight: 600, color: C.text, alpha: h6 });
+    const h7 = win(t, T.s7 + .05, T.s8 + .1, .3);
+    text('Tek saat dilimi', SAFE.x0, Y1, 76, { alpha: h7 });
+    text('16 Kasım · gün batımı', SAFE.x0, Y2, 52, { weight: 600, color: C.mute, alpha: h7 });
+    const h8 = win(t, T.s8 + .05, T.s9 + .1, .3);
+    text('Aynı saat, farklı gökyüzü', SAFE.x0, Y1, 66, { alpha: h8 });
+    text('73 dakika fark', SAFE.x0, Y2, 60, { color: C.accent, alpha: h8 });
+    const h9 = win(t, T.s9 + .1, T.s10, .3);
+    text('İlinde güneş kaç dk erken?', SAFE.x0, Y1 - 10, 62, { alpha: h9 });
+    text('Durdur, bul ⏸', SAFE.x0, Y2 - 18, 52, { weight: 600, color: C.accent, alpha: h9 });
+    const h10 = win(t, T.s10 + .1, T.loop + .3, .3);
+    text('Güney ✓ Kuzey ✓ Batı ✓', SAFE.x0, Y1, 66, { alpha: h10 });
+    text('Peki en doğu?', SAFE.x0, Y2, 60, { color: C.accent, alpha: h10 });
+  },
+  sounds(T) {
+    return [
+      { t: .25, type: 'tick', gain: .18, f: 1100 }, { t: .4, type: 'tick', gain: .18, f: 1250 },
+      { t: T.dort, type: 'tick', gain: .5, f: 140 }, { t: T.dort + .01, type: 'tick', gain: .3, f: 90 },
+      { t: T.asya + .2, type: 'ping', gain: .22, f: 587 }, { t: T.degil, type: 'tick', gain: .4, f: 160 },
+      { t: T.s3, type: 'whoosh', dur: .6, gain: .1 }, { t: T.boz, type: 'tick', gain: .45, f: 300 },
+      { t: T.ada, type: 'whoosh', dur: .5, gain: .08 }, { t: T.pan, type: 'whoosh', dur: 1.0, gain: .1 },
+      { t: T.enez, type: 'tick', gain: .45, f: 420 },
+      ...Array.from({ length: 5 }, (_, i) => ({ t: T.br - .9 + i * .16, type: 'tick', gain: .1, f: 800 + i * 120 })),
+      { t: T.br, type: 'ping', gain: .3, f: 698 },
+      { t: T.s5 + .2, type: 'whoosh', dur: 1.0, gain: .1 },
+      { t: T.gok + .1, type: 'ping2', gain: .45 },
+      ...Array.from({ length: 4 }, (_, i) => ({ t: T.rul + i * .18, type: 'tick', gain: .14, f: 1500 - i * 200 })),
+      { t: T.s7 + .1, type: 'whoosh', dur: 1.2, gain: .1 },
+      ...Array.from({ length: 12 }, (_, i) => ({ t: T.clk0 + (T.clk1 - T.clk0) * i / 11, type: 'tick', gain: .07, f: 1700 })),
+      { t: T.clk0 + (T.clk1 - T.clk0) * (SET_IGDIR - 16 * 60 - 40) / 82, type: 'tick', gain: .3, f: 220 },
+      { t: T.s8 + .1, type: 'ping', gain: .38, f: 784 },
+      ...Array.from({ length: 9 }, (_, i) => ({ t: T.s9 + .1 + i * .07, type: 'tick', gain: .08, f: 1300 + i * 30 })),
+      { t: T.s10, type: 'whoosh', dur: .8, gain: .1 },
+      { t: T.loop, type: 'whoosh', dur: .9, gain: .08 },
+    ];
+  },
+});
+
+// saat: 16:40 → 18:02, clk0..clk1
+const tau = t => 16 * 60 + 40 + 82 * ease.inOutSine(prog(t, T.clk0, T.clk1));
+
+function drawMap(t, g) {
+  const { path, pr, T, DUR, cam } = g;
+  const xy = p => pr(p);
+  // zemin: uzakta world-atlas 50m, yakında NE 1:10m kıyılar
+  const near = prog(cam.k, 30, 70);
+  baseMap(path, { sphere: false, fine: true, landAlpha: 1 - near });
+  const islA = 1 - .75 * win(t, T.ada, T.s5 + .2, .4);
+  fillFeature(path, KIYI.Greece, { color: C.land, alpha: near });
+  fillFeature(path, KIYI.Bulgaria, { color: C.land, alpha: near });
+  fillFeature(path, MAIN, { color: C.land, alpha: 1 });
+  ISL.forEach(f => fillFeature(path, f, { color: C.land, alpha: islA }));
+  ctx.save(); ctx.strokeStyle = 'rgba(15,28,38,.6)'; ctx.lineWidth = 1.6; ctx.globalAlpha = Math.max(near, .5);
+  ctx.beginPath(); path(KIYI.Turkey); ctx.stroke(); ctx.restore();
+
+  // gece: 16 Kasım gün batımı çizgisinin doğusu
+  const nA = win(t, T.clk0 - .3, T.s9 + .2, .3);
+  if (nA > 0) {
+    const tt = tau(t), lats = Array.from({ length: 61 }, (_, i) => 25 + i * .5);
+    const e0 = nightEdge(25, tt), e1 = nightEdge(55, tt), n = 40;
+    // üst ve alt kenarlar paralel boyunca sık noktalı (d3 düz kenarı büyük daire yayı olarak çizer)
+    const poly = [...lats.map(la => [nightEdge(la, tt), la]),
+      ...Array.from({ length: n }, (_, i) => [e1 + (70 - e1) * (i + 1) / n, 55]),
+      ...Array.from({ length: n }, (_, i) => [70 - (70 - e0) * (i + 1) / n, 25])];
+    ctx.save(); ctx.globalAlpha = .62 * nA; ctx.fillStyle = '#03080C';
+    ctx.beginPath(); path({ type: 'Polygon', coordinates: [[...poly, poly[0]]] }); ctx.fill(); ctx.restore();
+    // ikonlar: Iğdır ay, Gökçeada güneş → ay
+    const ig = xy(IGDIR), gk = xy(GOK);
+    const igN = tt >= SET_IGDIR, gkN = tt >= SET_GOK;
+    pin(ig, { color: C.text, r: 9, alpha: nA }); pin(gk, { color: C.accent, r: 9, alpha: nA });
+    IKON.ciz(ctx, igN ? 'f:crescent-moon' : 'f:sun', ig[0] - 10, ig[1] - 70, 64, { alpha: nA, ...(igN ? IKON.pop(t, T.clk0 + (T.clk1 - T.clk0) * .1, .4) : {}) });
+    IKON.ciz(ctx, gkN ? 'f:crescent-moon' : 'f:sun', gk[0] + 10, gk[1] - 70, 64, { alpha: nA });
+    IKON.etiket(ctx, 'Iğdır', ig[0] - 10, ig[1] + 40, { boyut: 30, alpha: nA });
+    IKON.etiket(ctx, 'Gökçeada', gk[0] + 40, gk[1] + 40, { boyut: 30, alpha: nA });
+    // büyük saat
+    const cA = win(t, T.clk0 - .2, T.s8 + .2, .3);
+    ctx.save(); ctx.globalAlpha = .92 * cA; ctx.fillStyle = C.ocean; ctx.beginPath(); ctx.roundRect(W / 2 - 220, 600, 440, 150, 24); ctx.fill(); ctx.restore();
+    text(hhmm(tt), W / 2, 712, 112, { font: MONO, weight: 500, color: C.text, alpha: cA, align: 'center' });
+    // 73 dakika
+    const dA = win(t, T.s8, T.s9 + .2, .3);
+    if (dA > 0) {
+      const s = 1 + .25 * (1 - ease.outCubic(prog(t, T.s8, T.s8 + .35)));
+      ctx.save(); ctx.globalAlpha = .94 * dA; ctx.fillStyle = C.ocean; ctx.beginPath(); ctx.roundRect(W / 2 - 320, 590, 640, 220, 24); ctx.fill(); ctx.restore();
+      ctx.save(); ctx.translate(W / 2, 700); ctx.scale(s, s);
+      text((SET_GOK - SET_IGDIR) + ' dakika', 0, 0, 104, { color: C.accent, alpha: dA, align: 'center' }); ctx.restore();
+      text('Iğdır ' + hhmm(SET_IGDIR) + ' · Gökçeada ' + hhmm(SET_GOK), W / 2, 782, 36, { font: MONO, weight: 500, color: C.text, alpha: dA, align: 'center' });
+    }
+  }
+
+  // boylam çizgileri
+  const bA = Math.max(win(t, 0, T.s7 + .2, .01), prog(t, T.loop + .1, DUR - .2));
+  lonLine(path, BABA[0], { alpha: bA, t, color: t < T.s3 ? C.accent : C.land, width: t < T.s3 ? 5 : 4 });
+  lonLine(path, BOZ[0], { alpha: win(t, T.boz - .2, T.ada + .3, .3), t, color: C.land, width: 4 });
+  lonLine(path, ENEZ[0], { alpha: win(t, T.enez - .1, T.s7 + .2, .3), t, color: C.land, width: 4 });
+  lonLine(path, GOK[0], { alpha: win(t, T.gok, T.s7 + .2, .3), t, color: C.accent, width: 5 });
+
+  // 4 · Babakale
+  if (t < T.s4 + .6 || t > T.loop) {
+    const b = xy(BABA), a = t > T.loop ? prog(t, T.loop + .2, DUR - .2) : 1 - prog(t, T.s4, T.s4 + .5);
+    pin(b, { color: C.accent, r: 13, alpha: a, pulse: t < T.dort ? (t * 1.1) % 1 : 0 });
+    const p = IKON.pop(t, .5, .45), ik = IKON.il('Çanakkale');
+    IKON.ciz(ctx, ik.ikon, b[0] + 120, b[1] + 20, 96 * p.olcek, { alpha: a * p.alpha, aci: p.aci });
+    IKON.etiket(ctx, 'Babakale', b[0] + 120, b[1] + 100, { boyut: 34, alpha: a });
+    if (t < T.loop) badge(b[0] - 80, b[1] - 90, 4, t, T.dort, a, { color: RED, ink: C.text });
+    // doğru ama kartı
+    const kA = win(t, T.asya, T.s3 + .1, .3) * a;
+    if (kA > 0) {
+      ctx.save(); ctx.globalAlpha = .94 * kA; ctx.fillStyle = C.ocean; ctx.beginPath(); ctx.roundRect(SAFE.x0 - 10, b[1] - 330, 610, 170, 20); ctx.fill(); ctx.restore();
+      text('✓ Asya’nın en batı ucu', SAFE.x0 + 16, b[1] - 262, 44, { weight: 800, color: C.accent, alpha: kA });
+      text('✗ Türkiye’nin en batı ucu', SAFE.x0 + 16, b[1] - 192, 44, { weight: 800, color: RED, alpha: kA * prog(t, T.degil, T.degil + .2) });
+    }
+  }
+  // 3 · Bozcaada
+  if (t > T.boz - .3 && t < T.s5 + .3) {
+    const z = xy(BOZ), a = win(t, T.boz - .3, T.s5 + .3, .3) * (1 - .6 * win(t, T.ada, T.s5 + .3, .3));
+    pin(z, { color: C.land, r: 11, alpha: a });
+    badge(z[0] - 90, z[1] - 60, 3, t, T.boz, a);
+    IKON.etiket(ctx, 'Bozcaada', z[0] - 60, z[1] + 56, { boyut: 32, alpha: a });
+  }
+  // 2 · Enez
+  if (t > T.enez - .3 && t < T.s7 + .3) {
+    const e = xy(ENEZ), a = win(t, T.enez - .3, T.s6, .3);
+    pin(e, { color: C.land, r: 12, alpha: a });
+    badge(e[0] - 100, e[1] - 110, 2, t, T.enez, a);
+    const p = IKON.pop(t, T.enez + .2, .45), ik = IKON.il('Edirne');
+    IKON.ciz(ctx, ik.ikon, e[0] + 150, e[1] - 150, 92 * p.olcek, { alpha: a * p.alpha, aci: p.aci });
+    IKON.etiket(ctx, 'Enez · Edirne', e[0] + 150, e[1] - 76, { boyut: 32, alpha: a });
+    const gp = IKON.pop(t, T.enez + .5, .4), gr = xy([25.95, 40.88]);   // Yunanistan kıyısı (NE 1:10m içinde); yakınlaşmadan önce söner
+    IKON.bayrak(ctx, 'gr', gr[0], gr[1], 42, { bicim: 'direk', olcek: gp.olcek, alpha: a * gp.alpha * (1 - prog(t, T.br - 1.6, T.br - 1.1)), dalga: t });
+    // Babakale çizgisiyle arası
+    const bx = xy([BABA[0], ENEZ[1]])[0];
+    if (bx - e[0] > 40) bracketH(e[0], bx, e[1] + 150, '> 2 km', a * prog(t, T.br, T.br + .3), { size: 44 });
+    IKON.etiket(ctx, 'Babakale hizası', bx + 40, e[1] + 250, { boyut: 26, alpha: a * prog(t, T.br, T.br + .3), zemin: C.ocean, renk: C.mute });
+  }
+  // 1 · Gökçeada
+  if (t > T.s5 - .2 && t < T.s7 + .4) {
+    const k = xy(GOK), a = win(t, T.s5 + .3, T.s7 + .4, .3) * (1 - win(t, T.rul - .2, T.s7 + .2, .3));
+    pin(k, { color: C.accent, r: 13, alpha: a, pulse: (t * 1.1) % 1 });
+    if (t < T.gok) { qmark(k[0] - 4, k[1] - 34, a, .9); badge(k[0] + 20, k[1] - 160, 1, t, T.soru, a, { color: C.accent, empty: true }); }
+    else {
+      badge(k[0] + 20, k[1] - 160, 1, t, T.gok, a, { color: C.accent });
+      const p = IKON.pop(t, T.gok + .25, .45), ik = IKON.il('Çanakkale');
+      IKON.ciz(ctx, ik.ikon, k[0] + 200, k[1] + 30, 92 * p.olcek, { alpha: a * p.alpha, aci: p.aci });
+      IKON.etiket(ctx, 'İncirburnu · Gökçeada', k[0] + 110, k[1] + 110, { boyut: 32, alpha: a, zemin: C.accent, renk: C.ocean });
+    }
+  }
+  // cliffhanger: üç uç ✓, doğuda ?
+  const cA = win(t, T.s10 + .2, T.loop + .3, .3);
+  if (cA > 0) {
+    [[HATAY, 'Hatay · güney', 'Hatay', -70], [KOFCAZ, 'Kofçaz · kuzey', 'Kırklareli', -60], [GOK, 'Gökçeada · batı', 'Çanakkale', 60]].forEach(([p, s, il, dy], i) => {
+      const q = xy(p), k = cA * prog(t, T.s10 + .3 + i * .25, T.s10 + .6 + i * .25), pp = IKON.pop(t, T.s10 + .3 + i * .25, .4);
+      pin(q, { color: C.accent, r: 10, alpha: k });
+      IKON.ciz(ctx, IKON.il(il).ikon, q[0], q[1] - 54, 56 * pp.olcek, { alpha: k * pp.alpha });
+      IKON.etiket(ctx, s + ' ✓', q[0] + (i === 2 ? 110 : i === 1 ? 60 : 0), q[1] + dy + (dy > 0 ? 10 : -40), { boyut: 32, alpha: k });
+    });
+    const e = xy([44.3, 38.9]);
+    qmark(e[0], e[1] + 20, cA * prog(t, T.s10 + 1.3, T.s10 + 1.6) * (.75 + .25 * Math.sin(t * 7)), 1.5);
+  }
+}
+
+function drawList(t, a) {
+  const cols = 3, rows = 27, x0 = SAFE.x0 - 18, colW = (SAFE.x1 - SAFE.x0 + 36) / cols, y0 = 520, rowH = 37.5;
+  ctx.save(); ctx.globalAlpha = a; ctx.fillStyle = C.bg; ctx.fillRect(0, 480, W, H - 480); ctx.restore();
+  GB.forEach(([il, saat, dk], i) => {
+    const c = Math.floor(i / rows), r = i % rows, x = x0 + c * colW, y = y0 + r * rowH;
+    const k = prog(t, T.s9 + .05 + i * .008, T.s9 + .25 + i * .008), al = a * k;
+    if (al <= .001) return;
+    const hl = il === 'Iğdır' || il === 'İzmir';
+    if (hl) { ctx.globalAlpha = al * (.72 + .28 * Math.sin(t * 6.3)); ctx.fillStyle = C.accent; ctx.beginPath(); ctx.roundRect(x - 6, y - 27, colW - 8, 36, 8); ctx.fill(); ctx.globalAlpha = 1; }
+    const ik = IKON.il(il);
+    if (ik) IKON.ciz(ctx, ik.ikon, x + 14, y - 9, 30, { alpha: al });
+    const right = x + colW - 16, s2 = saat + ' ' + String(dk).padStart(2, ' ');
+    ctx.font = `500 21px ${MONO}`; const w2 = ctx.measureText(s2).width;
+    text(saat, right - w2, y, 21, { font: MONO, weight: 500, color: hl ? C.ocean : C.mute, alpha: al });
+    text(String(dk), right, y, 21, { font: MONO, weight: 500, color: hl ? C.ocean : C.accent, alpha: al, align: 'right' });
+    let size = 24; ctx.font = `600 ${size}px ${SANS}`;
+    const room = colW - 50 - w2 - 12, need = ctx.measureText(il).width;
+    if (need > room) size = Math.max(15, size * room / need);
+    text(il, x + 34, y, size, { weight: 600, color: hl ? C.ocean : C.text, alpha: al });
+  });
+  text('16 Kasım gün batımı (il merkezi) · turuncu: Gökçeada’dan kaç dk önce', SAFE.x0, y0 + rows * rowH + 6, 24, { weight: 600, color: C.mute, alpha: a });
+}
+</script>
+</body>
+</html>
