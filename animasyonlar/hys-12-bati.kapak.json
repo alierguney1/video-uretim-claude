@@ -1,0 +1,41 @@
+{
+  "kaynak": "hys-12-bati.html",
+  "varyantlar": [
+    {
+      "ad": "babakale",
+      "tur": "yanlış inanış",
+      "t": 3.9,
+      "zoom": { "x": 511, "y": 1100, "olcek": 1.2, "dy": 120 },
+      "baslik": ["EN BATI", "*BABAKALE*", "*DEĞİL*"],
+      "baslikY": 250,
+      "boyut": 150,
+      "alt": "Peki *neresi?*",
+      "altY": 1600,
+      "emoji": [{ "ad": "face-screaming-in-fear", "x": 880, "y": 1330, "boyut": 180, "aci": 8 }]
+    },
+    {
+      "ad": "gizem",
+      "tur": "gizem nesnesi",
+      "t": 18.2,
+      "zoom": { "x": 452, "y": 1014, "olcek": 1.25, "dy": 150 },
+      "baslik": ["TÜRKİYE'NİN", "EN BATISI", "*NERESİ?*"],
+      "baslikY": 250,
+      "boyut": 145,
+      "halkalar": [{ "x": 452, "y": 1164, "r": 110 }],
+      "emoji": [{ "ad": "thinking-face", "x": 880, "y": 1450, "boyut": 180, "aci": -8 }]
+    },
+    {
+      "ad": "73dk",
+      "tur": "paradoks",
+      "t": 27.6,
+      "zoom": { "x": 540, "y": 1000, "olcek": 1.15, "dy": 230 },
+      "karart": 0.2,
+      "baslik": ["AYNI SAAT", "*73 DAKİKA*", "FARK"],
+      "baslikY": 250,
+      "boyut": 145,
+      "alt": "Güneş *önce* nerede batıyor?",
+      "altY": 1620,
+      "emoji": [{ "ad": "sun", "x": 180, "y": 1420, "boyut": 150, "aci": -6 }, { "ad": "crescent-moon", "x": 900, "y": 1420, "boyut": 150, "aci": 8 }]
+    }
+  ]
+}

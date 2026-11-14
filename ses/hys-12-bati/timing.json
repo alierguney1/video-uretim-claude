@@ -1,0 +1,65 @@
+{
+  "duration": 42.01,
+  "lines": [
+    {
+      "id": "l1",
+      "start": 0.15,
+      "end": 4.314,
+      "text": "En batı ucu deyince akla Babakale gelir. Ama Babakale dördüncü."
+    },
+    {
+      "id": "l2",
+      "start": 4.664,
+      "end": 7.962,
+      "text": "Asya'nın en batı ucu, evet. Türkiye'nin değil."
+    },
+    {
+      "id": "l3",
+      "start": 8.212,
+      "end": 9.858,
+      "text": "Üçüncü: Bozcaada."
+    },
+    {
+      "id": "l4",
+      "start": 10.108,
+      "end": 17.019,
+      "text": "Ada saymazsak? İkinci: Enez, Meriç'in denize döküldüğü yer. Babakale'den 2 km'den fazla batıda."
+    },
+    {
+      "id": "l5",
+      "start": 17.269,
+      "end": 18.594,
+      "text": "Peki birinci?"
+    },
+    {
+      "id": "l6",
+      "start": 19.344,
+      "end": 23.215,
+      "text": "Gökçeada, İncirburnu. Babakale'den 34 km batıda."
+    },
+    {
+      "id": "l7",
+      "start": 23.465,
+      "end": 29.994,
+      "text": "Neden önemli? Tek saat dilimindeyiz, ama güneş Iğdır'da 16.47'de, Gökçeada'da 18.00'de batıyor."
+    },
+    {
+      "id": "l8",
+      "start": 30.244,
+      "end": 31.813,
+      "text": "73 dakika fark."
+    },
+    {
+      "id": "l9",
+      "start": 32.063,
+      "end": 34.728,
+      "text": "Senin ilinde kaç dakika erken? Durdur, bul."
+    },
+    {
+      "id": "l10",
+      "start": 35.478,
+      "end": 39.613,
+      "text": "Güney, kuzey, batı tamam. Peki en doğu ucu? Yaz."
+    }
+  ]
+}
