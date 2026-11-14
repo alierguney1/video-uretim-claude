@@ -76,27 +76,42 @@ export async function cdnFallback(target) {
   });
 }
 
+export function findChromium(chromium) {
+  const def = chromium?.executablePath?.();
+  if (def && fs.existsSync(def)) return def;
+  for (const p of [process.env.CHROMIUM_PATH, '/usr/bin/chromium', '/usr/bin/chromium-browser', '/usr/bin/google-chrome']) {
+    if (p && fs.existsSync(p)) return p;
+  }
+  return undefined;
+}
+
+export async function launchBrowser(opts = {}) {
+  const { chromium } = loadPlaywright();
+  const executablePath = opts.executablePath || findChromium(chromium);
+  return chromium.launch({ ...opts, ...(executablePath ? { executablePath } : {}) });
+}
+
 /**
  * Sayfayı açar, __ready'yi bekler, viewport'u __size'a göre ayarlar.
  * Döner: { browser, context, page, meta: {duration, fps, width, height, scenes} }
  */
 export async function openAnimation(file, { query = '', scale = 1, browser } = {}) {
-  const { chromium } = loadPlaywright();
   const ownBrowser = !browser;
-  browser = browser || await chromium.launch();
+  browser = browser || await launchBrowser();
   const url = pathToFileURL(file).href + '?render=1' + (query ? '&' + query : '');
 
-  // Önce boyutu öğren
-  const probe = await browser.newPage();
+  // Önce boyutu öğren (proxy TLS sertifikası Google Fonts'u düşürmesin diye ignoreHTTPSErrors)
+  const probeCtx = await browser.newContext({ ignoreHTTPSErrors: true });
+  const probe = await probeCtx.newPage();
   await cdnFallback(probe);
   const errors = [];
   probe.on('pageerror', e => errors.push(e.message));
   await probe.goto(url);
   const size = await probe.evaluate(() => window.__size || null);
-  await probe.close();
+  await probeCtx.close();
   const width = size?.width || 1920, height = size?.height || 1080;
 
-  const context = await browser.newContext({ viewport: { width, height }, deviceScaleFactor: scale });
+  const context = await browser.newContext({ viewport: { width, height }, deviceScaleFactor: scale, ignoreHTTPSErrors: true });
   const page = await context.newPage();
   await cdnFallback(page);
   page.on('pageerror', e => errors.push(e.message));
@@ -107,9 +122,12 @@ export async function openAnimation(file, { query = '', scale = 1, browser } = {
   const meta = await page.evaluate(() => ({
     duration: window.__duration,
     fps: window.__fps,
+    cover: window.__cover,
     hasSetTime: typeof window.__setTime === 'function',
     scenes: window.__scenes || null,
     hasAudio: typeof window.__renderAudio === 'function',
+    loadedFonts: [...document.fonts].filter(f => f.status === 'loaded').length,
+    failedFonts: [...document.fonts].filter(f => f.status === 'error').map(f => f.family),
   }));
   Object.assign(meta, { width, height, errors, url });
 

@@ -14,11 +14,13 @@ const { page, meta } = anim;
 requireContract(meta);
 
 const d = meta.duration, eps = 1 / (meta.fps || 60);
+const coverAt = typeof meta.cover === 'number' && meta.cover > eps && meta.cover < d - eps ? meta.cover : 0;
 let shots = [];
 if (args.times) {
   shots = String(args.times).split(',').map(Number).map(t => ({ t, label: '' }));
 } else if (meta.scenes?.length) {
-  shots.push({ t: 0, label: 'KAPAK' });
+  shots.push({ t: 0, label: coverAt > 0 ? '0. KARE' : 'KAPAK' });
+  if (coverAt > 0) shots.push({ t: coverAt, label: 'KAPAK (__cover)' });
   meta.scenes.forEach((s, i) => {
     const len = s.end - s.start;
     shots.push({ t: s.start + len * 0.15, label: `${s.name} · baş` });

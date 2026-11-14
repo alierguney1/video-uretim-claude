@@ -1,0 +1,723 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>81 İli Plaka Sırasıyla Gezsen</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@600;700;800&family=IBM+Plex+Mono:wght@500&display=block" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/d3-array@3.2.4/dist/d3-array.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/d3-geo@3.1.1/dist/d3-geo.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/topojson-client@3.1.0/dist/topojson-client.min.js"></script>
+<style>
+  html, body { margin: 0; height: 100%; background: #0b141b; }
+  body { display: grid; place-items: center; overflow: hidden; }
+  canvas { display: block; }
+  #hud { position: fixed; left: 12px; bottom: 10px; font: 12px/1.4 ui-monospace, monospace;
+         color: #bbb; background: rgba(0,0,0,.55); padding: 4px 8px; border-radius: 4px; user-select: none; }
+  body.render #hud { display: none; }
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div id="hud">yükleniyor…</div>
+<audio id="vo" src="../ses/hys-09-plaka/voice.wav" preload="auto"></audio>
+<script src="../lib/ikonlar.js"></script>
+<script src="../lib/ikon-seti.js"></script>
+<script src="../lib/iller.js"></script>
+<script src="../lib/ikon-katmani.js"></script>
+<script src="../lib/harita-motoru.js"></script>
+<script>
+'use strict';
+// Harita Yalan Söyler · Bölüm 9 (V2) — "81 ili plaka sırasıyla gezsen"
+// Brif: hys-09-plaka.brief.md · Doğrulama hesabı: node tools/hys-09-plaka.mjs → veri/hys-09/plaka.json
+// İl merkezleri: Natural Earth 1:10m (9 il GeoNames). Mesafe: büyük daire (kuşuçuşu, R = 6.371,0088 km); yol mesafesi DEĞİL.
+// Ekvator çevresi: 40.075 km (WGS84). Plaka sırası (01→81): 46.555 km · Akıllı rota (bulduğumuz en kısa, Edirne→Sivas): 6.948 km.
+
+/*VO:BEGIN*/ const VO = {"duration":42.85,"lines":[{"id":"l1","start":0.15,"end":4.653,"text":"81 ili plaka sırasıyla gezsen, dünyanın çevresinden daha uzun yol yaparsın."},{"id":"l2","start":4.933,"end":10.647,"text":"01 Adana'dan başla: Adıyaman, Afyon, Ağrı… Daha 4. ilde 2.040 km."},{"id":"l3","start":10.927,"end":15.341,"text":"Neden bu kadar dağınık? Çünkü plakalar haritaya göre değil, ALFABEYE göre verildi."},{"id":"l4","start":15.871,"end":21.153,"text":"35'ten 36'ya: İzmir'den Kars'a, tek hamlede 1.387 km."},{"id":"l5","start":21.433,"end":24.59,"text":"70'te, Karaman'da, dünyanın çevresini geçiyorsun."},{"id":"l6","start":25.32,"end":26.454,"text":"Daha 11 il var."},{"id":"l7","start":26.934,"end":29.479,"text":"Toplam: 46.555 km."},{"id":"l8","start":30.259,"end":35.982,"text":"Aynı 81 il, akıllı sırayla: 6.948 km. Yaklaşık 7 kat kısa."},{"id":"l9","start":36.262,"end":38.65,"text":"Senin ilin bu rotada kaçıncı durak? Durdur, bak."}]}; /*VO:END*/
+
+const { C, SANS, MONO, W, H, SAFE, RAD, R_EARTH, ctx, clamp, lerp, prog, win, ease, km, fmtNum,
+  text, textTab, label, pin, line, tracer, arrow, meter, statPill, vignette, baseMap, heading, headerSeq } = HYS;
+
+const EKVATOR = 40075;
+// Akıllı rota sırası (plaka numaraları; veri/hys-09/plaka.json'dan doğrulanmış deterministik çıktı)
+const AKILLI_SIRA = [
+  22, 39, 59, 17, 10, 45, 35, 9, 48, 20, 7, 15, 32, 3, 64, 43, 26, 11, 16, 77,
+  34, 41, 54, 81, 14, 67, 74, 78, 6, 71, 18, 37, 57, 55, 52, 28, 29, 61, 53, 8,
+  75, 36, 76, 4, 65, 30, 73, 56, 13, 49, 72, 47, 21, 12, 25, 69, 24, 62, 23, 44,
+  2, 63, 27, 79, 46, 80, 31, 1, 33, 70, 42, 68, 51, 38, 50, 40, 66, 19, 5, 60, 58,
+];
+
+const pz = n => String(n).padStart(2, '0');
+const SAFE_CX = (SAFE.x0 + SAFE.x1) / 2;   // 518.4 px — sağda UI sütunu nedeniyle kaydırılmış gerçek görsel merkez
+
+let CITIES = [], TR_FEATS = [], TR_MESH = null, TR_OUTER = null;
+let NEAR_LAND = null, NEAR_BORDERS = null;
+const BG_CACHE = new Map();
+let GRID_CACHE = null;
+let P_LEGS = [], P_CUM = [0], S_LEGS = [], S_CUM = [0];
+const DURAK_BY_PLAKA = new Array(82).fill(0);
+
+// Plaka rota zaman çizelgesi: [zaman, adım (0..80)]
+function buildSchedule(T) {
+  return [
+    [0,           0.22],
+    [T.s2 - .12,  0.72],
+    [T.p2,        1.00],  // 02 Adıyaman
+    [T.p3,        2.00],  // 03 Afyonkarahisar
+    [T.p4,        3.00],  // 04 Ağrı (2.040 km)
+    [T.sweep0,    3.00],  // alfabe sahnesi boyunca bekle
+    [T.j35,      34.00],  // 05..35 İzmir
+    [T.jump0,    34.00],  // 35 İzmir kısa nefes
+    [T.jump1,    35.00],  // 35 İzmir → 36 Kars (1.387 km)
+    [T.fast2,    35.00],
+    [T.p69,      68.00],  // 37..69 Bayburt (39.853 km)
+    [T.eqPre,    68.00],  // eşik öncesi gerilim
+    [T.eqHit,    69.00],  // 70 Karaman (40.551 km — EKVATOR GEÇİLDİ!)
+    [T.rem0,     69.00],  // 11 il kaldı anonsu
+    [T.p81,      80.00],  // 71..81 Düzce (46.555 km)
+    [T.loopStart,80.00],
+  ];
+}
+
+function stepAt(t, sched) {
+  if (t >= sched[sched.length - 1][0]) return 80;
+  for (let i = 0; i < sched.length - 1; i++) {
+    const [t0, s0] = sched[i], [t1, s1] = sched[i + 1];
+    if (t <= t1) {
+      if (s0 === s1) return s0;
+      let k = prog(t, t0, t1);
+      if (s1 - s0 === 1 && s0 >= 33) k = ease.inOutCubic(k);  // dev sıçrama ve çevre geçişinde akıcı ivme
+      else if (s1 - s0 > 5) k = k < .5 ? lerp(0, .5, Math.pow(k * 2, 1.15)) : lerp(.5, 1, 1 - Math.pow((1 - k) * 2, 1.05));
+      return lerp(s0, s1, k);
+    }
+  }
+  return 80;
+}
+
+function legTime(sched, targetStep) {
+  for (let i = 0; i < sched.length - 1; i++) {
+    const [t0, s0] = sched[i], [t1, s1] = sched[i + 1];
+    if (targetStep >= s0 && targetStep <= s1 && s1 > s0) {
+      let lo = t0, hi = t1;
+      for (let k = 0; k < 28; k++) {
+        const mid = (lo + hi) / 2;
+        if (stepAt(mid, sched) < targetStep) lo = mid; else hi = mid;
+      }
+      return (lo + hi) / 2;
+    }
+  }
+  return 0;
+}
+
+function cumulativeKm(step, cumArr) {
+  const s = clamp(step, 0, cumArr.length - 1);
+  const idx = Math.floor(s), frac = s - idx;
+  if (idx >= cumArr.length - 1) return cumArr[cumArr.length - 1];
+  return lerp(cumArr[idx], cumArr[idx + 1], frac);
+}
+
+// Coğrafi yol parçasını pikselle çiz (precomputed koordinatlardan hızlı çizim)
+function drawLegPartial(path, coords, k, { color = C.accent, width = 6, alpha = 1, outline = true } = {}) {
+  k = clamp(k);
+  if (alpha <= .001 || k <= .001) return;
+  const maxI = (coords.length - 1) * k;
+  const n = Math.floor(maxI), f = maxI - n;
+  const sub = coords.slice(0, n + 1);
+  if (f > .001 && n < coords.length - 1) {
+    sub.push([lerp(coords[n][0], coords[n + 1][0], f), lerp(coords[n][1], coords[n + 1][1], f)]);
+  }
+  if (sub.length >= 2) line(path, sub, { color, width, alpha, outline });
+}
+
+// 1962 Alfabesi kartı (Sahne 3: "Plakalar alfabeye göre verildi")
+function drawAlphabetCard(t, T, A) {
+  if (A <= .001) return;
+  const items = [
+    ['01', 'Adana', false], ['02', 'Adıyaman', false], ['03', 'Afyon', false], ['04', 'Ağrı', false],
+    ['33', 'İçel → Mersin', true], ['46', 'Maraş → K.maraş', true], ['63', 'Urfa → Şanlıurfa', true], ['67', 'Zonguldak', false],
+    ['68–81', 'Sonradan kurulanlar (1989–1999)', false],
+  ];
+  const bx = SAFE.x0, by = 1020, bw = SAFE.x1 - SAFE.x0, bh = 315;
+  ctx.save();
+  ctx.globalAlpha = A;
+  ctx.fillStyle = 'rgba(11,20,27,.92)';
+  ctx.beginPath(); ctx.roundRect(bx, by, bw, bh, 18); ctx.fill();
+  ctx.strokeStyle = 'rgba(244,241,234,.18)'; ctx.lineWidth = 1.5; ctx.stroke();
+
+  text('27 EYLÜL 1962 KURALI · İSİM ALFABESİ', bx + 24, by + 38, 24, { font: MONO, weight: 500, color: C.mute, alpha: A });
+  const kScan = prog(t, T.why + .3, T.sweep0 - .2);
+  const cols = 2, colW = (bw - 64) / cols;
+  for (let i = 0; i < 8; i++) {
+    const col = i < 4 ? 0 : 1, row = i % 4;
+    const x = bx + 24 + col * (colW + 16), y = by + 62 + row * 48;
+    const [pl, nm, hi] = items[i];
+    const lit = hi && kScan > (i - 3) * .12;
+    ctx.fillStyle = lit ? 'rgba(255,107,44,.16)' : 'rgba(232,226,212,.06)';
+    ctx.beginPath(); ctx.roundRect(x, y, colW, 40, 10); ctx.fill();
+    if (lit) { ctx.strokeStyle = 'rgba(255,107,44,.6)'; ctx.lineWidth = 1.5; ctx.stroke(); }
+    textTab(pl, x + 12, y + 28, 25, { font: MONO, weight: 500, color: lit ? C.accent : C.mute, alpha: A });
+    text(nm, x + 58, y + 28, 26, { weight: hi ? 700 : 600, color: lit ? C.text : C.land, alpha: A, maxW: colW - 68 });
+  }
+  text('68–81 sonradan il olanlara sırayla eklendi (Aksaray → Düzce)', bx + 24, by + bh - 26, 24, { weight: 600, color: C.mute, alpha: A, maxW: bw - 48 });
+  ctx.restore();
+}
+
+// Vektörel duraklat simgesi (sistem emoji kutusu yerine temiz düz harita çizgisi)
+function drawPauseBars(cx, cy, h, color, alpha = 1) {
+  if (alpha <= .001) return;
+  const bw = Math.max(3, Math.round(h * .25));
+  const gap = Math.max(3, Math.round(h * .22));
+  ctx.save();
+  ctx.globalAlpha = alpha;
+  ctx.fillStyle = color;
+  ctx.beginPath();
+  ctx.roundRect(cx - bw - gap / 2, cy - h / 2, bw, h, Math.max(1.5, bw * .3));
+  ctx.roundRect(cx + gap / 2, cy - h / 2, bw, h, Math.max(1.5, bw * .3));
+  ctx.fill();
+  ctx.restore();
+}
+
+// 81 il Durdur-Bul tablosu (Sahne 9: 3 sütun × 27 satır — güvenli alan + altyazı üstü)
+function drawStopGrid(t, T, DUR, A) {
+  if (A <= .001) return;
+  const cols = 3, rows = 27, gapX = 14, rowH = 32.8, pillH = 28.4;
+  const totalW = SAFE.x1 - SAFE.x0, colW = (totalW - gapX * (cols - 1)) / cols;
+  const y0 = 434;
+  const pulse = .5 + .5 * Math.sin(t * 5.2);
+  const STARS = new Set([1, 22, 35, 36, 58, 70, 81]);
+
+  ctx.save();
+  // Koyu mat cam arka plan
+  ctx.globalAlpha = A * .95;
+  ctx.fillStyle = C.bg;
+  ctx.beginPath(); ctx.roundRect(SAFE.x0 - 12, y0 - 12, totalW + 24, rows * rowH + 22, 18); ctx.fill();
+  ctx.strokeStyle = 'rgba(244,241,234,.16)'; ctx.lineWidth = 1.5; ctx.stroke();
+
+  const kIn = ease.outCubic(prog(t, T.stop0, T.stop0 + .42));
+  for (let i = 0; i < 81; i++) {
+    const c = Math.floor(i / rows), r = i % rows;
+    const x = SAFE.x0 + c * (colW + gapX);
+    const y = y0 + r * rowH + (1 - kIn) * 12;
+    const ct = CITIES[i], pl = ct.plaka, durak = DURAK_BY_PLAKA[pl];
+    const star = STARS.has(pl), eqFix = pl === 70;
+
+    ctx.globalAlpha = A;
+    ctx.fillStyle = eqFix ? `rgba(255,107,44,${.18 + .09 * pulse})` : star ? 'rgba(255,107,44,.12)' : 'rgba(232,226,212,.065)';
+    ctx.beginPath(); ctx.roundRect(x, y, colW, pillH, 7); ctx.fill();
+    if (star) {
+      ctx.strokeStyle = eqFix ? C.accent : 'rgba(255,107,44,.48)'; ctx.lineWidth = eqFix ? 1.6 : 1.2; ctx.stroke();
+    }
+    textTab(pz(pl), x + 9, y + 20.5, 18.5, { font: MONO, weight: 500, color: star ? C.accent : C.mute, alpha: A });
+    text(ct.ad, x + 41, y + 20.5, 19, { weight: star ? 700 : 600, color: C.text, alpha: A, maxW: colW - 92 });
+    textTab(`#${durak}`, x + colW - 9, y + 20.5, 19, { font: MONO, weight: 500, color: C.accent, alpha: A, align: 'right' });
+  }
+  ctx.restore();
+
+  // Altyazı bittikten sonra altta interaktif vektörel durdur rozeti + easter egg notu
+  const hintA = win(t, T.hintStart, T.loopStart, .22) * A;
+  if (hintA > .001) {
+    const bx = SAFE.x0, by = 1364;
+    const title = 'Durdur · ilini ve #durağını bul';
+    const sub = 'İpucu: 70 Karaman hem çevre geçişi hem tam #70. durak!';
+    ctx.font = `700 32px ${SANS}`;
+    const mw = ctx.measureText(title).width;
+    ctx.font = `600 24px ${SANS}`;
+    const sw = ctx.measureText(sub).width;
+    const iconW = 40, padX = 20, padY = 14;
+    const w = Math.max(mw + iconW, sw) + padX * 2;
+    const h = 32 + 24 + padY * 2 + 10;
+    ctx.save();
+    ctx.globalAlpha = hintA;
+    ctx.fillStyle = 'rgba(11,20,27,.94)';
+    ctx.beginPath(); ctx.roundRect(bx, by, w, h, 14); ctx.fill();
+    ctx.strokeStyle = 'rgba(255,107,44,.42)'; ctx.lineWidth = 1.5; ctx.stroke();
+    drawPauseBars(bx + padX + 12, by + padY + 17, 22, C.accent, hintA * (.75 + .25 * pulse));
+    text(title, bx + padX + iconW, by + padY + 27, 32, { weight: 700, color: C.text, alpha: hintA });
+    text(sub, bx + padX, by + padY + 32 + 28, 24, { weight: 600, color: C.land, alpha: hintA * .92 });
+    ctx.restore();
+  }
+}
+
+HYS.run({
+  vo: VO, cover: 28.6, flat: true, seed: 9,
+  captionStyle: 'kinetic',
+  drone: { f: 98, cutoff: 420, gain: .024 },
+  projection: cam => d3.geoMercator().scale(W / (2 * Math.PI) * cam.k).center([cam.lon, cam.lat]).translate([SAFE_CX, 815]).precision(.3),
+
+  init(D) {
+    const inBox = (minX, maxX, minY, maxY) => maxX >= 5 && minX <= 65 && maxY >= 10 && minY <= 62;
+    const polyInBox = poly => {
+      let minX = 180, maxX = -180, minY = 90, maxY = -90;
+      for (const ring of poly) for (const [x, y] of ring) {
+        if (x < minX) minX = x; if (x > maxX) maxX = x; if (y < minY) minY = y; if (y > maxY) maxY = y;
+      }
+      return inBox(minX, maxX, minY, maxY);
+    };
+    const lineInBox = coords => {
+      let minX = 180, maxX = -180, minY = 90, maxY = -90;
+      for (const [x, y] of coords) { if (x < minX) minX = x; if (x > maxX) maxX = x; if (y < minY) minY = y; if (y > maxY) maxY = y; }
+      return inBox(minX, maxX, minY, maxY);
+    };
+    NEAR_LAND = { type: 'MultiPolygon', coordinates: D.LAND.features[0].geometry.coordinates.filter(polyInBox) };
+    NEAR_BORDERS = { type: 'MultiLineString', coordinates: D.BORDERS.coordinates.filter(lineInBox) };
+    BG_CACHE.clear();
+
+    TR_FEATS = IKON.ilSekilleri();
+    TR_MESH = topojson.mesh(ILLER.topo, ILLER.topo.objects.iller, (a, b) => a !== b);
+    TR_OUTER = topojson.mesh(ILLER.topo, ILLER.topo.objects.iller, (a, b) => a === b);
+    CITIES = Array.from({ length: 81 }, (_, i) => IKON.il(i + 1));
+
+    P_CUM = [0];
+    P_LEGS = [];
+    for (let i = 0; i < 80; i++) {
+      const a = CITIES[i].merkez, b = CITIES[i + 1].merkez;
+      const d = km(a, b);
+      const nSeg = d > 900 ? 34 : 20;
+      P_LEGS.push({ from: CITIES[i], to: CITIES[i + 1], km: d, coords: HYS.greatCircle(a, b, 1, nSeg) });
+      P_CUM.push(P_CUM[i] + d);
+    }
+
+    AKILLI_SIRA.forEach((pl, i) => { DURAK_BY_PLAKA[pl] = i + 1; });
+    S_CUM = [0];
+    S_LEGS = [];
+    for (let i = 0; i < 80; i++) {
+      const a = CITIES[AKILLI_SIRA[i] - 1], b = CITIES[AKILLI_SIRA[i + 1] - 1];
+      const d = km(a.merkez, b.merkez);
+      S_LEGS.push({ from: a, to: b, km: d, coords: HYS.greatCircle(a.merkez, b.merkez, 1, 12) });
+      S_CUM.push(S_CUM[i] + d);
+    }
+  },
+
+  times: (L, at, DUR) => ({
+    s2: at(1) - .05,
+    p2: at(1) + 1.25,
+    p3: at(1) + 2.20,
+    p4: at(1) + 3.25,
+    why: at(2) - .05,
+    sweep0: at(2, 'end') + .10,
+    j35: at(3) + 1.65,
+    jump0: at(3) + 1.98,
+    jump1: at(3) + 3.55,
+    fast2: at(4) - .10,
+    p69: at(4) + 1.60,
+    eqPre: at(4) + 1.80,
+    eqHit: at(4) + 2.35,
+    rem0: at(5) - .10,
+    p81: at(6) - .18,
+    tot: at(6),
+    smart0: at(7) - .05,
+    smartDone: at(7) + 3.85,
+    stop0: at(8) - .06,
+    hintStart: Math.max(at(8) + 2.69, at(8, 'end') + .30),
+    loopStart: Math.max(at(8, 'end') + 1.70, DUR - 2.50),
+    DUR,
+  }),
+
+  scenes: (T, at, DUR) => [
+    { name: 'kanca',        start: 0,           end: T.s2 },
+    { name: 'ilk 4 il',     start: T.s2,        end: T.why },
+    { name: 'neden alfabe', start: T.why,       end: T.sweep0 },
+    { name: 'izmir-kars',   start: T.sweep0,    end: T.fast2 },
+    { name: 'çevre geçişi', start: T.fast2,     end: T.rem0 },
+    { name: 'son 11 il',    start: T.rem0,      end: T.p81 },
+    { name: 'toplam 46k',   start: T.p81,       end: T.smart0 },
+    { name: 'akıllı rota',  start: T.smart0,    end: T.stop0 },
+    { name: 'durdur-bul',   start: T.stop0,     end: T.loopStart },
+    { name: 'döngü',        start: T.loopStart, end: DUR },
+  ],
+
+  keys: (T, at, DUR) => [
+    [0,           35.2, 39.0, 14.3],
+    [T.sweep0,    35.2, 39.0, 14.3],
+    [T.j35,       33.8, 39.2, 15.2],
+    [T.jump1 + .5,35.3, 39.4, 15.4],
+    [T.fast2 + .9,35.2, 39.0, 14.3],
+    [T.stop0,     35.2, 39.0, 14.3],
+    [DUR,         35.2, 39.0, 14.3],
+  ],
+
+  draw(t, g) {
+    const { path, pr, cam, T, at, DUR } = g;
+    const sched = buildSchedule(T);
+    const pStep = stepAt(t, sched);
+    const loopFade = prog(t, DUR - 1.05, DUR - .62);
+    const loopRestart = prog(t, DUR - .65, DUR);
+    const dispStep = loopRestart > 0 ? lerp(0, .22, ease.outCubic(loopRestart)) : pStep;
+    const isSmart = t >= T.smart0 && t < T.stop0 + .04;
+    const smartOutro = 1 - prog(t, T.stop0 - .18, T.stop0 + .04);
+    const isStop = t >= T.stop0 + .08 && t < T.loopStart;
+
+    // 1. Arka plan komşu kara sınırları + 81 Türkiye ili (kamera sabitken sıfır maliyetli önbellekten)
+    const dpr = ctx.getTransform().a || 1;
+    const bgKey = `${cam.lon.toFixed(5)}|${cam.lat.toFixed(5)}|${cam.k.toFixed(5)}|${dpr}`;
+    let bg = BG_CACHE.get(bgKey);
+    if (!bg) {
+      if (BG_CACHE.size >= 4) BG_CACHE.delete(BG_CACHE.keys().next().value);
+      bg = document.createElement('canvas');
+      bg.width = Math.round(W * dpr); bg.height = Math.round(H * dpr);
+      const o = bg.getContext('2d');
+      o.setTransform(dpr, 0, 0, dpr, 0, 0);
+      const op = d3.geoPath(pr, o);
+      o.strokeStyle = C.grid; o.lineWidth = 1.5; o.beginPath(); op(HYS.D.GRAT); o.stroke();
+      o.globalAlpha = .14;
+      o.fillStyle = C.land; o.beginPath(); op(NEAR_LAND); o.fill();
+      o.strokeStyle = 'rgba(232,226,212,.08)'; o.lineWidth = 1.2; o.beginPath(); op(NEAR_BORDERS); o.stroke();
+      o.globalAlpha = 1;
+      o.fillStyle = C.land; o.beginPath(); op({ type: 'FeatureCollection', features: TR_FEATS }); o.fill();
+      BG_CACHE.set(bgKey, bg);
+    }
+    ctx.drawImage(bg, 0, 0, W, H);
+
+    ctx.save();
+    // Vurgulu il dolguları (İzmir & Kars sıçramasında / Karaman çevre geçişinde / Düzce / Edirne & Sivas)
+    const hlCity = (pl, col, a) => {
+      if (a <= .001) return;
+      const ft = TR_FEATS.find(f => f.properties.ad === CITIES[pl - 1].ad);
+      if (ft) { ctx.globalAlpha = a; ctx.fillStyle = col; ctx.beginPath(); path(ft); ctx.fill(); ctx.globalAlpha = 1; }
+    };
+    const jumpSpot = win(t, T.j35 - .2, T.fast2 + .2, .25);
+    hlCity(35, 'rgba(255,107,44,.28)', jumpSpot);
+    hlCity(36, 'rgba(255,107,44,.28)', jumpSpot);
+    hlCity(70, 'rgba(255,107,44,.32)', win(t, T.eqHit - .1, T.rem0 + .3, .2));
+    hlCity(81, 'rgba(255,107,44,.28)', win(t, T.p81 - .1, T.smart0, .25));
+    hlCity(22, 'rgba(255,107,44,.26)', win(t, T.smart0 + .1, T.stop0, .25));
+    hlCity(58, 'rgba(255,107,44,.26)', win(t, T.smartDone - .2, T.stop0, .25));
+
+    ctx.strokeStyle = 'rgba(15,28,38,.48)'; ctx.lineWidth = 1.1; ctx.beginPath(); path(TR_MESH); ctx.stroke();
+    ctx.strokeStyle = C.ocean; ctx.lineWidth = 2.2; ctx.beginPath(); path(TR_OUTER); ctx.stroke();
+    ctx.restore();
+
+    const drawLegs = (coordsList, color, width, alpha, outline) => {
+      if (!coordsList.length || alpha <= .001) return;
+      const geo = { type: 'MultiLineString', coordinates: coordsList };
+      ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.setLineDash([]);
+      if (outline) { ctx.globalAlpha = alpha; ctx.strokeStyle = C.ocean; ctx.lineWidth = width + 6; ctx.beginPath(); path(geo); ctx.stroke(); }
+      ctx.globalAlpha = alpha; ctx.strokeStyle = color; ctx.lineWidth = width; ctx.beginPath(); path(geo); ctx.stroke();
+      ctx.globalAlpha = 1;
+    };
+
+    // 2. Plaka Zikzak Rotası (01 → 81)
+    const smartDim = lerp(1, .16, prog(t, T.smart0, T.smart0 + .45));
+    const webAlpha = (1 - loopFade) * smartDim;
+    const hideDuringJump = jumpSpot > .4 ? 1 - .72 * jumpSpot : 1;
+
+    if (webAlpha > .01) {
+      const doneCount = Math.floor(pStep), frac = pStep - doneCount;
+      const col = smartDim < .4 ? '#9AA9B5' : C.accent;
+      const ol = smartDim > .4;
+      const oldThin = [], oldEarly = [], recThin = [], recEarly = [];
+      let heroCoords = null;
+      for (let i = 0; i < doneCount; i++) {
+        if (i === 34 && jumpSpot > 0) { heroCoords = P_LEGS[i].coords; continue; }
+        if (i >= doneCount - 4) (i < 3 ? recEarly : recThin).push(P_LEGS[i].coords);
+        else (i < 3 ? oldEarly : oldThin).push(P_LEGS[i].coords);
+      }
+      const oldA = webAlpha * .58 * hideDuringJump;
+      const recA = webAlpha * hideDuringJump;
+      drawLegs(oldThin, col, 4.2, oldA, ol);
+      drawLegs(oldEarly, col, 6, oldA, ol);
+      drawLegs(recThin, col, 4.2, recA, ol);
+      drawLegs(recEarly, col, 6, recA, ol);
+      if (heroCoords) drawLegs([heroCoords], col, 7.5, webAlpha, ol);
+      // Aktif çizilmekte olan segment + tracer ucu
+      if (doneCount < 80 && frac > .001 && !isSmart && !isStop) {
+        const leg = P_LEGS[doneCount];
+        const width = doneCount === 34 ? 8 : 6.5;
+        tracer(path, pr, leg.from.merkez, leg.to.merkez, frac, {
+          color: C.accent, width, headR: 11, alpha: webAlpha, outline: true, pulse: (t * 2.5) % 1, n: 48,
+        });
+      }
+    }
+
+    // Döngü sonunda 01 Adana → 02 Adıyaman başlangıcını geri çiz (kare DUR == kare 0)
+    if (loopRestart > 0) {
+      const leg0 = P_LEGS[0];
+      tracer(path, pr, leg0.from.merkez, leg0.to.merkez, lerp(0, .22, ease.outCubic(loopRestart)), {
+        color: C.accent, width: 6.5, headR: 11, alpha: 1, outline: true, pulse: (loopRestart * 2) % 1, n: 24,
+      });
+    }
+
+    // 3. Akıllı Rota (Sahne 8: 22 Edirne → 58 Sivas)
+    const sStep = lerp(0, 80, ease.inOutCubic(prog(t, T.smart0 + .28, T.smartDone)));
+    const cmpA = isSmart ? win(t, T.smart0, T.stop0 + .02, .22) : 0;
+    const sAlpha = (1 - loopFade) * prog(t, T.smart0 + .15, T.smart0 + .45) * (t < T.stop0 ? 1 : lerp(1, .30, prog(t, T.stop0, T.stop0 + .26)));
+    if (sAlpha > .01 && t >= T.smart0) {
+      const sDone = Math.floor(sStep), sFrac = sStep - sDone;
+      if (sDone > 0) drawLegs(S_LEGS.slice(0, sDone).map(l => l.coords), C.accent, 6.2, sAlpha, true);
+      if (sDone < 80 && sFrac > .001) {
+        const sl = S_LEGS[sDone];
+        tracer(path, pr, sl.from.merkez, sl.to.merkez, sFrac, {
+          color: C.accent, width: 6.5, headR: 11, alpha: sAlpha, outline: true, pulse: (t * 3) % 1, n: 24,
+        });
+      }
+    }
+
+    // 4. Gizli detay vurgusu (durdur-bul kapandıktan sonra döngü öncesi: 50 Nevşehir → 51 Niğde, 72 km)
+    const gemA = win(t, T.loopStart + .04, DUR - .78, .22);
+    if (gemA > .01) {
+      const c50 = CITIES[49], c51 = CITIES[50];
+      line(path, P_LEGS[49].coords, { color: C.accent, width: 7, alpha: gemA, outline: true });
+      pin(pr(c50.merkez), { color: C.accent, r: 10, alpha: gemA, pulse: (t * 2) % 1 });
+      pin(pr(c51.merkez), { color: C.accent, r: 10, alpha: gemA });
+    }
+
+    // 5. İl merkez noktaları (ziyaret edilenler ufak nokta, aktif il nabız)
+    if (t < T.smart0) {
+      const visitedN = Math.min(81, Math.floor(pStep) + 1);
+      for (let i = 0; i < visitedN; i++) {
+        const xy = pr(CITIES[i].merkez);
+        if (!xy) continue;
+        const isCur = i === visitedN - 1;
+        if (i < 4 || i === 34 || i === 35 || i === 69 || i === 80 || isCur) {
+          pin(xy, { color: C.accent, r: isCur ? 10 : 7, alpha: 1 - prog(t, T.smart0 - .25, T.smart0), pulse: isCur ? (t * 1.8) % 1 : 0 });
+        }
+      }
+    }
+    if (loopRestart > 0) pin(pr(CITIES[0].merkez), { color: C.accent, r: 10, alpha: ease.outCubic(loopRestart), pulse: loopRestart % 1 });
+
+    // 6. İKON Katmanı (MOTION_RULES §3b — sabit integer boyut, haritada >= 54px, tekli >= 90px)
+    const drawCityIcon = (pl, showA, t0Pop, size = 90, dx = 0, dy = -44, zT = null) => {
+      if (showA <= .001) return;
+      const il = CITIES[pl - 1], xy = pr(il.merkez);
+      if (!xy) return;
+      const p = t0Pop <= 0 ? { olcek: 1, alpha: 1, aci: 0 } : IKON.pop(t, t0Pop, .38);
+      const z = zT ? IKON.zipla(t, zT, .48) : { dy: 0, olcek: 1 };
+      IKON.ciz(ctx, il.ikon, xy[0] + dx, xy[1] + dy + z.dy * 34, size, {
+        alpha: showA * p.alpha, olcek: p.olcek * z.olcek, aci: p.aci, bicim: 'cikartma',
+      });
+    };
+
+    if (!isStop) {
+      // İlk kare ve döngü sonunda 01 Adana ikonu
+      const adanaStartA = 1 - prog(t, T.p3, T.p3 + .35);
+      const adanaLoopA = prog(t, DUR - .65, DUR - .25);
+      if (t < T.p3 + .35) drawCityIcon(1, adanaStartA, t < .3 ? -1 : 0, 92, -16, -54, at(1) + .3);
+      if (adanaLoopA > .01) drawCityIcon(1, adanaLoopA, DUR - .65, 92, -16, -54);
+
+      // 02 Adıyaman, 03 Afyon, 04 Ağrı (ilk 4 il sahnesinde pop, boy > 54)
+      const early4A = win(t, T.p2 - .05, T.why + .35, .25);
+      drawCityIcon(2, early4A, T.p2, 66, -4, -48, at(1) + 1.0);
+      drawCityIcon(3, win(t, T.p3 - .05, T.why + .35, .2), T.p3, 70, 0, -46, at(1) + 1.85);
+      drawCityIcon(4, win(t, T.p4 - .05, T.why + .35, .2), T.p4, 72, 10, -48, at(1) + 2.55);
+
+      // 33 Mersin (İçel) alfabe sahnesinde pop (NOT: etiket Anamur içermemeli)
+      drawCityIcon(33, win(t, T.why + 1.1, T.sweep0 + .15, .25), T.why + 1.1, 90, 0, -48);
+
+      // 35 İzmir & 36 Kars dev sıçrama sahnesinde
+      drawCityIcon(35, win(t, T.j35 - .15, T.fast2 + .15, .25), T.j35, 90, -22, -52, at(3) + 1.7);
+      drawCityIcon(36, win(t, T.jump1 - .1, T.fast2 + .2, .25), T.jump1, 92, -26, -48, at(3) + 2.5);
+
+      // 70 Karaman (Ekvator geçişi — "11 il var" açılınca söner, 81 Düzce & kapağı kirletmez)
+      drawCityIcon(70, win(t, T.eqHit - .08, T.rem0 + .35, .25), T.eqHit, 90, 0, -58, at(4) + .8);
+
+      // 81 Düzce (46.555 km bitiş + kapak)
+      drawCityIcon(81, win(t, T.p81 - .08, T.smart0 + .1, .2), T.p81, 88, -24, -46);
+
+      // 22 Edirne & 58 Sivas (Akıllı rota baş ve son)
+      drawCityIcon(22, win(t, T.smart0 + .25, T.stop0 + .02, .22), T.smart0 + .25, 86, 24, -46);
+      drawCityIcon(58, win(t, T.smartDone - .15, T.stop0 + .02, .22), T.smartDone - .15, 86, 0, -56);
+
+      // 50 Nevşehir & 51 Niğde (Döngü öncesi en kısa adım detayı, çakışmasız ayrık konum)
+      drawCityIcon(50, gemA, T.loopStart + .04, 58, -36, -46);
+      drawCityIcon(51, gemA, T.loopStart + .04, 58, 48, 22);
+    }
+
+    // 7. Alt Ekvator Ölçer (üst durum rozetleri headerBand'ın üstüne, header() içine alındı; FRAME_BOXES sıralı!)
+    const mainHudA = Math.max(t < T.smart0 ? (1 - prog(t, T.smart0 - .25, T.smart0)) : 0, loopRestart > 0 ? ease.outCubic(loopRestart) : 0);
+    const whyHide = loopRestart > 0 ? 1 : (1 - win(t, T.why - .1, T.sweep0 + .1, .22));
+    const barA = mainHudA * whyHide;
+    if (barA > .01) {
+      const liveKm = Math.round(cumulativeKm(dispStep, P_CUM));
+      const passed = liveKm >= EKVATOR;
+      meter(SAFE.x0, 1120, SAFE.x1 - SAFE.x0, 34, liveKm, 46555, {
+        color: C.accent,
+        marker: EKVATOR,
+        markerColor: passed ? C.accent : C.text,
+        markerLabel: `Ekvator · ${fmtNum(EKVATOR)} km`,
+        label: 'Plaka rotası (kuşuçuşu)',
+        valueText: `${fmtNum(liveKm)} km`,
+        alpha: barA,
+        fontSize: 30,
+      });
+      text('Kuşuçuşu: il merkezleri arası büyük daire (R = 6.371 km)', SAFE.x0, 1254, 24, { weight: 600, color: C.mute, alpha: barA * .88 });
+    }
+
+    // Alfabe kartı (Sahne 3)
+    drawAlphabetCard(t, T, win(t, T.why, T.sweep0 + .08, .25));
+
+    // Akıllı Rota Çift Ölçer Karşılaştırması (Sahne 8 — çakışmasız hiyerarşi ve yumuşak çıkış)
+    if (cmpA > .01) {
+      const sKm = Math.round(cumulativeKm(sStep, S_CUM));
+      meter(SAFE.x0, 1042, SAFE.x1 - SAFE.x0, 24, 46555, 46555, {
+        color: 'rgba(232,226,212,.38)',
+        label: 'Plaka sırası (01 Adana → 81 Düzce)',
+        valueText: '46.555 km',
+        alpha: cmpA * .9,
+        fontSize: 28,
+      });
+      meter(SAFE.x0, 1148, SAFE.x1 - SAFE.x0, 26, sKm, 46555, {
+        color: C.accent,
+        label: 'Akıllı rota (22 Edirne → 58 Sivas)',
+        valueText: `${fmtNum(sKm)} km`,
+        alpha: cmpA,
+        fontSize: 28,
+      });
+      const ratioA = ease.spring(prog(t, T.smartDone - .35, T.smartDone + .2)) * cmpA;
+      if (ratioA > .01) {
+        statPill(SAFE.x1, 1208, '6,7× kısa (≈ 7 kat)', {
+          color: C.accent, accentDot: C.accent, size: 28, alpha: ratioA, align: 'right', padX: 16, padY: 8,
+        });
+      }
+      text('Kuşuçuşu (il merkezleri) · bulduğumuz en kısa', SAFE.x0, 1242, 23, { weight: 600, color: C.mute, alpha: cmpA * .88 });
+    }
+
+    // Gizli detay bilgi kartı (Döngü başlangıcı)
+    if (gemA > .01) {
+      statPill(SAFE_CX, 1105, 'En kısa adım: 50 Nevşehir → 51 Niğde · 72 km', {
+        sub: 'En uzun: 35 İzmir → 36 Kars (1.387 km)',
+        accentDot: C.accent, size: 30, subSize: 24, align: 'center', alpha: gemA,
+      });
+    }
+
+    // 8. Akıllı Çakışmasız Harita Etiketleri (etiket kutuları yukarıdakilerden kaçınır)
+    if (!isStop && loopFade < .6) {
+      const mA = 1 - loopFade;
+      // İlk 4 il
+      const f4 = win(t, T.p2 - .1, T.why + .2, .2) * mA;
+      if (f4 > .01) {
+        const p2 = pr(CITIES[1].merkez), p3 = pr(CITIES[2].merkez), p4 = pr(CITIES[3].merkez);
+        if (t >= T.p2 && p2) label('02 Adıyaman', p2[0], p2[1], { size: 32, dx: 18, dy: 34, alpha: f4 });
+        if (t >= T.p3 && p3) label('03 Afyon', p3[0], p3[1], { size: 32, dx: -175, dy: 28, alpha: f4 });
+        if (t >= T.p4 && p4) label('04 Ağrı · 2.040 km', p4[0], p4[1], { size: 32, dx: -180, dy: 44, color: C.accent, alpha: f4 });
+      }
+      // 33 İçel → Mersin
+      const m33 = win(t, T.why + 1.0, T.sweep0 + .1, .2);
+      if (m33 > .01) {
+        const xy = pr(CITIES[32].merkez);
+        if (xy) label('33 İçel → Mersin', xy[0], xy[1], { size: 34, dx: -140, dy: 38, color: C.accent, alpha: m33 });
+      }
+      // 35 İzmir → 36 Kars
+      if (jumpSpot > .01) {
+        const iz = pr(CITIES[34].merkez), ka = pr(CITIES[35].merkez), mid = pr(d3.geoInterpolate(CITIES[34].merkez, CITIES[35].merkez)(.5));
+        if (iz) label('35 İzmir', iz[0], iz[1], { size: 34, dx: 24, dy: 34, alpha: jumpSpot });
+        if (ka && t >= T.jump1 - .25) label('36 Kars', ka[0], ka[1], { size: 34, dx: -155, dy: 28, alpha: jumpSpot });
+        if (mid && t >= T.jump0 + .6) label('1.387 km', mid[0], mid[1], { size: 42, dx: -95, dy: -66, color: C.accent, alpha: jumpSpot * prog(t, T.jump0 + .5, T.jump0 + 1.0) });
+      }
+      // 70 Karaman
+      const k70 = win(t, T.eqHit - .05, T.rem0 + .25, .2);
+      if (k70 > .01) {
+        const xy = pr(CITIES[69].merkez);
+        if (xy) label('70 Karaman · 40.551 km', xy[0], xy[1], { size: 36, dx: -185, dy: 46, color: C.accent, alpha: k70 });
+      }
+      // 81 Düzce (Karadeniz boşluğuna temiz yerleşir — kapakta rota yumaklarını örtmez)
+      const k81 = win(t, T.p81 - .05, T.smart0, .2);
+      if (k81 > .01) {
+        const xy = pr(CITIES[80].merkez);
+        if (xy) label('81 Düzce · 46.555 km', xy[0], xy[1], { size: 36, dx: 26, dy: -52, color: C.accent, alpha: k81 });
+      }
+      // Akıllı rota uçları (Sahne 8→9 yumuşak çıkışıyla senkron)
+      if (cmpA > .01) {
+        const ed = pr(CITIES[21].merkez), sv = pr(CITIES[57].merkez);
+        const edgeA = Math.min(sAlpha, cmpA);
+        if (ed) label('1. durak · 22 Edirne', ed[0], ed[1], { size: 32, dx: 26, dy: 28, alpha: edgeA });
+        if (sv && t >= T.smartDone - .2) label('81. durak · 58 Sivas', sv[0], sv[1], { size: 32, dx: -160, dy: 38, color: C.accent, alpha: edgeA });
+      }
+    }
+
+    // Döngü geçişi: son kare == ilk kare (01 Adana etiketi)
+    const adanaLblA = Math.max(win(t, -1, T.p2 + .2, .25), prog(t, DUR - .65, DUR - .25));
+    if (adanaLblA > .01) {
+      const xy = pr(CITIES[0].merkez);
+      if (xy) label('01 Adana', xy[0], xy[1], { size: 36, dx: 28, dy: 28, color: C.accent, alpha: adanaLblA });
+    }
+
+    vignette(.36);
+  },
+
+  header(t, g) {
+    const { T, DUR } = g;
+    headerSeq(t, [
+      { a: 0, b: T.s2 - .05, noFadeIn: true, str: '81 ili plaka sırasıyla', sub: 'Dünyanın çevresini geçer mi?', size: 72, subSize: 48, subColor: C.accent },
+      { a: T.s2 - .05, b: T.why - .05, str: '01 → 04: 2.040 km', sub: 'Adana · Adıyaman · Afyon · Ağrı', size: 74, subSize: 44, tabular: true, color: C.accent },
+      { a: T.why - .05, b: T.sweep0 - .05, str: 'Neden bu zikzak?', sub: 'Harita değil, 1962 alfabesi', size: 74, subSize: 48, subColor: C.accent },
+      { a: T.sweep0 - .05, b: T.fast2 - .05, str: '35 → 36: 1.387 km', sub: 'İzmir’den Kars’a tek sıçrama', size: 74, subSize: 46, tabular: true, color: C.accent },
+      { a: T.fast2 - .05, b: T.rem0 - .05, str: '70 Karaman: geçildi', sub: '40.551 km > 40.075 km Ekvator', size: 72, subSize: 44, color: C.accent },
+      { a: T.rem0 - .05, b: T.tot - .05, str: 'Daha 11 il var…', sub: '71 Kırıkkale → 81 Düzce', size: 74, subSize: 48 },
+      { a: T.tot - .05, b: T.smart0 - .05, str: 'Toplam: 46.555 km', sub: 'Dünya çevresinin 1,16 katı', size: 74, subSize: 48, tabular: true, color: C.accent },
+      { a: T.smart0 - .05, b: T.stop0 - .05, str: 'Akıllı sıra: 6.948 km', sub: 'Edirne → Sivas · yaklaşık 7 kat kısa', size: 72, subSize: 46, tabular: true, color: C.accent },
+      { a: T.stop0 - .05, b: T.loopStart, render: (a, dy) => {
+        text('Senin ilin kaçıncı durak?', SAFE.x0, SAFE.y0 + 96 + dy, 62, { alpha: a, maxW: SAFE.x1 - SAFE.x0 });
+        const prefix = 'Plaka  ·  İl  →  6.948 km rotadaki #sıra  ·  ';
+        text(prefix, SAFE.x0, SAFE.y0 + 150 + dy, 34, { weight: 600, color: C.accent, alpha: a });
+        ctx.font = `600 34px ${SANS}`;
+        const px = SAFE.x0 + ctx.measureText(prefix).width;
+        drawPauseBars(px + 8, SAFE.y0 + 139 + dy, 20, C.accent, a);
+        text('durdur', px + 24, SAFE.y0 + 150 + dy, 34, { weight: 700, color: C.text, alpha: a });
+      }},
+      { a: T.loopStart, b: DUR - .75, str: 'En kısa: 50 → 51 (72 km)', sub: 'Nevşehir’den Niğde’ye…', size: 68, subSize: 46 },
+      { a: DUR - .75, b: DUR + 1, noFadeOut: true, str: '81 ili plaka sırasıyla', sub: 'Dünyanın çevresini geçer mi?', size: 72, subSize: 48, subColor: C.accent },
+    ]);
+
+    // Üst canlı köşe rozetleri (headerBand'ın ÜSTÜNDE çizildiği için gölgelenmeden tam parlak okunur)
+    const sched = buildSchedule(T);
+    const pStep = stepAt(t, sched);
+    const loopRestart = prog(t, DUR - .65, DUR);
+    const dispStep = loopRestart > 0 ? lerp(0, .22, ease.outCubic(loopRestart)) : pStep;
+    const dashA = Math.max(t < T.smart0 ? (1 - prog(t, T.smart0 - .25, T.smart0)) : 0, loopRestart > 0 ? ease.outCubic(loopRestart) : 0);
+    if (dashA > .01) {
+      const curPlateIdx = Math.min(80, Math.floor(dispStep));
+      const curCity = CITIES[curPlateIdx];
+      const liveKm = Math.round(cumulativeKm(dispStep, P_CUM));
+      const legInfo = curPlateIdx > 0 ? P_LEGS[curPlateIdx - 1] : P_LEGS[0];
+      statPill(SAFE.x0, 472, `${pz(curCity.plaka)} ${curCity.ad}`, {
+        sub: `${curPlateIdx + 1} / 81 il`,
+        accentDot: C.accent, size: 36, subSize: 25, alpha: dashA,
+      });
+      statPill(SAFE.x1, 472, `${fmtNum(liveKm)} km`, {
+        sub: liveKm >= EKVATOR ? `+${fmtNum(liveKm - EKVATOR)} km çevre üstü` : `adım +${fmtNum(Math.round(legInfo.km))} km`,
+        color: liveKm >= EKVATOR ? C.accent : C.text,
+        size: 36, subSize: 25, align: 'right', tabular: true, alpha: dashA,
+      });
+    }
+
+    // 81 il tablosu headerBand üstünde (net, hiç kararmadan) çizilir
+    const stopA = win(t, T.stop0 + .02, T.loopStart, .22);
+    if (stopA > .001) drawStopGrid(t, T, DUR, stopA);
+  },
+
+  sounds(T, at, DUR) {
+    const sched = buildSchedule(T);
+    const list = [
+      { t: T.p2, type: 'pop', gain: .18, f: 420 },
+      { t: T.p3, type: 'pop', gain: .19, f: 520 },
+      { t: T.p4, type: 'pop', gain: .20, f: 640 },
+      { t: T.p4, type: 'sub', gain: .24, f: 96, f1: 38 },
+      { t: T.why, type: 'whoosh', dur: .35, gain: .07 },
+      { t: T.why + 1.1, type: 'ping', gain: .16, f: 740 },
+      { t: T.j35, type: 'pop', gain: .20, f: 560 },
+      { t: T.jump0 + .1, type: 'rise', dur: T.jump1 - T.jump0 - .1, gain: .08, f0: 240, f1: 520 },
+      { t: T.jump1, type: 'sub', gain: .32, f: 110, f1: 36 },
+      { t: T.jump1, type: 'ping', gain: .26, f: 660 },
+      { t: T.eqPre, type: 'rise', dur: T.eqHit - T.eqPre, gain: .09, f0: 280, f1: 680 },
+      { t: T.eqHit, type: 'ping2', gain: .32 },
+      { t: T.eqHit, type: 'sub', gain: .30, f: 105, f1: 36 },
+      { t: T.p81, type: 'sub', gain: .34, f: 112, f1: 38 },
+      { t: T.p81, type: 'ping', gain: .26, f: 880 },
+      { t: T.smart0, type: 'whoosh', dur: .45, gain: .08 },
+      { t: T.smartDone, type: 'ping2', gain: .30 },
+      { t: T.smartDone, type: 'sub', gain: .28, f: 98, f1: 38 },
+      { t: T.stop0 + .1, type: 'chime', gain: .18, notes: [523.25, 659.25, 783.99, 1046.5] },
+      { t: T.loopStart, type: 'whoosh', dur: .4, gain: .06 },
+    ];
+    // Hızlı tarama tıklamaları (adım zamanından deterministik)
+    for (let s = 4; s <= 34; s += 2) list.push({ t: legTime(sched, s), type: 'tick', gain: .05, f: 850 + s * 22 });
+    for (let s = 36; s <= 68; s += 2) list.push({ t: legTime(sched, s), type: 'tick', gain: .055, f: 950 + (s - 35) * 24 });
+    for (let s = 70; s <= 79; s++) list.push({ t: legTime(sched, s), type: 'tick', gain: .065, f: 1100 + (s - 70) * 60 });
+    return list;
+  },
+});
+</script>
+</body>
+</html>

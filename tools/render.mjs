@@ -7,7 +7,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
-import { parseArgs, resolveInput, outDir, openAnimation, frameAt, requireContract, loadPlaywright } from './lib.mjs';
+import { parseArgs, resolveInput, outDir, openAnimation, frameAt, requireContract, launchBrowser } from './lib.mjs';
 
 const args = parseArgs();
 const file = resolveInput(args._[0]);
@@ -16,8 +16,7 @@ const name = path.basename(file, path.extname(file));
 
 if (spawnSync('ffmpeg', ['-version']).status !== 0) { console.error('FFmpeg bulunamadı.'); process.exit(1); }
 
-const { chromium } = loadPlaywright();
-const browser = await chromium.launch();
+const browser = await launchBrowser();
 const scale = +args.scale || 1;
 const main = await openAnimation(file, { browser, scale });
 requireContract(main.meta);
@@ -53,22 +52,24 @@ await Promise.all(pages.map(async (p, w) => {
 }));
 process.stdout.write(`\r  ${total}/${total} kare · ${((Date.now() - started) / 1000).toFixed(1)} sn\n`);
 
-// Ses: --audio (seslendirme/müzik) ve sayfanın sentez sesleri (SOUNDS) varsa ikisi karıştırılır.
-// --no-synth sadece --audio'yu, --no-audio hiç ses kullanmaz.
+// Ses: --audio (seslendirme/müzik) veya otomatik ses/<ad>/voice.wav varsa sayfa sentez sesleriyle (SOUNDS) karıştırılır.
+// --no-synth sadece dış sesi, --no-voice otomatik voice.wav aramayı, --no-audio tüm sesi kapatır.
 let audio = null, synthWav = null;
 if (!args['no-audio'] && !args['no-synth'] && meta.hasAudio) {
   const b64 = await main.page.evaluate(() => window.__renderAudio());
   if (b64) { synthWav = path.join(dir, 'synth.wav'); fs.writeFileSync(synthWav, Buffer.from(b64, 'base64')); }
 }
-if (args.audio && !args['no-audio']) {
-  const ext = path.resolve(args.audio);
+const autoVoice = path.resolve('ses', name, 'voice.wav');
+const extAudio = args.audio ? path.resolve(args.audio) : (!args['no-voice'] && fs.existsSync(autoVoice) ? autoVoice : null);
+if (!args.audio && extAudio) console.log(`Seslendirme otomatik eklendi: ${path.relative('.', extAudio)}`);
+if (extAudio && !args['no-audio']) {
   if (synthWav) {
     audio = path.join(dir, 'audio.wav');
-    const m = spawnSync('ffmpeg', ['-y', '-loglevel', 'error', '-i', ext, '-i', synthWav, '-filter_complex',
+    const m = spawnSync('ffmpeg', ['-y', '-loglevel', 'error', '-i', extAudio, '-i', synthWav, '-filter_complex',
       '[0:a]aformat=sample_rates=48000:channel_layouts=stereo[v];[1:a]aformat=sample_rates=48000:channel_layouts=stereo[s];' +
       '[v][s]amix=inputs=2:normalize=0:duration=longest[a]', '-map', '[a]', audio], { stdio: 'inherit' });
     if (m.status !== 0) { console.error('Ses karıştırılamadı.'); process.exit(1); }
-  } else audio = ext;
+  } else audio = extAudio;
 } else audio = synthWav;
 // Kapak karesi
 const coverT = await main.page.evaluate(() => typeof window.__cover === 'number' ? window.__cover : 0);

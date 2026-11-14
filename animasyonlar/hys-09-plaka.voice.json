@@ -1,15 +1,16 @@
 {
   "voice": "Charon",
   "style": "enerjik ve merak uyandıran, hızlı tempolu, önemli kelimeleri vurgulayan, izleyiciye meydan okur gibi",
-  "tempo": 1.12, "lead": 0.15, "gap": 0.3, "tail": 4.5,
+  "tempo": 1.12, "lead": 0.15, "gap": 0.28, "tail": 4.2,
   "lines": [
     { "id": "l1", "text": "Seksen bir ili PLAKA sırasıyla gezsen, dünyanın çevresinden daha uzun yol yaparsın.", "caption": "81 ili plaka sırasıyla gezsen, dünyanın çevresinden daha uzun yol yaparsın." },
-    { "id": "l2", "text": "Sıfır bir Adana'dan başla: Adıyaman, Afyon, Ağrı... Daha dördüncü ilde İKİ BİN kilometre.", "caption": "01 Adana'dan başla: Adıyaman, Afyon, Ağrı… Daha 4. ilde 2.000 km." },
-    { "id": "l3", "text": "Neden bu kadar dağınık? Çünkü plakalar haritaya göre değil, ALFABEYE göre verildi.", "holdAfter": 0.3 },
+    { "id": "l2", "text": "Sıfır bir Adana'dan başla: Adıyaman, Afyon, Ağrı... Daha dördüncü ilde İKİ BİN kırk kilometre.", "caption": "01 Adana'dan başla: Adıyaman, Afyon, Ağrı… Daha 4. ilde 2.040 km." },
+    { "id": "l3", "text": "Neden bu kadar dağınık? Çünkü plakalar haritaya göre değil, ALFABEYE göre verildi.", "holdAfter": 0.25 },
     { "id": "l4", "text": "Otuz beşten otuz altıya: İzmir'den Kars'a, tek hamlede bin üç yüz seksen yedi kilometre.", "caption": "35'ten 36'ya: İzmir'den Kars'a, tek hamlede 1.387 km." },
-    { "id": "l5", "text": "Yetmişte, Karaman'da, dünyanın çevresini geçiyorsun. <short pause> Daha on bir il var.", "caption": "70'te, Karaman'da, dünyanın çevresini geçiyorsun. Daha 11 il var.", "holdAfter": 0.4 },
-    { "id": "l6", "text": "Toplam: kırk altı bin beş yüz elli beş kilometre.", "caption": "Toplam: 46.555 km.", "holdAfter": 0.5 },
-    { "id": "l7", "text": "Aynı seksen bir il, akıllı sırayla: altı bin dokuz yüz kırk sekiz kilometre. Yaklaşık YEDİ kat kısa.", "caption": "Aynı 81 il, akıllı sırayla: 6.948 km. Yaklaşık 7 kat kısa." },
-    { "id": "l8", "text": "Senin ilin bu rotada kaçıncı durak? Durdur, bak." }
+    { "id": "l5", "text": "Yetmişte, Karaman'da, dünyanın çevresini geçiyorsun.", "caption": "70'te, Karaman'da, dünyanın çevresini geçiyorsun.", "holdAfter": 0.45 },
+    { "id": "l6", "text": "Daha on bir il var.", "caption": "Daha 11 il var.", "holdAfter": 0.2 },
+    { "id": "l7", "text": "Toplam: kırk altı bin beş yüz elli beş kilometre.", "caption": "Toplam: 46.555 km.", "holdAfter": 0.5 },
+    { "id": "l8", "text": "Aynı seksen bir il, akıllı sırayla: altı bin dokuz yüz kırk sekiz kilometre. Yaklaşık YEDİ kat kısa.", "caption": "Aynı 81 il, akıllı sırayla: 6.948 km. Yaklaşık 7 kat kısa." },
+    { "id": "l9", "text": "Senin ilin bu rotada kaçıncı durak? Durdur, bak." }
   ]
 }
