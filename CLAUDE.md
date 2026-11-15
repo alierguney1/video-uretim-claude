@@ -25,8 +25,11 @@ her piksel kodla çizilir. Her işte **[MOTION_RULES.md](MOTION_RULES.md)** geç
    direktör turunu uygula (en fazla 3 tur, hedef her başlıkta 8+).
 7. **Render.** `npm run render -- animasyonlar/<ad>.html` → `out/<ad>/<ad>.mp4` + `cover.png`.
    Müzik/seslendirme dosyası varsa `--audio dosya.mp3`.
-8. **Kayıt.** `yayinlar.csv`'ye satır ekle (metrikler boş). Kullanıcı 48 saat / 7 gün metriklerini
-   verince doldur. Her 10 satırda bir kanca türü / süre / yapı karşılaştırması yap ve
+8. **Kapak.** [promptlar/12-kapak.md](promptlar/12-kapak.md): `animasyonlar/<ad>.kapak.json` (en az 3 varyant, farklı
+   formüller) → `npm run kapak -- animasyonlar/<ad>.kapak.json` → `out/<ad>/kapak-onizleme.png` dosyasını **Read ile aç**,
+   kontrol listesini uygula → seçileni `--sec <varyant>` ile 0. kareye göm; yayında `<ad>-kapakli.mp4` kullanılır.
+9. **Kayıt.** `yayinlar.csv`'ye satır ekle (metrikler boş). Kullanıcı 48 saat / 7 gün metriklerini
+   verince doldur. Her 10 satırda bir kanca türü / kapak formülü / süre / yapı karşılaştırması yap ve
    MOTION_RULES.md'deki (V) değerlerini güncellemeyi öner.
 
 "Kod çalışıyor" ile "görüntü doğru" aynı şey değil. Kontak sayfasına bakmadan "bitti" deme.
@@ -56,9 +59,16 @@ her piksel kodla çizilir. Her işte **[MOTION_RULES.md](MOTION_RULES.md)** geç
   `IKON.hazirla()`'yı kendisi bekler. Yeni il ikonu `lib/ikonlar.js`'e kendi SVG'miz olarak (32x32, düz renk) eklenir,
   `npm run ikonlar` ile katalogda göz ile kontrol edilir.
 - **CDN engelliyse:** `tools/lib.mjs` jsDelivr isteklerini aynı sürümün npm paketinden sunar (`.cache/cdn/`); bulut ortamında render bu yüzden çalışır.
+- **V2 seri motoru (`lib/harita-motoru.js`):** Yeni bölümlerde `textTab`, `headerSeq`, `captionStyle: 'kinetic'`, `tracer`, `meter`, `statPill`, `arrow`, çakışmasız `label` ve çok katmanlı ses (`sub`, `pop`, `chime`, `rise`, `pulse` + ana kompresör) hazırdır. Eski bölümler (`captionStyle: 'box'`, `headerBand`) bozulmaz.
+- **`headerBand()` tuzağı (`y = 0..610`):** `headerBand()` `EP.draw()`'dan sonra `#0B141B` gölgesi basar. Üst yarıda net kalması gereken köşe rozeti, kart veya `Durdur-Bul` tablosunu `EP.header(t, g)` içinde (`headerSeq` sonrası) çiz; yoksa kararır.
+- **Headless Chromium (SwiftShader) hızı (`BG_CACHE` + BBox):** `D.LAND` / `D.BORDERS` (50m) tüm dünya poligonlarını her karede çizmek kare başına ~160 ms harcar (`check` zaman aşımına düşebilir). Çalışma bölgesine göre bounding-box filtresi + kamera sabitken offscreen `BG_CACHE` + `MultiLineString` toplu çizimi süreyi ~5–10 kat hızlandırır.
+- **Emoji kutuları yerine vektör:** Canvas `fillText` içinde `\u23F8` (`⏸`) sistemin turuncu kare emojisini basar. Düz harita dili için `drawPauseBars()` gibi vektörel çizim ya da `lib/ikonlar.js` kullan.
+- **Geçiş ve döngü temizliği:** Tam ekran `Durdur-Bul` tablosunun arkasında önceki sahnenin çubukları/ikonları hayalet bırakmamalı (`win()` penceresini tablo girişinden önce kapat). Son 0.65 sn'de ilk karedeki rozet, sayaç ve başlangıç çizgisini geri getir ki son kare = ilk kare olsun.
+- **Fikirler ve hızlı push disiplini:** Yeni bölüm fikirleri ve strateji notları [docs/fikirler.md](docs/fikirler.md) dosyasında toplanır. Birden fazla ajan paralel çalıştığı için işe başlamadan önce `git fetch origin`, iş bitiminde (temiz `check` sonrası) değişiklikleri bekletmeden doğrudan varsayılan dala (`claude/clever-newton-v18p72` / `main`) pushla.
 
 ## Düzeltme dili
 
 Kullanıcı kare ile konuşabilir: "logoyu 12 kare geciktir", "son kareyi 30 kare uzat".
 60 fps'te 60 kare = 1 sn. Her düzeltmeden sonra ilgili anın karesini `--times` ile alıp göster:
 `npm run contact -- animasyonlar/<ad>.html --times 4.2,4.4,4.6`.
+

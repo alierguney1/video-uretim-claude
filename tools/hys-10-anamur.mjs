@@ -31,7 +31,7 @@ const cypN = CYP.filter(p => p[1] > 35.1), turS = TUR.filter(p => p[1] < 36.9 &&
 let best = [Infinity];
 for (const t of turS) for (const c of cypN) { const d = km(t, c); if (d < best[0]) best = [d, t, c]; }
 
-const ANAMUR = [32.8369, 36.0751];   // Anamur ilçe merkezi (GeoNames 323779); NE'de yok
+const ANAMUR = [32.8311, 36.0800];   // Anamur ilçe merkezi (Wikipedia "Anamur": 36°04′48″K 32°49′52″D); NE'de yok
 const MERSIN = city('Icel'), ANKARA = city('Ankara', 'Admin-0'), LEFKOSA = city('Nicosia', 'Admin-0'), GIRNE = city('Kyrenia');
 
 // Anamur Burnu'nun enleminden kuzeyde kalan başkentler (Admin-0 capital), Ankara hariç
@@ -42,9 +42,9 @@ const afrika = ['Tunis', 'Algiers'].map(n => kuzeyde.find(c => c.ad === n));
 const guneyde = P.filter(p => p.properties.featurecla === 'Admin-0 capital' && Math.abs(p.geometry.coordinates[1] - lat0) < 0.5)
   .map(p => ({ ad: p.properties.name, lat: +p.geometry.coordinates[1].toFixed(4) })).sort((a, b) => b.lat - a.lat);
 
-// Ufuk: Kıbrıs'ın en yüksek noktası Olimpos (Troodos), 1.952 m — Wikipedia "Mount Olympus (Cyprus)", 34.9367 N 32.8633 E.
+// Ufuk: Kıbrıs'ın en yüksek noktası Olimpos (Troodos), 1.952 m — Wikipedia "Mount Olympus (Cyprus)", 34.93639 K 32.86333 D.
 // Gözlemci Anamur Burnu kıyısında, göz 2 m. Geometrik ufuk d = √(2Rh); kırılmasız (kötümser) hesap.
-const OLIMPOS = [32.8633, 34.9367], H_OL = 1952, H_GOZ = 2;
+const OLIMPOS = [32.86333, 34.93639], H_OL = 1952, H_GOZ = 2;
 const ufuk = h => Math.sqrt(2 * R * (h / 1000));               // km
 const dOl = km(anadoluGuney, OLIMPOS);
 const gizlenen = d => ((Math.max(0, d - ufuk(H_GOZ))) ** 2) / (2 * R) * 1000;   // m, ufkun arkasında kalan yükseklik
@@ -55,7 +55,7 @@ const out = {
             turkiyeKibris_enKisa_km: +best[0].toFixed(1), turkiyeNoktasi: best[1], kibrisNoktasi: best[2] },
   anamur: { mersin_km: +km(ANAMUR, MERSIN).toFixed(1), ankara_km: +km(ANAMUR, ANKARA).toFixed(1),
             lefkosa_km: +km(ANAMUR, LEFKOSA).toFixed(1), girne_km: +km(ANAMUR, GIRNE).toFixed(1),
-            kibrisKiyi_km: +km(ANAMUR, minBy(CYP, p => km(p, ANAMUR))).toFixed(1) },
+            kibrisKiyi_km: +km(ANAMUR, minBy(CYP, p => km(p, ANAMUR))).toFixed(1), kibrisKiyi: minBy(CYP, p => km(p, ANAMUR)) },
   enlem: { anamurBurnu: lat0, afrikaBaskentleri: afrika.map(c => ({ ...c, farkKm: +((c.lat - lat0) * 111.2).toFixed(0) })),
            kuzeydeKalanBaskentSayisi: kuzeyde.length, yakinEnlemBaskentler: guneyde },
   ufuk: { olimpos_km: +dOl.toFixed(1), olimposUfuk_km: +ufuk(H_OL).toFixed(1), gozUfuk_km: +ufuk(H_GOZ).toFixed(2),

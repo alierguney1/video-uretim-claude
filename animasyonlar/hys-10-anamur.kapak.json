@@ -1,0 +1,26 @@
+{
+  "kaynak": "hys-10-anamur.html",
+  "varyantlar": [
+    {
+      "ad": "ufuk", "tur": "imkânsız iddia", "t": 32.6,
+      "zoom": { "x": 700, "y": 800, "olcek": 1.15, "dy": 190 },
+      "baslik": ["BU SAHİLDEN", "*BAŞKA ÜLKE*", "GÖRÜNÜYOR"], "baslikY": 250, "boyut": 150,
+      "oklar": [{ "x": 905, "y": 915, "aci": 35, "boy": 230 }],
+      "alt": "Türkiye'de bir ilçe. *Neresi?*", "altY": 1570,
+      "emoji": [{ "ad": "eyes", "x": 910, "y": 1250, "boyut": 170, "aci": -8 }]
+    },
+    {
+      "ad": "yakin", "tur": "sayı şoku", "t": 21.6,
+      "zoom": { "x": 460, "y": 1000, "olcek": 1.3, "dy": 260 },
+      "baslik": ["İL MERKEZİ", "179 KM", "*KIBRIS 76 KM*"], "baslikY": 260, "boyut": 140,
+      "alt": "Bu ilçe neresi?", "altY": 1530,
+      "emoji": [{ "ad": "exploding-head", "x": 900, "y": 1560, "boyut": 180, "aci": 8 }]
+    },
+    {
+      "ad": "ilin", "tur": "kendi ilin", "t": 36.3, "karart": 0.55,
+      "baslik": ["İLİN HANGİ", "*BAŞKENTLE*", "AYNI HİZADA?"], "baslikY": 260, "boyut": 150,
+      "etiketler": [{ "metin": "ANKARA = PEKİN", "x": 540, "y": 1500, "boyut": 80 }],
+      "emoji": [{ "ad": "thinking-face", "x": 910, "y": 1230, "boyut": 190, "aci": 10 }]
+    }
+  ]
+}

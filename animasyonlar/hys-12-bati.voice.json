@@ -1,0 +1,63 @@
+{
+ "voice": "Charon",
+ "style": "enerjik ve merak uyandıran, geri sayım yapar gibi gerilimi artıran, sıra numaralarını vurgulayan, izleyiciye sır veriyormuş gibi",
+ "tempo": 1.12,
+ "lead": 0.15,
+ "gap": 0.25,
+ "tail": 2.4,
+ "lines": [
+  {
+   "id": "l1",
+   "text": "En batı ucu deyince akla Babakale gelir. <short pause> Ama Babakale... DÖRDÜNCÜ.",
+   "caption": "En batı ucu deyince akla Babakale gelir. Ama Babakale dördüncü.",
+   "holdAfter": 0.1
+  },
+  {
+   "id": "l2",
+   "text": "Asya'nın en batı ucu, evet. <short pause> Türkiye'nin değil.",
+   "caption": "Asya'nın en batı ucu, evet. Türkiye'nin değil."
+  },
+  {
+   "id": "l3",
+   "text": "ÜÇÜNCÜ: Bozcaada.",
+   "caption": "Üçüncü: Bozcaada."
+  },
+  {
+   "id": "l4",
+   "text": "Ada saymazsak? İKİNCİ: Enez, Meriç'in denize döküldüğü yer. Babakale'den iki kilometreden fazla batıda.",
+   "caption": "Ada saymazsak? İkinci: Enez, Meriç'in denize döküldüğü yer. Babakale'den 2 km'den fazla batıda."
+  },
+  {
+   "id": "l5",
+   "text": "Peki... BİRİNCİ?",
+   "caption": "Peki birinci?",
+   "holdAfter": 0.5
+  },
+  {
+   "id": "l6",
+   "text": "Gökçeada, İncirburnu. Babakale'den otuz dört kilometre batıda.",
+   "caption": "Gökçeada, İncirburnu. Babakale'den 34 km batıda."
+  },
+  {
+   "id": "l7",
+   "text": "Neden önemli? Tek saat dilimindeyiz, ama güneş Iğdır'da on altı kırk yedide, Gökçeada'da on sekizde batıyor.",
+   "caption": "Neden önemli? Tek saat dilimindeyiz, ama güneş Iğdır'da 16.47'de, Gökçeada'da 18.00'de batıyor."
+  },
+  {
+   "id": "l8",
+   "text": "YETMİŞ ÜÇ dakika fark.",
+   "caption": "73 dakika fark."
+  },
+  {
+   "id": "l9",
+   "text": "Senin ilinde kaç dakika erken? Durdur, bul.",
+   "caption": "Senin ilinde kaç dakika erken? Durdur, bul.",
+   "holdAfter": 0.5
+  },
+  {
+   "id": "l10",
+   "text": "Güney, kuzey, batı tamam. Peki en DOĞU ucu? Yaz.",
+   "caption": "Güney, kuzey, batı tamam. Peki en doğu ucu? Yaz."
+  }
+ ]
+}

@@ -36,7 +36,8 @@ bulunamazsa araç ne kuracağını söyler.
 | [lib/ikon-katmani.js](lib/ikon-katmani.js) | Bayrak + il ikonu katmanı (çıkartma görünümü): 81 il eşlemesi `lib/ikonlar.js`, emoji/bayrak seti `lib/ikon-seti.js` (MIT, `npm run ikon-seti` üretir), katalog `npm run ikonlar` |
 | [STYLE.md](STYLE.md) | Seri kimliği (sabit): palet, yazı tipleri, hareket dili, ses |
 | [tools/render.mjs](tools/render.mjs) | Paralel kare kare PNG → FFmpeg H.264 MP4, sentez sesi ya da `--audio` |
-| [promptlar/](promptlar/) | Brif, dikey video, cilalama döngüsü, skill'e çevirme |
+| [promptlar/](promptlar/) | Brif, dikey video, cilalama döngüsü, kapak rehberi, skill'e çevirme |
+| [docs/fikirler.md](docs/fikirler.md) | Seri durumu, sıradaki video fikirleri ve üretim/algoritma stratejisi |
 | [docs/platform-notlari.md](docs/platform-notlari.md) | Instagram / YouTube / TikTok algoritmaları ve AI içerik kuralları (Kasım 2026) |
 | [docs/kutuphaneler.md](docs/kutuphaneler.md) | Kütüphaneler ve her birini `draw(t)`'ye nasıl bağlayacağın |
 | [animasyonlar/ornek-yuzde-bir.html](animasyonlar/ornek-yuzde-bir.html) | Örnek: "Her gün %1 daha iyi → 1 yılda 37,8x" (10 sn, dikey, sesli) |

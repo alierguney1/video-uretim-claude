@@ -1,0 +1,104 @@
+{
+  "kaynak": "hys-11-kuzey.html",
+  "varyantlar": [
+    {
+      "ad": "sinop",
+      "tur": "yanlış inanış",
+      "t": 6.4,
+      "zoom": {
+        "x": 594,
+        "y": 828,
+        "olcek": 1.2,
+        "dy": 230
+      },
+      "baslik": [
+        "EN KUZEY",
+        "*SİNOP*",
+        "*DEĞİL*"
+      ],
+      "baslikY": 250,
+      "boyut": 155,
+      "oklar": [
+        {
+          "x": 600,
+          "y": 1000,
+          "aci": 20,
+          "boy": 220
+        }
+      ],
+      "alt": "Peki *neresi?*",
+      "altY": 1560,
+      "emoji": [
+        {
+          "ad": "face-screaming-in-fear",
+          "x": 900,
+          "y": 1300,
+          "boyut": 180,
+          "aci": 8
+        }
+      ]
+    },
+    {
+      "ad": "gizem",
+      "tur": "gizem nesnesi",
+      "t": 11.7,
+      "zoom": {
+        "x": 484,
+        "y": 870,
+        "olcek": 1.25,
+        "dy": 230
+      },
+      "baslik": [
+        "TÜRKİYE'NİN",
+        "EN KUZEYİ",
+        "*NERESİ?*"
+      ],
+      "baslikY": 250,
+      "boyut": 145,
+      "halkalar": [
+        {
+          "x": 484,
+          "y": 1065,
+          "r": 110
+        }
+      ],
+      "emoji": [
+        {
+          "ad": "thinking-face",
+          "x": 880,
+          "y": 1450,
+          "boyut": 180,
+          "aci": -8
+        }
+      ]
+    },
+    {
+      "ad": "800m",
+      "tur": "sayı şoku",
+      "t": 25.6,
+      "zoom": {
+        "x": 540,
+        "y": 790,
+        "olcek": 1.25,
+        "dy": 290
+      },
+      "baslik": [
+        "*800 METREYLE*",
+        "KAYBETTİ"
+      ],
+      "baslikY": 270,
+      "boyut": 140,
+      "alt": "Hangi il? *Bil bakalım*",
+      "altY": 1600,
+      "emoji": [
+        {
+          "ad": "exploding-head",
+          "x": 900,
+          "y": 760,
+          "boyut": 170,
+          "aci": 10
+        }
+      ]
+    }
+  ]
+}
