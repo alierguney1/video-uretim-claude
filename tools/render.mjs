@@ -59,6 +59,33 @@ if (!args['no-audio'] && !args['no-synth'] && meta.hasAudio) {
   const b64 = await main.page.evaluate(() => window.__renderAudio());
   if (b64) { synthWav = path.join(dir, 'synth.wav'); fs.writeFileSync(synthWav, Buffer.from(b64, 'base64')); }
 }
+// Kütüphane dosyaları (window.__sfx = [{t, dosya, gain, hiz, pan}], lib/ses.js SES.dosyalar üretir):
+// sentez sesinin üstüne FFmpeg ile örnek-kesin yerleştirilir. --no-sfx atlar.
+const sfx = args['no-audio'] || args['no-sfx'] ? [] : await main.page.evaluate(() => window.__sfx || []);
+if (sfx.length) {
+  const ROOT = path.resolve(path.dirname(new URL(import.meta.url).pathname), '..');
+  const files = [...new Set(sfx.map(s => s.dosya))];
+  for (const f of files) if (!fs.existsSync(path.resolve(ROOT, f))) { console.error(`Ses dosyası yok: ${f}`); process.exit(1); }
+  const inputs = synthWav ? ['-i', synthWav] : ['-f', 'lavfi', '-t', String(meta.duration), '-i', 'anullsrc=r=48000:cl=stereo'];
+  files.forEach(f => inputs.push('-i', path.resolve(ROOT, f)));
+  const uses = files.map(f => sfx.filter(s => s.dosya === f).length), seen = files.map(() => 0);
+  const parts = ['[0:a]aformat=sample_rates=48000:channel_layouts=stereo[b]'];
+  files.forEach((f, k) => parts.push(`[${k + 1}:a]aformat=sample_rates=48000:channel_layouts=stereo,` +
+    (uses[k] > 1 ? `asplit=${uses[k]}` + uses.slice(k, k + 1).flatMap(n => Array.from({ length: n }, (_, j) => `[f${k}_${j}]`)).join('') : `anull[f${k}_0]`)));
+  sfx.forEach((s, i) => {
+    const k = files.indexOf(s.dosya), j = seen[k]++, ms = Math.max(0, Math.round(s.t * 1000)), p = Math.max(-1, Math.min(1, s.pan || 0));
+    const rate = s.hiz && s.hiz !== 1 ? `asetrate=${Math.round(48000 * s.hiz)},aresample=48000,` : '';
+    const pan = p ? `pan=stereo|c0=${Math.min(1, 1 - p).toFixed(3)}*c0|c1=${Math.min(1, 1 + p).toFixed(3)}*c1,` : '';
+    parts.push(`[f${k}_${j}]${rate}${pan}volume=${(s.gain ?? 1).toFixed(3)},adelay=${ms}|${ms}[e${i}]`);
+  });
+  parts.push('[b]' + sfx.map((_, i) => `[e${i}]`).join('') + `amix=inputs=${sfx.length + 1}:normalize=0:duration=first[a]`);
+  const script = path.join(dir, 'efekt-filtre.txt'), out = path.join(dir, 'efekt.wav');
+  fs.writeFileSync(script, parts.join(';\n'));
+  const m = spawnSync('ffmpeg', ['-y', '-loglevel', 'error', ...inputs, '-filter_complex_script', script, '-map', '[a]', '-ar', '48000', out], { stdio: 'inherit' });
+  if (m.status !== 0) { console.error('Kütüphane sesleri karıştırılamadı.'); process.exit(1); }
+  synthWav = out;
+  console.log(`  ses: ${sfx.length} kütüphane olayı (${files.length} dosya) karıştırıldı`);
+}
 const autoVoice = path.resolve('ses', name, 'voice.wav');
 const extAudio = args.audio ? path.resolve(args.audio) : (!args['no-voice'] && fs.existsSync(autoVoice) ? autoVoice : null);
 if (!args.audio && extAudio) console.log(`Seslendirme otomatik eklendi: ${path.relative('.', extAudio)}`);

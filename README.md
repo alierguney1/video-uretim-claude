@@ -29,16 +29,20 @@ bulunamazsa araç ne kuracağını söyler.
 | [MOTION_RULES.md](MOTION_RULES.md) | Kurallar: render sözleşmesi, görünüm yasakları, ses, kontrol döngüsü, dağıtım |
 | [CLAUDE.md](CLAUDE.md) | Claude'un bu repoda izlediği iş akışı ve öğrenilmiş dersler |
 | [template.html](template.html) | Çalışan iskelet: `__setTime`, `?t=`, mulberry32, easing seti, tabular rakam, Web Audio + offline WAV |
-| [tools/check.mjs](tools/check.mjs) | `Math.random`, tüm karelerde hata, determinizm, `?t=`, ilk saniye hareketi, font sayısı |
+| [tools/check.mjs](tools/check.mjs) | `Math.random`, tüm karelerde hata, determinizm, `?t=`, ilk saniye hareketi, font sayısı, döngü haritası |
 | [tools/contact.mjs](tools/contact.mjs) | Her sahnenin başı/ortası/sonu + geçişler, güvenli alan katmanıyla kontak sayfası |
 | [tools/tts.mjs](tools/tts.mjs) | `npm run tts -- animasyonlar/<ad>.voice.json`: Gemini TTS ile cümle cümle seslendirme (önbellekli), zaman çizelgesi ve animasyondaki `VO` bloğu |
 | [tools/firsat.mjs](tools/firsat.mjs) | `npm run firsat`: YouTube Data API + Gemini ile video türü bazında talep/arz (fırsat) raporu. Bkz. [docs/firsat-analizi.md](docs/firsat-analizi.md) |
 | [lib/harita-motoru.js](lib/harita-motoru.js) | "Harita Yalan Söyler" seri motoru: küre/Mercator, altyazı, etiket, ses, render sözleşmesi |
 | [lib/ikon-katmani.js](lib/ikon-katmani.js) | Bayrak + il ikonu katmanı (çıkartma görünümü): 81 il eşlemesi `lib/ikonlar.js`, emoji/bayrak seti `lib/ikon-seti.js` (MIT, `npm run ikon-seti` üretir), katalog `npm run ikonlar` |
 | [STYLE.md](STYLE.md) | Seri kimliği (sabit): palet, yazı tipleri, hareket dili, ses |
-| [tools/render.mjs](tools/render.mjs) | Paralel kare kare PNG → FFmpeg H.264 MP4, sentez sesi ya da `--audio` |
+| [tools/render.mjs](tools/render.mjs) | Paralel kare kare PNG → FFmpeg H.264 MP4; sentez sesi + kütüphane efektleri (`__sfx`) + `--audio`, −14 LUFS |
 | [promptlar/](promptlar/) | Brif, dikey video, cilalama döngüsü, kapak rehberi, skill'e çevirme |
 | [docs/fikirler.md](docs/fikirler.md) | Seri durumu, sıradaki video fikirleri ve üretim/algoritma stratejisi |
+| [docs/ses-rehberi.md](docs/ses-rehberi.md) | Ses tasarımı: katmanlar, seviyeler, kurallar, lisanslı kaynaklar, kullanım |
+| [lib/ses.js](lib/ses.js) | Ortak ses motoru: ZzFX 8-bit (MIT), kod sentezi (yükseliş, darbe, dalga, rüzgâr…), kütüphane dosyaları, seslendirme altında kısma |
+| [ses/kutuphane/](ses/kutuphane/) | CC0 ses kütüphanesi (Kenney: RPG, Impact, Interface, Digital; 343 dosya). `npm run sesler` katalog + dinleme sayfası (`index.html`) üretir |
+| [docs/hikaye-rehberi.md](docs/hikaye-rehberi.md) | Hikâye ve dikkat: merak boşluğu, gerilim, "ama/bu yüzden", soğuk açılış, döngü haritası, hikâye testi, etik sınır |
 | [docs/platform-notlari.md](docs/platform-notlari.md) | Instagram / YouTube / TikTok algoritmaları ve AI içerik kuralları (Kasım 2026) |
 | [docs/kutuphaneler.md](docs/kutuphaneler.md) | Kütüphaneler ve her birini `draw(t)`'ye nasıl bağlayacağın |
 | [animasyonlar/ornek-yuzde-bir.html](animasyonlar/ornek-yuzde-bir.html) | Örnek: "Her gün %1 daha iyi → 1 yılda 37,8x" (10 sn, dikey, sesli) |

@@ -10,6 +10,9 @@
     window.__size          {width, height} mantıksal çözünürlük
     window.__scenes        [{name, start, end}]  (kontak sayfası bunu okur)
     window.__cover         kapak karesinin zamanı (render cover.png çıkarır)
+    window.__beats         döngü haritası (ops. ama önerilir): açılan sorular, ara ödüller,
+                           kapanan sorular. check bunlardan merak boşluklarını ölçer.
+                           docs/hikaye-rehberi.md §4
     window.__setTime(t)    t anını çizer
     window.__ready         font vb. yüklenince çözülen Promise
     window.__renderAudio() SOUNDS'u OfflineAudioContext ile WAV'a (base64) çevirir
@@ -61,6 +64,16 @@ const SCENES = [
   { name: 'büyüme',  start: 2.6, end: 6.6 },
   { name: 'sonuç',   start: 6.6, end: 9.0 },
   { name: 'döngü',   start: 9.0, end: 10.0 },
+];
+
+// Döngü haritası (docs/hikaye-rehberi.md §4): izleyicinin her an cevabını beklediği bir soru olsun.
+//   {t, ac: 'A', soru}  soru açılır · {t, odul}  ara ödül · {t, kapa: 'A'}  soru cevaplanır
+//   {t, ac: 'Z', soru, sonraki: true}  bir sonraki videoya bırakılan soru (kapanmaz)
+const BEATS = [
+  { t: 0.0, ac: 'A', soru: '1 yılda kaç kat?' },
+  { t: 3.4, odul: 'günler akıyor, iki çizgi ayrılıyor' },
+  { t: 7.0, kapa: 'A' },
+  { t: 8.0, odul: 'tersi: %1 kötü' },
 ];
 
 // Ses olayları: her ses ekranda görünen bir olaya bağlı. Hem canlı oynatma
@@ -325,6 +338,7 @@ window.__fps = CONFIG.fps;
 window.__size = { width: W, height: H };
 window.__scenes = SCENES;
 window.__cover = CONFIG.cover;
+window.__beats = BEATS;
 window.__setTime = t => { current = t; draw(t); };
 // Google Fonts Türkçe harfleri (İ Ş Ğ ı ş ğ) ayrı "latin-ext" dosyasında sunar; örnek metin
 // vermeden load() çağrılırsa o dosya ilk kullanımda geç gelir ve ilk kare yanlış fontla çizilir.

@@ -1,0 +1,29 @@
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ses kütüphanesi</title>
+<style>
+:root{--bg:#14111c;--card:#1f1a2b;--ink:#f3e9d2;--mute:#9c93ae;--acc:#e2483d;--gold:#f2b544}
+body{margin:0;padding:24px 16px 60px;background:var(--bg);color:var(--ink);font:15px/1.45 system-ui,sans-serif}
+h1{font-size:22px;margin:0 0 4px}h2{font-size:17px;margin:28px 0 8px;color:var(--gold)}p{color:var(--mute);margin:4px 0 12px;max-width:760px}
+.g{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:8px}
+button{all:unset;cursor:pointer;background:var(--card);border:1px solid #2e2740;border-radius:8px;padding:8px 10px;display:flex;justify-content:space-between;gap:8px}
+button:hover{border-color:var(--acc)}button b{font-weight:600}button span{color:var(--mute);font:12px ui-monospace,monospace}
+code{font:13px ui-monospace,monospace;color:var(--gold)}table{border-collapse:collapse;margin-top:6px}td{padding:4px 10px 4px 0;color:var(--mute);vertical-align:top}td:first-child{color:var(--ink)}
+</style></head><body>
+<h1>Ses kütüphanesi</h1>
+<p>Tıkla, dinle. Olay listesinde (<code>SOUNDS</code>) adıyla kullan. Kurallar: <code>docs/ses-rehberi.md</code>.
+Kod sentezi ve ZzFX bizim ürettiğimiz ses (lisans sorunu yok); dosyalar CC0.</p>
+<h2>Kod sentezi · <code>{ t, tur: 'darbe' }</code></h2><div class="g" id="gen"></div>
+<h2>ZzFX 8-bit · <code>{ t, tur: 'zzfx', ad: 'blip' }</code></h2><div class="g" id="zz"></div>
+<h2>Kütüphane · <code>{ t, tur: 'dosya', ad: 'kapi-ac' }</code></h2><p>Bir ad birden çok varyant taşır; motor aynı sesi art arda tekrarlamamak için t'ye göre seçer. Tıklayınca sıradaki varyant çalar.</p><div class="g" id="lib"></div>
+<h2>Paketler ve lisans</h2><table><tr><td>kenney-rpg</td><td>Kenney RPG Audio · CC0-1.0 · kapı, kitap, kumaş, para, bıçak, adım, gıcırtı<br><a style="color:var(--mute)" href="https://kenney.nl/assets/rpg-audio">https://kenney.nl/assets/rpg-audio</a></td></tr><tr><td>kenney-darbe</td><td>Kenney Impact Sounds · CC0-1.0 · adım (taş, tahta, çimen, kar), metal, tahta, cam, zil, yumruk<br><a style="color:var(--mute)" href="https://kenney.nl/assets/impact-sounds">https://kenney.nl/assets/impact-sounds</a></td></tr><tr><td>kenney-arayuz</td><td>Kenney Interface Sounds · CC0-1.0 · tık, seçim, onay, hata, aç/kapa, kaydır, glitch<br><a style="color:var(--mute)" href="https://kenney.nl/assets/interface-sounds">https://kenney.nl/assets/interface-sounds</a></td></tr><tr><td>kenney-dijital</td><td>Kenney Digital Audio · CC0-1.0 · 8-bit güç, lazer, zap, ton<br><a style="color:var(--mute)" href="https://kenney.nl/assets/digital-audio">https://kenney.nl/assets/digital-audio</a></td></tr></table>
+<script src="katalog.js"></script><script src="../../lib/ses.js"></script>
+<script>
+let ac; const ctx = () => (ac = ac || new AudioContext());
+const btn = (el, label, sub, fn) => { const b = document.createElement('button'); b.innerHTML = '<b>' + label + '</b><span>' + sub + '</span>'; b.onclick = fn; document.getElementById(el).append(b); };
+const play = s => { const a = ctx(); SES.oynat(a, [{ t: 0, ...s }], 0, {}); };
+const GEN = { yukselis: { dur: 1.2 }, darbe: {}, whoosh: {}, ping: {}, ping2: {}, tick: {}, kalp: {}, marti: { kez: 3 }, dalga: { dur: 8 }, ruzgar: { dur: 8 }, yagmur: { dur: 6 }, ates: { dur: 6 }, gerilim: { dur: 5 }, drone: { dur: 4 } };
+for (const [k, o] of Object.entries(GEN)) btn('gen', k, o.dur ? o.dur + ' sn' : '', () => play({ tur: k, ...o }));
+for (const k of Object.keys(SES.ON_AYAR)) btn('zz', k, 'zzfx', () => play({ tur: 'zzfx', ad: k }));
+const turn = {};
+for (const [ad, ids] of Object.entries(SES_KATALOG.adlar)) btn('lib', ad, ids.length + ' varyant', () => { turn[ad] = ((turn[ad] ?? -1) + 1) % ids.length; new Audio('../../' + SES_KATALOG.sesler[ids[turn[ad]]].dosya).play(); });
+</script></body></html>

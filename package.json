@@ -11,7 +11,8 @@
     "tts": "NODE_USE_ENV_PROXY=1 node tools/tts.mjs",
     "ikonlar": "node tools/ikon-katalogu.mjs",
     "ikon-seti": "node tools/ikon-seti.mjs",
-    "firsat": "NODE_USE_ENV_PROXY=1 node tools/firsat.mjs"
+    "firsat": "NODE_USE_ENV_PROXY=1 node tools/firsat.mjs",
+    "sesler": "node tools/ses-katalog.mjs"
   },
   "engines": {
     "node": ">=18"
