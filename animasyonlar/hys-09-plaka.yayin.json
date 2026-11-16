@@ -1,0 +1,34 @@
+{
+  "ad": "hys-09-plaka",
+  "onay": false,
+  "zaman": null,
+  "not": "Brifteki yayın paketinden. onay:true yapılınca sıraya girer.",
+  "youtube": {
+    "baslik": "81 ili plaka sırasıyla gezsen kaç km yol yaparsın?",
+    "aciklama": "01 Adana'dan 81 Düzce'ye, 81 ili plaka sırasıyla kuşuçuşu gezdik: 46.555 km, dünyanın çevresinden (40.075 km) uzun. Aynı 81 il akıllı sırayla 6.948 km. Hesap: il merkezleri (Natural Earth), büyük daire mesafesi; yol mesafesi değil.\n\n#plaka #harita #türkiye #81il #coğrafya",
+    "etiketler": [
+      "plaka",
+      "harita",
+      "türkiye",
+      "81il",
+      "coğrafya"
+    ],
+    "gizlilik": "public",
+    "kategori": 27,
+    "sabitYorum": "Plakan kaç, akıllı rotada kaçıncı duraksın? Yaz bakalım 👇"
+  },
+  "instagram": {
+    "aciklama": "81 ili plaka sırasıyla gezsen kaç km yol yaparsın?\n\n01 Adana'dan 81 Düzce'ye, 81 ili plaka sırasıyla kuşuçuşu gezdik: 46.555 km, dünyanın çevresinden (40.075 km) uzun. Aynı 81 il akıllı sırayla 6.948 km. Hesap: il merkezleri (Natural Earth), büyük daire mesafesi; yol mesafesi değil.\n\n#plaka #harita #türkiye #81il #coğrafya",
+    "aiEtiketi": true
+  },
+  "yayinlandi": {
+    "youtube": {
+      "url": "https://youtube.com/shorts/vRCTlpNgyfo",
+      "tarih": "2026-11-15"
+    },
+    "instagram": {
+      "url": "https://www.instagram.com/reel/Dfxm1U2i1tW/",
+      "tarih": "2026-11-15"
+    }
+  }
+}

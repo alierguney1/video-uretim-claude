@@ -31,7 +31,11 @@ her piksel kodla çizilir. Her işte **[MOTION_RULES.md](MOTION_RULES.md)** geç
 8. **Kapak.** [promptlar/12-kapak.md](promptlar/12-kapak.md): `animasyonlar/<ad>.kapak.json` (en az 3 varyant, farklı
    formüller) → `npm run kapak -- animasyonlar/<ad>.kapak.json` → `out/<ad>/kapak-onizleme.png` dosyasını **Read ile aç**,
    kontrol listesini uygula → seçileni `--sec <varyant>` ile 0. kareye göm; yayında `<ad>-kapakli.mp4` kullanılır.
-9. **Kayıt.** `yayinlar.csv`'ye satır ekle (metrikler boş). Kullanıcı 48 saat / 7 gün metriklerini
+9. **Yayın kuyruğu (elle yükleme yok).** `animasyonlar/<ad>.yayin.json` yaz (`"onay": true`, kapak varyantı,
+   brifteki yayın paketinin başlık/açıklama/etiketleri; şema [docs/otomatik-yayin.md](docs/otomatik-yayin.md)).
+   Günlük zamanlanmış oturum YouTube + Instagram'a vidIQ ile yükler ve `npm run yayin -- kaydet` ile kaydeder.
+   Kullanıcıdan yükleme yapmasını isteme.
+10. **Kayıt.** `yayinlar.csv`'ye satır ekle (metrikler boş; otomatik yayında `kaydet` bunu yapar). Kullanıcı 48 saat / 7 gün metriklerini
    verince doldur. Her 10 satırda bir kanca türü / kapak formülü / süre / yapı karşılaştırması yap ve
    MOTION_RULES.md'deki (V) değerlerini güncellemeyi öner.
 
