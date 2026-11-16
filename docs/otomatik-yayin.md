@@ -58,7 +58,8 @@ farklı bir şey yayınlama. Metni değiştirme, uydurma.
 3. Her `{ad, platform}` için (aynı `ad` ise hazırlığı bir kez yap):
    0. **TEKRAR YÜKLEME YASAK — önce platforma bak.** `yayinlar.csv` eksik olabilir (16 Kasım'da hys-01, 02, 09, 12
       platformda vardı ama kayıtta yoktu). Her yüklemeden önce:
-      - YouTube: `vidiq_user_videos {channelId: "UC7kBWHh-RPkkY7LGZVxy7Zw", limit: 50}`
+      - YouTube (ücretsiz, vidIQ kredisi harcamaz): `curl -sS "https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UC7kBWHh-RPkkY7LGZVxy7Zw&order=date&maxResults=50&type=video"`
+        (yedek: `vidiq_user_videos`, 5 kredi; krediler 16 Kas'ta bitti)
       - Instagram: `vidiq_instagram_owner_insights {platformAccountId: "40458087940456318", mode: "media", limit: 25, metrics: ["views"]}`
       Başlık/açıklamada bölümün konusu (yer adı, ana sayı) geçen **ya da** süresi `sure_sn` ± 1,5 sn olup aynı konuyu
       anlatan bir gönderi varsa: **yükleme yapma**, `npm run yayin -- kaydet <ad> <platform> <url> --tarih <gönderi tarihi>

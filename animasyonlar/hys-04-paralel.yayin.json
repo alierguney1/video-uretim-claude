@@ -1,24 +1,36 @@
 {
   "ad": "hys-04-paralel",
-  "onay": false,
+  "onay": true,
   "zaman": null,
-  "not": "Brifteki yayın paketinden. onay:true yapılınca sıraya girer.",
+  "not": "v2 (16 Kas): viral analiz sonrası kanca + paket yenilendi. docs/viral-analiz-2026-11.md",
   "youtube": {
-    "baslik": "İstanbul'dan dümdüz doğuya gitsen kaç ülkeden geçersin?",
-    "aciklama": "41° kuzey enleminde dünyayı dolaştık: 17 ülke, 30.207 km. New York İstanbul'dan 33 km güneyde, Roma 99 km kuzeyde. Veri: Natural Earth.\n\n#harita #coğrafya #istanbul #dünyaturu #bilgi",
+    "baslik": "New York, İstanbul’dan daha güneyde 😳 #harita #coğrafya #istanbul",
+    "aciklama": "İstanbul 41,01° K, New York 40,71° K: New York tam 33 km güneyde. Roma ise İstanbul’dan 99 km kuzeyde. 41. paralel boyunca dümdüz doğuya gittik: 17 ülke, 30.207 km sonra yine İstanbul. Veri: Natural Earth.\n\n#harita #coğrafya #istanbul #newyork #türkiye",
     "etiketler": [
       "harita",
       "coğrafya",
       "istanbul",
-      "dünyaturu",
-      "bilgi"
+      "new york",
+      "türkiye",
+      "enlem"
     ],
     "gizlilik": "public",
     "kategori": 27,
-    "sabitYorum": "Sen kaç tahmin etmiştin?"
+    "sabitYorum": "Sen kaç ülke tahmin etmiştin? 👇"
   },
   "instagram": {
-    "aciklama": "İstanbul'dan dümdüz doğuya gitsen kaç ülkeden geçersin?\n\n41° kuzey enleminde dünyayı dolaştık: 17 ülke, 30.207 km. New York İstanbul'dan 33 km güneyde, Roma 99 km kuzeyde. Veri: Natural Earth.\n\n#harita #coğrafya #istanbul #dünyaturu #bilgi",
+    "aciklama": "New York, İstanbul’dan daha güneyde 😳\nİstanbul 41,01° K, New York 40,71° K: tam 33 km güneyde. Roma ise İstanbul’dan 99 km kuzeyde.\n41. paralelden dümdüz doğuya gittik: 17 ülke, 30.207 km sonra yine İstanbul 🌍\nSen kaç ülke tahmin etmiştin? Yorumlara yaz 👇\nNew York’u bizden kuzeyde sanan arkadaşına gönder.\n.\n#istanbul #newyork #harita #coğrafya #memleket #türkiye #haritayalansoyler",
     "aiEtiketi": true
+  },
+  "kapak": "newyork",
+  "yayinlandi": {
+    "youtube": {
+      "url": "https://youtube.com/shorts/0Eoxv_SrfRo",
+      "tarih": "2026-11-16"
+    },
+    "instagram": {
+      "url": "https://www.instagram.com/reel/Df0DJL3gXQs/",
+      "tarih": "2026-11-16"
+    }
   }
 }
