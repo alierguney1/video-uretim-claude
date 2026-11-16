@@ -46,6 +46,21 @@ Paylaşım oranı ise 13 kat değişiyor (0,8 → 10,4). Instagram'da erişimi b
 
 ## 4. İlke
 
+> **Düzeltme (Ali, 16 Kas akşamı):** hys-04 v2 bu ilkeyi mekanik uyguladı ve "ucube" oldu. New York–İstanbul
+> enlemini kimse merak etmiyor. Asıl sürücü karşılaştırma değil, **izleyicinin zaten sahip olduğu bir inanç ya da
+> gerçekten sorduğu bir soru.** Anamur/Sinop/Babakale okulda öğrenilmiş "en uç nokta" bilgisini bozdu.
+> Aşağıdaki ilke ancak "normal insan testi"nden (§4a) geçen konularda geçerli.
+
+### 4a. Normal insan testi (her fikirde zorunlu, üçü de evet olmalı)
+
+1. **Önceden fikri var mı?** Sıradan biri bu konuda bir şey bildiğini/sandığını söyler mi? (okul bilgisi, ezber, memleket, gündelik deneyim)
+2. **Kendisi sorar mı?** Bu soruyu biri arkadaşına, Google'a ya da yol uzunluğu/hava/fiyat gibi bir derdi yüzünden kendiliğinden sorar mı?
+3. **Kime gönderir?** Belirli bir kişiyi aklına getiriyor mu ("Sinoplu arkadaşım", "Kars'taki dayım")?
+
+Bir tanesi bile hayırsa fikir elenir, kurgusu ne kadar iyi olursa olsun.
+
+### 4b. Eski ilke (testten geçenlere uygulanır)
+
 > **"[Türkiye'den tanıdık bir yer], [herkesin bildiği yabancı bir yer]den daha [ters yönde]."**
 > İlk saniyede iddia, sonunda "o yerin insanına gönder".
 

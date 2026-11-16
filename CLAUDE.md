@@ -14,6 +14,9 @@ her piksel kodla çizilir. Her işte **[MOTION_RULES.md](MOTION_RULES.md)** geç
    Cold open, merak boşluğu, katmanlı açık döngüler, gizem, gerilim, ters köşe ve cliffhanger/döngü
    araçlarından en az 5'i kullanılır; brifte "merak haritası" tablosu zorunludur. Bilgi vermek yetmez,
    izleyici her an bir cevap beklemeli.
+   **Normal insan testi (zorunlu):** fikir, sıradan birinin zaten bir fikri olduğu ya da kendiliğinden sorduğu bir şey
+   olmalı ve belirli bir kişiye gönderilmeli. Üç soru: [docs/viral-analiz-2026-11.md §4a](docs/viral-analiz-2026-11.md).
+   "Doğru ama kimse sormuyor" konular elenir (ders: hys-04 v2, New York–İstanbul enlemi).
    Hikâye ve dikkat araçları ("ama / bu yüzden" testi, döngü haritası `__beats`, hikâye testi):
    [docs/hikaye-rehberi.md](docs/hikaye-rehberi.md).
 2. **Sahne listesi + süreler + geçiş nesneleri.** Göster, **onay al**. Onaydan önce kod yazma.
