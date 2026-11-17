@@ -21,14 +21,19 @@ her piksel kodla çizilir. Her işte **[MOTION_RULES.md](MOTION_RULES.md)** geç
 5. **Kontak sayfası.** `npm run contact -- animasyonlar/<ad>.html`, sonra `out/<ad>/contact.png`
    dosyasını **Read ile aç ve gerçekten bak**. Taşan yazı, çakışma, okunmayan metin, güvenli alan
    dışı öge, kopuk geçiş, ölü zaman ara. Bulduklarını saniye + kare numarasıyla yaz, düzelt, tekrarla.
-6. **Cilalama.** İlk sürüm taslaktır: [promptlar/10-cilalama.md](promptlar/10-cilalama.md)'deki
+6. **Viral süzgeç turu.** İlk sürüm (adım 3–5) bitince, cilalamadan önce
+   [promptlar/13-viral-suzgec.md](promptlar/13-viral-suzgec.md): `.claude/skills/` altındaki `viral-hooks`,
+   `viral-short-form`, `viral-captions-and-ctas` (gerekirse `viral-short-form-ideas`) süzgeçlerinden geçir,
+   raporu göster, onay al, videoyu **yeniden üret**, `check` + kontak sayfasını tekrarla. Rapor:
+   `animasyonlar/<ad>.suzgec.md`. Platform skill'leri (tiktok/shorts/reels) şimdilik çağrılmaz.
+7. **Cilalama.** İlk sürüm taslaktır: [promptlar/10-cilalama.md](promptlar/10-cilalama.md)'deki
    direktör turunu uygula (en fazla 3 tur, hedef her başlıkta 8+).
-7. **Render.** `npm run render -- animasyonlar/<ad>.html` → `out/<ad>/<ad>.mp4` + `cover.png`.
+8. **Render.** `npm run render -- animasyonlar/<ad>.html` → `out/<ad>/<ad>.mp4` + `cover.png`.
    Müzik/seslendirme dosyası varsa `--audio dosya.mp3`.
-8. **Kapak.** [promptlar/12-kapak.md](promptlar/12-kapak.md): `animasyonlar/<ad>.kapak.json` (en az 3 varyant, farklı
+9. **Kapak.** [promptlar/12-kapak.md](promptlar/12-kapak.md): `animasyonlar/<ad>.kapak.json` (en az 3 varyant, farklı
    formüller) → `npm run kapak -- animasyonlar/<ad>.kapak.json` → `out/<ad>/kapak-onizleme.png` dosyasını **Read ile aç**,
    kontrol listesini uygula → seçileni `--sec <varyant>` ile 0. kareye göm; yayında `<ad>-kapakli.mp4` kullanılır.
-9. **Kayıt.** `yayinlar.csv`'ye satır ekle (metrikler boş). Kullanıcı 48 saat / 7 gün metriklerini
+10. **Kayıt.** `yayinlar.csv`'ye satır ekle (metrikler boş). Kullanıcı 48 saat / 7 gün metriklerini
    verince doldur. Her 10 satırda bir kanca türü / kapak formülü / süre / yapı karşılaştırması yap ve
    MOTION_RULES.md'deki (V) değerlerini güncellemeyi öner.
 
