@@ -1,0 +1,77 @@
+{
+  "kaynak": "hys-13-vergi.html",
+  "varyantlar": [
+    {
+      "ad": "yarisi",
+      "tur": "sayı şoku",
+      "t": 2,
+      "karart": 0.15,
+      "baslik": [
+        "VERGİNİN",
+        "*YARISI*",
+        "TEK İLDEN"
+      ],
+      "baslikY": 240,
+      "boyut": 150,
+      "alt": "Peki nerede *harcanıyor?*",
+      "altY": 1560,
+      "emoji": [
+        {
+          "ad": "exploding-head",
+          "x": 880,
+          "y": 1330,
+          "boyut": 180,
+          "aci": 8
+        }
+      ]
+    },
+    {
+      "ad": "terazi",
+      "tur": "paradoks",
+      "t": 7.6,
+      "karart": 0.1,
+      "baslik": [
+        "İSTANBUL",
+        "*80 İLDEN*",
+        "FAZLA ÖDÜYOR"
+      ],
+      "baslikY": 220,
+      "boyut": 140,
+      "alt": "2025 vergi verisi",
+      "altY": 1560,
+      "emoji": [
+        {
+          "ad": "face-screaming-in-fear",
+          "x": 890,
+          "y": 1380,
+          "boyut": 170,
+          "aci": -8
+        }
+      ]
+    },
+    {
+      "ad": "72il",
+      "tur": "benim ilim",
+      "t": 19.9,
+      "karart": 0.15,
+      "baslik": [
+        "81 İLİN *72*'Sİ",
+        "VERDİĞİNDEN",
+        "FAZLA ALIYOR"
+      ],
+      "baslikY": 360,
+      "boyut": 130,
+      "alt": "Senin ilin *kaç kat?*",
+      "altY": 1560,
+      "emoji": [
+        {
+          "ad": "thinking-face",
+          "x": 880,
+          "y": 1380,
+          "boyut": 180,
+          "aci": 8
+        }
+      ]
+    }
+  ]
+}

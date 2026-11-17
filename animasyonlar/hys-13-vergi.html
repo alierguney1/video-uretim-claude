@@ -35,7 +35,7 @@
 // Brif: hys-13-vergi.brief.md. Veri: HMB Muhasebat GM, İller İtibarıyla Merkezi Yönetim Bütçe İstatistikleri, 2025
 // (Aralık, kümülatif) → tools/hys-13-vergi.py → veri/hys-13/vergi-2025.js. Ekrandaki her oran aşağıda hesaplanır.
 
-/*VO:BEGIN*/ const VO = {"duration":38.58,"lines":[{"id":"l1","start":0.15,"end":4.603,"text":"Türkiye'de toplanan verginin yarısından fazlası, tek bir ilden geliyor."},{"id":"l2","start":4.853,"end":9.245,"text":"İstanbul. Geçen yıl, diğer 80 ilin toplamından bile fazla vergi ödedi."},{"id":"l3","start":9.495,"end":11.645,"text":"İlk beş ili ekle: verginin %81'i."},{"id":"l4","start":11.895,"end":15.561,"text":"Ama dikkat: vergi, şirketin kayıtlı olduğu ilde sayılıyor."},{"id":"l5","start":15.811,"end":17.9,"text":"Peki bu para, nerede harcanıyor?"},{"id":"l6","start":18.15,"end":21.633,"text":"81 ilin 72'si, topladığı vergiden fazla harcama alıyor."},{"id":"l7","start":21.883,"end":25.185,"text":"En uçta Hakkari: 1 liralık vergiye, 16 lira harcama."},{"id":"l8","start":25.435,"end":28.312,"text":"İstanbul'da ise 100 liralık vergiye, 11 lira."},{"id":"l9","start":28.562,"end":33.621,"text":"Bir de şu var: harcamanın %60'ı, faiz ve transferler gibi, hiçbir ile yazılmıyor."},{"id":"l10","start":33.871,"end":36.385,"text":"Senin ilin kaç kat alıyor? Durdur, bul."}],"taslak":true}; /*VO:END*/
+/*VO:BEGIN*/ const VO = {"duration":36.63,"lines":[{"id":"l1","start":0.15,"end":3.411,"text":"Türkiye'de toplanan verginin yarısından fazlası, tek bir ilden geliyor."},{"id":"l2","start":3.661,"end":8.144,"text":"İstanbul. Geçen yıl, diğer 80 ilin toplamından bile fazla vergi ödedi."},{"id":"l3","start":8.394,"end":11.061,"text":"İlk beş ili ekle: verginin %81'i."},{"id":"l4","start":11.311,"end":14.616,"text":"Ama dikkat: vergi, şirketin kayıtlı olduğu ilde sayılıyor."},{"id":"l5","start":14.866,"end":16.364,"text":"Peki bu para, nerede harcanıyor?"},{"id":"l6","start":16.614,"end":20.149,"text":"81 ilin 72'si, topladığı vergiden fazla harcama alıyor."},{"id":"l7","start":20.399,"end":23.926,"text":"En uçta Hakkari: 1 liralık vergiye, 16 lira harcama."},{"id":"l8","start":24.176,"end":26.919,"text":"İstanbul'da ise 100 liralık vergiye, 11 lira."},{"id":"l9","start":27.169,"end":32.122,"text":"Bir de şu var: harcamanın %60'ı, faiz ve transferler gibi, hiçbir ile yazılmıyor."},{"id":"l10","start":32.372,"end":34.427,"text":"Senin ilin kaç kat alıyor? Durdur, bul."}]}; /*VO:END*/
 const { C, SANS, MONO, W, H, SAFE, GLOBE, ctx, clamp, lerp, prog, win, ease, text, textTab, pin } = HYS;
 
 // ── veri ve hesaplar ──
@@ -86,8 +86,8 @@ const H_IST = 440;
 const colH = (i, t) => {
   const isI = i === IST, rank = ORAN_SIRA.length ? IL.indexOf(i) : 0;
   const t0 = isI ? .35 : .05 + (rank % 81) * .004, t1 = isI ? 1.7 : t0 + .55;
-  const grow = ease.outCubic(prog(t, t0, t1)), loopGrow = ease.outCubic(prog(t, T.loop + .05, T.DUR + .4));
-  return H_IST * (i.vergi / IST.vergi) * (t >= T.loop ? loopGrow : grow);
+  const grow = ease.outCubic(prog(t, t0, t1));
+  return H_IST * (i.vergi / IST.vergi) * (t >= T.loop ? 0 : grow);                 // döngü: son kare = ilk kare (sütun yok)
 };
 
 // ── terazi ──
