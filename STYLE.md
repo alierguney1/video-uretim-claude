@@ -29,6 +29,23 @@ harita doğal olarak başladığı yere döner (döngü).
 | İkon / bayrak | Çıkartma (die-cut) görünüm: düz renkli ikon, kâğıt beyazı kenar, ince koyu dış çizgi. Ülkeye bayrak, ile ikon (MOTION_RULES §3b). Haritaya saplanan bayrak (`direk`) serinin imzası. |
 | Kapak düzeni | Üstte soru (2 satır, sola hizalı), altında harita, sorulan nesne vurgu renginde kontur, köşede "?" |
 
+## Konu ve görsel dil kuralları (Ali, 17 Kasım 2026)
+
+1. **Konu: gündelik hayat + istatistik.** İnsanların zaten bir fikri olduğu, kendiliğinden sorduğu konular
+   (trafik, vergi, kira, su, nüfus, "benim ilim"). Normal insan testi zorunlu (docs/viral-analiz-2026-11.md §4a).
+   "Doğru ama kimse sormuyor" konular (ör. New York–İstanbul enlemi) elenir.
+2. **Haritadan kopma.** Harita her bölümün omurgası ve ilk/son karesi; grafik sahneleri haritanın *içinden* doğar
+   (il poligonu sütuna dönüşür, iller sıralamaya dizilir, akış oku haritada başlar) ve haritaya geri döner.
+   Kural: bölümün en az %50'sinde harita ekranda.
+3. **Görsel çeşitlilik.** Her bölümde haritaya ek en az 2 farklı görsel: yerden büyüyen sütun, sıralama
+   (bar race), akış okları / sankey, kare (waffle) grafik, izotip, bölünmüş ekran, büyük kinetik sayı.
+   Aynı grafik türü art arda iki bölümde ana sahne olmaz.
+4. **Kamera: hafif ve sürekli.** Durağan kare yok; her sahnede yavaş itme (%3–8 ölçek) ya da kaydırma,
+   `inOutCubic`. Sahne geçişinde kamera bir sonraki nesneye *taşır* (kesme yerine). Sarsma, hızlı zoom,
+   dönme (küre hariç) yok.
+5. **Hassas konularda tarafsızlık.** Vergi, göç, bütçe gibi konularda sadece resmî veri ve kaynağı ekranda;
+   yorum, suçlama, siyasi çıkarım yok. "Neden" sorusu cevaplanamıyorsa açıkça söylenir.
+
 ## Hareket dili
 
 - **Projeksiyon değişimi = gerçeği göstermek.** Mercator → küre / eşit alan geçişi serinin imza hareketi.
