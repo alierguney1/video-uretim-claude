@@ -25,8 +25,13 @@ Ali videoları elle yüklemiyor. Yayın bu sistemle yapılır:
 ```
 
 Bir platformu atlamak için o anahtarı (`youtube` / `instagram`) dosyadan çıkar.
-TikTok anahtarı şimdilik kullanılmaz: TikTok hesabı vidIQ'ya bağlı değil (bağlanınca `tiktok` eklenir;
-gizlilik / yorum / müzik onayı için Ali'nin seçimi `tiktok` nesnesine bir kez yazılır).
+**TikTok (Ali, 17 Kas: "YouTube, Instagram ve TikTok için kendin her şeyini yap ve kendin paylaş"):** her yeni bölümün
+yayin.json'una `tiktok` nesnesi eklenir: `{ "aciklama": ..., "gizlilik": "PUBLIC_TO_EVERYONE", "yorum": true, "aiEtiketi": true, "muzikOnay": true }`.
+Bu değerler Ali'nin kalıcı seçimidir (herkese açık, yorumlar açık, AI etiketi, müzik kullanım onayı: videolarda telifli müzik yok,
+sesler kodla sentezlenir). Yükleme: `vidiq_social_post_draft_create` TIKTOK hedefiyle (`privacyLevel`, `allowComment`,
+`isAiGenerated`, `musicUsageConfirmed`) → `vidiq_social_post_publish`. TikTok hesabı vidIQ'da bağlı değilse (`vidiq_social_account_list`
+boş) TikTok adımını atla ve raporda "TikTok bağlı değil" de; öge kuyrukta kalır, hesap bağlanınca ertesi tur yayınlar.
+Tekrar kontrolü: vidIQ'da TikTok listesi yoksa `vidiq_tiktok_profile_videos` ile (kredi varsa) ya da `yayinlar.csv`'deki satırla.
 
 ## Komutlar
 
