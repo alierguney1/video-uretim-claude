@@ -15,7 +15,9 @@ Henüz kodu değiştirme.
 1. npm run contact ile kontak sayfası al (gerekirse --times ile geçiş ortalarını ekle), Read ile aç, incele.
 2. 1–10 puanla: hikaye netliği, zamanlama/ritim, easing, tipografi, hiyerarşi, kompozisyon,
    geçiş sürekliliği, renk, okunabilirlik, KANCA (ilk 1 sn), MERAK (her an açık bir soru var mı,
-   ters köşe ve gerilim çalışıyor mu; promptlar/03-senaryo.md §5), DÖNGÜ (son→ilk kare).
+   ters köşe ve gerilim çalışıyor mu; promptlar/03-senaryo.md §5), DÖNGÜ (son→ilk kare), BEDEL (izleyici kaybedilecek şeyi biliyor mu).
+   Seslendirme satırlarına "ve sonra" testini uygula (docs/hikaye-rehberi.md §5): araya "ama" ya da
+   "bu yüzden" konamayan her geçişi listele. Her sahne sınırında "izleyici burada neden kalsın?" diye sor.
 3. Listele: yapay zeka şablonu gibi duran anlar, aceleye gelen anlar, ölü zaman
    (0.5 sn'den uzun hiçbir şeyin olmadığı anlar), ses kapalıyken anlaşılmayan anlar.
 4. Her madde için saniye ve kare numarası ver.
@@ -44,6 +46,8 @@ Tüm puanlar 8+ olana kadar devam et, en fazla 3 tur. Her tur sonunda kısa değ
 | Çok hızlı | Durgunluk yok | "Her büyük andan önce 400 ms durgunluk ekle." |
 | Her render farklı | Tohumsuz rastgelelik / biriken durum | `npm run check` → determinizm satırına bak. |
 | Ses görüntüden kayıyor | Ses saate bağlı değil | Sesleri `SOUNDS` listesine taşı; render WAV'ı aynı listeden üretir. |
+| Ortada izleyici kaçıyor | Ana soru erken cevaplanmış ya da açık soru kalmamış | `check` döngü haritası uyarısına bak; cevabı sona taşı, araya yeni bir soru aç. |
+| Hikâye düz akıyor | Olaylar "ve sonra" ile bağlı | "Her geçişi ama/bu yüzden ile yeniden yaz; bağlanamayanı çıkar." |
 | Arayüz/veri uyduruyor | Gerçek varlık verilmemiş | "Sadece verdiğim bilgileri kullan. Uydurduğun her şeyi listele ve çıkar." |
 | Türkçe harf bozuk / ilk karede farklı | Font alt kümesi geç yükleniyor | Fontu `CONFIG.fonts`'a ekle; `GLYPHS` ile yüklenir. |
 | 3D karelerde siyah | Çizim tamponu korunmuyor | `preserveDrawingBuffer: true`. |

@@ -1,0 +1,420 @@
+{
+ "kaynak": "HMB Muhasebat GM, İller İtibarıyla Merkezi Yönetim Bütçe İstatistikleri, 2024 Aralık (kümülatif), bin TL",
+ "iller": {
+  "Merkez": {
+   "vergiTahsilat": 48706465.37969,
+   "gider": 6486005517.356489,
+   "merkeziGelir": 691513789.9643899
+  },
+  "Adana": {
+   "vergiTahsilat": 74955884.9562,
+   "gider": 104525873.69813001,
+   "merkeziGelir": 84881253.72995
+  },
+  "Adıyaman": {
+   "vergiTahsilat": 4933595.50867,
+   "gider": 36266688.81373,
+   "merkeziGelir": 5614701.1808
+  },
+  "Afyon Karahisar": {
+   "vergiTahsilat": 10399334.60396,
+   "gider": 32411732.45199,
+   "merkeziGelir": 13587832.92237
+  },
+  "Ağrı": {
+   "vergiTahsilat": 5464963.00795,
+   "gider": 24718665.076190002,
+   "merkeziGelir": 6241465.69089
+  },
+  "Amasya": {
+   "vergiTahsilat": 3773477.47972,
+   "gider": 19270744.645659998,
+   "merkeziGelir": 5000274.0688000005
+  },
+  "Ankara": {
+   "vergiTahsilat": 782543368.17955,
+   "gider": 722616413.3601601,
+   "merkeziGelir": 983396941.9851202
+  },
+  "Antalya": {
+   "vergiTahsilat": 113736526.8618,
+   "gider": 97845756.89164,
+   "merkeziGelir": 129406960.96656999
+  },
+  "Artvin": {
+   "vergiTahsilat": 3519237.75519,
+   "gider": 12306055.37222,
+   "merkeziGelir": 4364704.72144
+  },
+  "Aydın": {
+   "vergiTahsilat": 25111825.75952,
+   "gider": 48096285.0691,
+   "merkeziGelir": 30628943.67079
+  },
+  "Balıkesir": {
+   "vergiTahsilat": 36285282.111,
+   "gider": 61846218.68826999,
+   "merkeziGelir": 41181568.20854001
+  },
+  "Bilecik": {
+   "vergiTahsilat": 4258605.16467,
+   "gider": 11726339.50295,
+   "merkeziGelir": 5089845.80021
+  },
+  "Bingöl": {
+   "vergiTahsilat": 2206342.07446,
+   "gider": 20246377.459569998,
+   "merkeziGelir": 2698727.1407000003
+  },
+  "Bitlis": {
+   "vergiTahsilat": 2403453.53728,
+   "gider": 22534842.56294,
+   "merkeziGelir": 4037610.5115000005
+  },
+  "Bolu": {
+   "vergiTahsilat": 7347583.68158,
+   "gider": 18590281.91905,
+   "merkeziGelir": 9434259.72172
+  },
+  "Burdur": {
+   "vergiTahsilat": 4182455.11,
+   "gider": 15571443.019260002,
+   "merkeziGelir": 5210416.334089999
+  },
+  "Bursa": {
+   "vergiTahsilat": 181859135.75788,
+   "gider": 102272859.64344999,
+   "merkeziGelir": 198094192.29088998
+  },
+  "Çanakkale": {
+   "vergiTahsilat": 19820960.33189,
+   "gider": 30734696.326769996,
+   "merkeziGelir": 22891296.96147
+  },
+  "Çankırı": {
+   "vergiTahsilat": 1600378.84977,
+   "gider": 10768212.1975,
+   "merkeziGelir": 2088141.26448
+  },
+  "Çorum": {
+   "vergiTahsilat": 8159182.95809,
+   "gider": 21619153.886680003,
+   "merkeziGelir": 10283137.525509998
+  },
+  "Denizli": {
+   "vergiTahsilat": 29059645.47655,
+   "gider": 40768047.60953,
+   "merkeziGelir": 32772140.094750002
+  },
+  "Diyarbakır": {
+   "vergiTahsilat": 28870112.58383,
+   "gider": 106381336.72387001,
+   "merkeziGelir": 34695372.360649996
+  },
+  "Edirne": {
+   "vergiTahsilat": 12733815.84888,
+   "gider": 28067245.6054,
+   "merkeziGelir": 16944554.79427
+  },
+  "Elazığ": {
+   "vergiTahsilat": 10739865.73942,
+   "gider": 48618633.909380004,
+   "merkeziGelir": 12721852.485000001
+  },
+  "Erzincan": {
+   "vergiTahsilat": 3166572.70335,
+   "gider": 17225901.75186,
+   "merkeziGelir": 3784478.7773800003
+  },
+  "Erzurum": {
+   "vergiTahsilat": 13748483.87999,
+   "gider": 55035587.853219986,
+   "merkeziGelir": 17444191.30475
+  },
+  "Eskişehir": {
+   "vergiTahsilat": 26683225.55162,
+   "gider": 55527023.27075,
+   "merkeziGelir": 30838418.950009998
+  },
+  "Gaziantep": {
+   "vergiTahsilat": 45545035.99391,
+   "gider": 86196689.02194999,
+   "merkeziGelir": 50728463.108430006
+  },
+  "Giresun": {
+   "vergiTahsilat": 5105638.83909,
+   "gider": 21979359.67569,
+   "merkeziGelir": 6349261.36901
+  },
+  "Gümüşhane": {
+   "vergiTahsilat": 1091636.55236,
+   "gider": 7919517.616450001,
+   "merkeziGelir": 1418502.28453
+  },
+  "Hakkari": {
+   "vergiTahsilat": 1762175.59983,
+   "gider": 34485888.0136,
+   "merkeziGelir": 2101247.96667
+  },
+  "Hatay": {
+   "vergiTahsilat": 54796441.96315,
+   "gider": 79971363.73785,
+   "merkeziGelir": 59292850.1467
+  },
+  "Isparta": {
+   "vergiTahsilat": 7671138.43563,
+   "gider": 35502584.47528,
+   "merkeziGelir": 11565870.93214
+  },
+  "Mersin": {
+   "vergiTahsilat": 152908477.44786,
+   "gider": 92215410.21643999,
+   "merkeziGelir": 161620388.70168003
+  },
+  "İstanbul": {
+   "vergiTahsilat": 3567917071.37696,
+   "gider": 451724987.98566,
+   "merkeziGelir": 3836810501.37197
+  },
+  "İzmir": {
+   "vergiTahsilat": 683903102.26587,
+   "gider": 208940529.07395,
+   "merkeziGelir": 708283896.7461
+  },
+  "Kars": {
+   "vergiTahsilat": 2454009.64544,
+   "gider": 21441598.088820003,
+   "merkeziGelir": 3389457.2524699997
+  },
+  "Kastamonu": {
+   "vergiTahsilat": 8745429.68843,
+   "gider": 34837545.1796,
+   "merkeziGelir": 11418905.26102
+  },
+  "Kayseri": {
+   "vergiTahsilat": 34877719.9029,
+   "gider": 75991672.59696001,
+   "merkeziGelir": 40282880.439550005
+  },
+  "Kırklareli": {
+   "vergiTahsilat": 7908222.41833,
+   "gider": 17879319.30285,
+   "merkeziGelir": 9278837.194139998
+  },
+  "Kırşehir": {
+   "vergiTahsilat": 4137457.17468,
+   "gider": 13299498.00636,
+   "merkeziGelir": 5006501.21195
+  },
+  "Kocaeli": {
+   "vergiTahsilat": 753033058.78405,
+   "gider": 85397075.19736,
+   "merkeziGelir": 773718260.84394
+  },
+  "Konya": {
+   "vergiTahsilat": 51866460.3175,
+   "gider": 103703227.30821002,
+   "merkeziGelir": 60937822.16737001
+  },
+  "Kütahya": {
+   "vergiTahsilat": 10486858.85473,
+   "gider": 26386568.35248,
+   "merkeziGelir": 13004238.356200002
+  },
+  "Malatya": {
+   "vergiTahsilat": 7901336.20281,
+   "gider": 48707517.232599996,
+   "merkeziGelir": 10686612.8739
+  },
+  "Manisa": {
+   "vergiTahsilat": 42272108.12395,
+   "gider": 52148039.70436001,
+   "merkeziGelir": 46429312.53292
+  },
+  "K.Maraş": {
+   "vergiTahsilat": 7147404.82522,
+   "gider": 61728724.23552,
+   "merkeziGelir": 9291457.35273
+  },
+  "Mardin": {
+   "vergiTahsilat": 6142042.50377,
+   "gider": 40819521.49283,
+   "merkeziGelir": 7302261.00936
+  },
+  "Muğla": {
+   "vergiTahsilat": 37932948.80006,
+   "gider": 44503829.009109996,
+   "merkeziGelir": 45555291.564629994
+  },
+  "Muş": {
+   "vergiTahsilat": 2538843.53916,
+   "gider": 19018672.24692,
+   "merkeziGelir": 2958484.2805500003
+  },
+  "Nevşehir": {
+   "vergiTahsilat": 6003951.586,
+   "gider": 14286684.606110001,
+   "merkeziGelir": 6916819.0196400015
+  },
+  "Niğde": {
+   "vergiTahsilat": 4191113.93685,
+   "gider": 17856224.304789998,
+   "merkeziGelir": 6800986.7969
+  },
+  "Ordu": {
+   "vergiTahsilat": 8571849.33586,
+   "gider": 29116952.08436,
+   "merkeziGelir": 10050772.06456
+  },
+  "Rize": {
+   "vergiTahsilat": 7958765.58674,
+   "gider": 16822501.78376,
+   "merkeziGelir": 8912416.54218
+  },
+  "Sakarya": {
+   "vergiTahsilat": 25052058.4755,
+   "gider": 42031398.55766,
+   "merkeziGelir": 29525003.97433
+  },
+  "Samsun": {
+   "vergiTahsilat": 37234498.85507,
+   "gider": 81061161.38689001,
+   "merkeziGelir": 41792098.624819994
+  },
+  "Siirt": {
+   "vergiTahsilat": 5511670.7012,
+   "gider": 22064868.680359997,
+   "merkeziGelir": 6032281.80265
+  },
+  "Sinop": {
+   "vergiTahsilat": 2442028.43657,
+   "gider": 11809415.245520001,
+   "merkeziGelir": 3406880.8320999998
+  },
+  "Sivas": {
+   "vergiTahsilat": 10220721.72355,
+   "gider": 40059609.72096,
+   "merkeziGelir": 12261567.504600001
+  },
+  "Tekirdağ": {
+   "vergiTahsilat": 74513137.28839,
+   "gider": 38382135.912659995,
+   "merkeziGelir": 78983873.56213999
+  },
+  "Tokat": {
+   "vergiTahsilat": 6090166.65371,
+   "gider": 27430136.27933,
+   "merkeziGelir": 7610577.80738
+  },
+  "Trabzon": {
+   "vergiTahsilat": 23548683.50693,
+   "gider": 63831755.67912,
+   "merkeziGelir": 26995309.84041
+  },
+  "Tunceli": {
+   "vergiTahsilat": 961776.55998,
+   "gider": 16301022.198389998,
+   "merkeziGelir": 1149003.0044099998
+  },
+  "Urfa": {
+   "vergiTahsilat": 18542257.77303,
+   "gider": 86788183.09523001,
+   "merkeziGelir": 21640867.047530003
+  },
+  "Uşak": {
+   "vergiTahsilat": 4728340.16867,
+   "gider": 14180229.324020002,
+   "merkeziGelir": 5670805.51567
+  },
+  "Van": {
+   "vergiTahsilat": 11189026.93303,
+   "gider": 64840023.46789001,
+   "merkeziGelir": 12973734.787030002
+  },
+  "Yozgat": {
+   "vergiTahsilat": 3910146.09843,
+   "gider": 21609686.327239994,
+   "merkeziGelir": 4858513.572
+  },
+  "Zonguldak": {
+   "vergiTahsilat": 16653023.88853,
+   "gider": 23666721.02053,
+   "merkeziGelir": 19976325.419249997
+  },
+  "Aksaray": {
+   "vergiTahsilat": 12103097.36356,
+   "gider": 16673962.931979999,
+   "merkeziGelir": 13176502.31493
+  },
+  "Bayburt": {
+   "vergiTahsilat": 755548.64239,
+   "gider": 6904542.476670001,
+   "merkeziGelir": 946230.4334900001
+  },
+  "Karaman": {
+   "vergiTahsilat": 2510000.27657,
+   "gider": 11657798.7862,
+   "merkeziGelir": 3090977.88661
+  },
+  "Kırıkkale": {
+   "vergiTahsilat": 2989915.45195,
+   "gider": 16180449.762589999,
+   "merkeziGelir": 3904688.0283500003
+  },
+  "Batman": {
+   "vergiTahsilat": 6167100.01325,
+   "gider": 27487674.741959997,
+   "merkeziGelir": 7051808.1475
+  },
+  "Şırnak": {
+   "vergiTahsilat": 3135851.01216,
+   "gider": 42100254.221300006,
+   "merkeziGelir": 3878586.88916
+  },
+  "Bartın": {
+   "vergiTahsilat": 2665165.51891,
+   "gider": 9531543.268790001,
+   "merkeziGelir": 3283035.72678
+  },
+  "Ardahan": {
+   "vergiTahsilat": 963544.6035,
+   "gider": 6478348.1380199995,
+   "merkeziGelir": 1205901.51949
+  },
+  "Iğdır": {
+   "vergiTahsilat": 2025440.74289,
+   "gider": 12974151.71799,
+   "merkeziGelir": 2552573.07173
+  },
+  "Yalova": {
+   "vergiTahsilat": 22900542.12598,
+   "gider": 12115542.901519999,
+   "merkeziGelir": 24319353.52935
+  },
+  "Karabük": {
+   "vergiTahsilat": 3316447.79949,
+   "gider": 14016984.62179,
+   "merkeziGelir": 4461255.66823
+  },
+  "Kilis": {
+   "vergiTahsilat": 1474299.63392,
+   "gider": 13044447.78441,
+   "merkeziGelir": 1872719.1223799998
+  },
+  "Osmaniye": {
+   "vergiTahsilat": 4848084.39718,
+   "gider": 27298373.262280002,
+   "merkeziGelir": 6259443.74215
+  },
+  "Düzce": {
+   "vergiTahsilat": 7686335.77421,
+   "gider": 15614210.716230001,
+   "merkeziGelir": 8992775.704350002
+  },
+  "Toplam": {
+   "vergiTahsilat": 7305278990.972202,
+   "gider": 10780614067.443157,
+   "merkeziGelir": 8672832067.897097
+  }
+ }
+}

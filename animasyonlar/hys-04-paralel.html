@@ -31,7 +31,7 @@
 // sayfa açılırken Natural Earth 1:50m sınırlarından 0,05° adımla tespit edilir; sayaç, vurgular ve
 // tık sesleri bu listeden gelir. Mesafeler: paralel uzunluğu = 2πR·cos(enlem).
 
-/*VO:BEGIN*/ const VO = {"duration":35.55,"lines":[{"id":"l1","start":0.15,"end":4.343,"text":"İstanbul'dan dümdüz doğuya gitsen, eve dönene kadar kaç ülkeden geçerdin?"},{"id":"l2","start":4.593,"end":7.183,"text":"Hep aynı enlemde kalalım: 41° kuzey."},{"id":"l3","start":7.433,"end":11.616,"text":"Ermenistan, Azerbaycan, Hazar Denizi... ve Orta Asya'nın tam ortası."},{"id":"l4","start":11.866,"end":15.325,"text":"Çin'i boydan boya geçip Kuzey Kore'ye giriyorsun. Sonra Japonya."},{"id":"l5","start":15.575,"end":19.897,"text":"Pasifik'i aşınca Amerika. New York, İstanbul'dan sadece 33 km güneyde!"},{"id":"l6","start":20.147,"end":25.045,"text":"Atlantik'ten sonra Portekiz, İspanya ve İtalya. Roma ise İstanbul'dan daha kuzeyde."},{"id":"l7","start":25.295,"end":28.629,"text":"Arnavutluk, Kuzey Makedonya, Yunanistan... ve eve dönüş."},{"id":"l8","start":29.179,"end":31.899,"text":"Toplam: 17 ülke, 30.207 km."},{"id":"l9","start":32.149,"end":33.152,"text":"Sen kaç tahmin etmiştin?"}]}; /*VO:END*/
+/*VO:BEGIN*/ const VO = {"duration":38.66,"lines":[{"id":"l1","start":0.15,"end":4.687,"text":"New York, İstanbul'dan daha güneyde. İnanmıyor musun? Dümdüz doğuya gidelim."},{"id":"l2","start":4.937,"end":9.173,"text":"Hep aynı çizgide: 41° kuzey. Dünyayı dönene kadar kaç ülkeden geçeceğiz?"},{"id":"l3","start":9.423,"end":13.606,"text":"Ermenistan, Azerbaycan, Hazar Denizi... ve Orta Asya'nın tam ortası."},{"id":"l4","start":13.856,"end":17.316,"text":"Çin'i boydan boya geçip Kuzey Kore'ye giriyorsun. Sonra Japonya."},{"id":"l5","start":17.566,"end":21.79,"text":"Pasifik'i aşınca Amerika. İşte New York: İstanbul'dan tam 33 km güneyde."},{"id":"l6","start":22.04,"end":26.938,"text":"Atlantik'ten sonra Portekiz, İspanya ve İtalya. Roma ise İstanbul'dan daha kuzeyde."},{"id":"l7","start":27.188,"end":30.522,"text":"Arnavutluk, Kuzey Makedonya, Yunanistan... ve eve dönüş."},{"id":"l8","start":31.072,"end":33.792,"text":"Toplam: 17 ülke, 30.207 km."},{"id":"l9","start":34.042,"end":36.256,"text":"Sen kaç ülke tahmin etmiştin? Yaz bakalım."}]}; /*VO:END*/
 const { C, SANS, MONO, W, SAFE, RAD, R_EARTH, ctx, clamp, lerp, prog, win, ease, fmtNum, text, label, pin, line, baseMap, fillFeature, heading } = HYS;
 
 const LAT = 41.0082, IST = [28.9784, 41.0082], START = 28.9784, END = START + 360;
@@ -149,12 +149,27 @@ HYS.run({
   header(t, g) {
     const { T, DUR, at } = g;
     const hookA = t < DUR - 3 ? 1 - prog(t, at(1) - .3, at(1) + .1) : prog(t, DUR - 1.4, DUR - .6);
-    heading('İstanbul’dan dümdüz doğuya', hookA, { size: 62 });
-    text('kaç ülke?', SAFE.x0, SAFE.y0 + 40 + 80 + 92, 92, { alpha: hookA, color: C.land });
+    // Kanca (v2, 16 Kas): iddia ilk karede. "New York, İstanbul'dan daha güneyde" + iki satırlık enlem merdiveni.
+    heading('New York, İstanbul’dan', hookA, { size: 62 });
+    text('daha GÜNEYDE', SAFE.x0, SAFE.y0 + 40 + 80 + 92, 92, { alpha: hookA, color: C.accent });
+    const LY = SAFE.y0 + 40 + 80 + 92 + 50;                    // plaka üstü
+    if (hookA > .001) {                                         // koyu plaka: küre üstünde okunurluk
+      ctx.save(); ctx.globalAlpha = hookA * .92; ctx.fillStyle = C.bg;
+      ctx.beginPath(); ctx.roundRect(SAFE.x0 - 24, LY, SAFE.x1 - SAFE.x0 + 48, 150, 18); ctx.fill(); ctx.restore();
+    }
+    const ladder = (name, lat, y, color, k) => {
+      text(name, SAFE.x0, y, 48, { font: MONO, weight: 500, alpha: hookA, color });
+      text(`${lat.toFixed(2).replace('.', ',')}°`, SAFE.x1, y, 48, { font: MONO, weight: 500, alpha: hookA, color, align: 'right' });
+      const x0 = SAFE.x0 + 280, x1 = SAFE.x1 - 190;
+      ctx.save(); ctx.globalAlpha = hookA; ctx.strokeStyle = color; ctx.lineWidth = 4; ctx.setLineDash([10, 10]);
+      ctx.beginPath(); ctx.moveTo(x0, y - 16); ctx.lineTo(lerp(x0, x1, ease.outCubic(k)), y - 16); ctx.stroke(); ctx.restore();
+    };
+    ladder('İSTANBUL', LAT, LY + 62, C.text, prog(t, 0, .7));
+    ladder('NEW YORK', NYC[1], LY + 125, C.accent, prog(t, .25, 1.0));
 
     const h = headLon(t);
     const count = FIRST.filter(s => s.lon0 <= h).length;
-    const trA = win(t, at(1) - .1, T.total + .1, .3);
+    const trA = win(t, at(1) + .12, T.total + .1, .3);
     text(`${count} ülke`, SAFE.x0, SAFE.y0 + 40 + 96, 96, { font: MONO, weight: 500, alpha: trA });
     text(`41° K · ${fmtNum(CIRC * (h - START) / 360)} km`, SAFE.x0, SAFE.y0 + 40 + 96 + 66, 48, { font: MONO, weight: 500, alpha: trA, color: C.mute });
 

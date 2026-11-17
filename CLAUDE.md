@@ -14,10 +14,16 @@ her piksel kodla çizilir. Her işte **[MOTION_RULES.md](MOTION_RULES.md)** geç
    Cold open, merak boşluğu, katmanlı açık döngüler, gizem, gerilim, ters köşe ve cliffhanger/döngü
    araçlarından en az 5'i kullanılır; brifte "merak haritası" tablosu zorunludur. Bilgi vermek yetmez,
    izleyici her an bir cevap beklemeli.
+   **Normal insan testi (zorunlu):** fikir, sıradan birinin zaten bir fikri olduğu ya da kendiliğinden sorduğu bir şey
+   olmalı ve belirli bir kişiye gönderilmeli. Üç soru: [docs/viral-analiz-2026-11.md §4a](docs/viral-analiz-2026-11.md).
+   "Doğru ama kimse sormuyor" konular elenir (ders: hys-04 v2, New York–İstanbul enlemi).
+   Hikâye ve dikkat araçları ("ama / bu yüzden" testi, döngü haritası `__beats`, hikâye testi):
+   [docs/hikaye-rehberi.md](docs/hikaye-rehberi.md).
 2. **Sahne listesi + süreler + geçiş nesneleri.** Göster, **onay al**. Onaydan önce kod yazma.
 3. **Kod.** `template.html` dosyasını `animasyonlar/<ad>.html` olarak kopyala. `CONFIG`, `SCENES`,
    `SOUNDS` ve çizim fonksiyonlarını değiştir. Sözleşme kısmına (en alttaki blok) dokunma.
 4. **Denetim.** `npm run check -- animasyonlar/<ad>.html`. ✗ varsa düzelt; ! uyarılarını değerlendir.
+   Döngü haritası (`window.__beats`) uyarıları hikâyenin yerinde nerede izleyici kaybedeceğini gösterir.
 5. **Kontak sayfası.** `npm run contact -- animasyonlar/<ad>.html`, sonra `out/<ad>/contact.png`
    dosyasını **Read ile aç ve gerçekten bak**. Taşan yazı, çakışma, okunmayan metin, güvenli alan
    dışı öge, kopuk geçiş, ölü zaman ara. Bulduklarını saniye + kare numarasıyla yaz, düzelt, tekrarla.
@@ -33,11 +39,27 @@ her piksel kodla çizilir. Her işte **[MOTION_RULES.md](MOTION_RULES.md)** geç
 9. **Kapak.** [promptlar/12-kapak.md](promptlar/12-kapak.md): `animasyonlar/<ad>.kapak.json` (en az 3 varyant, farklı
    formüller) → `npm run kapak -- animasyonlar/<ad>.kapak.json` → `out/<ad>/kapak-onizleme.png` dosyasını **Read ile aç**,
    kontrol listesini uygula → seçileni `--sec <varyant>` ile 0. kareye göm; yayında `<ad>-kapakli.mp4` kullanılır.
-10. **Kayıt.** `yayinlar.csv`'ye satır ekle (metrikler boş). Kullanıcı 48 saat / 7 gün metriklerini
+10. **Yayın kuyruğu (elle yükleme yok).** `animasyonlar/<ad>.yayin.json` yaz (`"onay": true`, kapak varyantı,
+   brifteki yayın paketinin başlık/açıklama/etiketleri; şema [docs/otomatik-yayin.md](docs/otomatik-yayin.md)).
+   Günlük zamanlanmış oturum YouTube + Instagram'a vidIQ ile yükler ve `npm run yayin -- kaydet` ile kaydeder.
+   Kullanıcıdan yükleme yapmasını isteme.
+11. **Kayıt.** `yayinlar.csv`'ye satır ekle (metrikler boş; otomatik yayında `kaydet` bunu yapar). Kullanıcı 48 saat / 7 gün metriklerini
    verince doldur. Her 10 satırda bir kanca türü / kapak formülü / süre / yapı karşılaştırması yap ve
    MOTION_RULES.md'deki (V) değerlerini güncellemeyi öner.
 
 "Kod çalışıyor" ile "görüntü doğru" aynı şey değil. Kontak sayfasına bakmadan "bitti" deme.
+
+## Seriler
+
+Her seri ayrı kanal, ayrı kimlik; üretim hattı (araçlar, sözleşme, TTS) ortak.
+
+| Seri | Önek | Kimlik | Motor | Durum |
+| --- | --- | --- | --- | --- |
+| Harita Yalan Söyler | `hys-` | [STYLE.md](STYLE.md) | [lib/harita-motoru.js](lib/harita-motoru.js) | 12 bölüm, 6'sı yayında |
+| Seyir Defteri (çalışma adı) | `sd-` | **ayrı repo:** `alierguney1/haritada-hikayeler` | `lib/piksel-motoru.js` (orada) | Pilot `sd-01` orada |
+
+Bu repoya yalnızca HYS bölümleri girer. Ortak araçlarda (`lib/ses.js`, `tools/`, `template.html`) yapılan
+iyileştirme diğer repoya da elle taşınır.
 
 ## Kodlama notları (bu repoda öğrenilen dersler)
 
@@ -54,9 +76,17 @@ her piksel kodla çizilir. Her işte **[MOTION_RULES.md](MOTION_RULES.md)** geç
   `ctx.save()/restore()` içinde çizer; bu yapıyı koru. `check`'in `?t=` satırı bunu yakalar.
 - **Durum:** Her şey `t`'den hesaplanır. Bir olayın "ne zaman olduğunu" bilmek gerekiyorsa
   (ör. ses tıkı) zamanı ters hesapla (`monthTime` örneği), kare kare sayaç tutma.
-- **Ses:** `SOUNDS` dizisine `{t, type, gain}` ekle. Aynı liste canlı oynatmada Web Audio ile,
-  render'da `OfflineAudioContext` ile WAV olarak çalınır; görüntüyle kayma olmaz.
+- **Ses:** `SOUNDS` dizisine olay ekle. Yeni işlerde `lib/ses.js` kullan (`{t, tur, ad, gain, pan, yatak}`):
+  kod sentezi ve ZzFX `OfflineAudioContext` ile WAV olur, kütüphane dosyaları (`tur: 'dosya'`) render'da
+  FFmpeg ile örnek-kesin eklenir. Ad bulmak için `ses/kutuphane/index.html`; kurallar `docs/ses-rehberi.md`.
+  Sesi duyamazsın: spektrogram çiz (`showspectrumpic`) ve olayların saniyesini gözle doğrula.
 - **WebGL/Three.js:** `preserveDrawingBuffer: true`, döngü yerine `__setTime(t)` içinde `renderer.render`.
+- **Piksel sanatı:** Şekli küçük tuvale maske olarak çiz, alfa ≥ 128 ile eşikle, sonra renklendir;
+  büyütme sadece tamsayı kat ve `imageSmoothingEnabled = false`. Piksel boyu okunurluğa göre seçilir:
+  1080x1920'de 3x (360x640); 6x telefonda okunmuyor. Karakterleri ASCII ile değil vektör kukla ile çiz. Piksel yazı tipinin rakamlarını ve
+  Türkçe harflerini dene (Pixelify'da 5 ≈ S, Silkscreen'de İŞĞ yok). Ayrıntı: haritada-hikayeler reposu, PLAN.md §11.
+- **Rota karadan geçmesin:** Elle verilen deniz yolu ara noktalarını `d3.geoContains(LAND, p)` ile
+  denetle; 50m veride dar boğazlar (Korfu kanalı, Çanakkale) neredeyse kapalı görünür.
 - **Gerçek veri:** Kullanıcının vermediği sayı, özellik, müşteri, arayüz uydurma. Emin olmadığın
   bilgiyi ekrana yazma; hesaplanabiliyorsa kodda hesapla (ör. `1.01 ** 365`).
 - **Bayrak ve ikon:** haritada geçen her ülke/il `lib/ikon-katmani.js` ile bayrağını/ikonunu alır (MOTION_RULES §3b).

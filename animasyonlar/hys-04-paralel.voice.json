@@ -1,16 +1,55 @@
 {
   "voice": "Charon",
   "style": "enerjik ve merak uyandıran, hızlı tempolu, önemli kelimeleri vurgulayan, izleyiciye meydan okur gibi",
-  "tempo": 1.12, "lead": 0.15, "gap": 0.25, "tail": 2.2,
+  "tempo": 1.12,
+  "lead": 0.15,
+  "gap": 0.25,
+  "tail": 2.2,
   "lines": [
-    { "id": "l1", "text": "İstanbul'dan dümdüz doğuya gitsen, eve dönene kadar KAÇ ülkeden geçerdin?", "caption": "İstanbul'dan dümdüz doğuya gitsen, eve dönene kadar kaç ülkeden geçerdin?" },
-    { "id": "l2", "text": "Hep aynı enlemde kalalım: kırk bir derece kuzey.", "caption": "Hep aynı enlemde kalalım: 41° kuzey." },
-    { "id": "l3", "text": "Ermenistan, Azerbaycan, Hazar Denizi... ve Orta Asya'nın tam ortası." },
-    { "id": "l4", "text": "Çin'i boydan boya geçip, KUZEY KORE'ye giriyorsun. Sonra Japonya.", "caption": "Çin'i boydan boya geçip Kuzey Kore'ye giriyorsun. Sonra Japonya." },
-    { "id": "l5", "text": "Pasifik'i aşınca Amerika. New York, İstanbul'dan sadece otuz üç kilometre GÜNEYDE!", "caption": "Pasifik'i aşınca Amerika. New York, İstanbul'dan sadece 33 km güneyde!" },
-    { "id": "l6", "text": "Atlantik'ten sonra Portekiz, İspanya ve İtalya. Roma ise İstanbul'dan daha KUZEYDE.", "caption": "Atlantik'ten sonra Portekiz, İspanya ve İtalya. Roma ise İstanbul'dan daha kuzeyde." },
-    { "id": "l7", "text": "Arnavutluk, Kuzey Makedonya, Yunanistan... ve eve dönüş." },
-    { "id": "l8", "text": "Toplam: ON YEDİ ülke, otuz bin kilometre.", "caption": "Toplam: 17 ülke, 30.207 km.", "pauseBefore": 0.3 },
-    { "id": "l9", "text": "Sen kaç tahmin etmiştin?", "holdAfter": 0.2 }
+    {
+      "id": "l1",
+      "text": "New York, İstanbul'dan daha GÜNEYDE. <short pause> İnanmıyor musun? Dümdüz doğuya gidelim.",
+      "caption": "New York, İstanbul'dan daha güneyde. İnanmıyor musun? Dümdüz doğuya gidelim."
+    },
+    {
+      "id": "l2",
+      "text": "Hep aynı çizgide: kırk bir derece kuzey. Dünyayı dönene kadar KAÇ ülkeden geçeceğiz?",
+      "caption": "Hep aynı çizgide: 41° kuzey. Dünyayı dönene kadar kaç ülkeden geçeceğiz?"
+    },
+    {
+      "id": "l3",
+      "text": "Ermenistan, Azerbaycan, Hazar Denizi... ve Orta Asya'nın tam ortası."
+    },
+    {
+      "id": "l4",
+      "text": "Çin'i boydan boya geçip, KUZEY KORE'ye giriyorsun. Sonra Japonya.",
+      "caption": "Çin'i boydan boya geçip Kuzey Kore'ye giriyorsun. Sonra Japonya."
+    },
+    {
+      "id": "l5",
+      "text": "Pasifik'i aşınca Amerika. İşte New York: İstanbul'dan tam otuz üç kilometre GÜNEYDE.",
+      "caption": "Pasifik'i aşınca Amerika. İşte New York: İstanbul'dan tam 33 km güneyde."
+    },
+    {
+      "id": "l6",
+      "text": "Atlantik'ten sonra Portekiz, İspanya ve İtalya. Roma ise İstanbul'dan daha KUZEYDE.",
+      "caption": "Atlantik'ten sonra Portekiz, İspanya ve İtalya. Roma ise İstanbul'dan daha kuzeyde."
+    },
+    {
+      "id": "l7",
+      "text": "Arnavutluk, Kuzey Makedonya, Yunanistan... ve eve dönüş."
+    },
+    {
+      "id": "l8",
+      "text": "Toplam: ON YEDİ ülke, otuz bin kilometre.",
+      "caption": "Toplam: 17 ülke, 30.207 km.",
+      "pauseBefore": 0.3
+    },
+    {
+      "id": "l9",
+      "text": "Sen kaç ülke tahmin etmiştin? Yaz bakalım.",
+      "holdAfter": 0.2,
+      "caption": "Sen kaç ülke tahmin etmiştin? Yaz bakalım."
+    }
   ]
 }

@@ -22,6 +22,27 @@ Bu dosya diğer ajanların aynı araştırmayı sıfırdan tekrarlamaması için
 - **`hys-09-gunes` ("21 Aralık'ta güneş senin ilinde kaçta doğuyor?")** — Verisi (`veri/hys-09/gunes-2026-12-21.json`), seslendirmesi ve brifi hazır. **Mevsimlik pencere: 1–21 Aralık.**
 - **`hys-09-baskentler` ("81 ilin 43'ü Ankara'dan çok yabancı başkente yakın")** — Verisi (`veri/hys-09/sonuc.json`) hazır. Tek video yerine **"Erivan'a Ankara'dan yakın 23 il"** veya tekil il ikilileri olarak uyarlanabilir.
 
+
+## 2b. Yeni yön (Ali, 16 Kas): gündelik hayat + istatistik, sadece harita değil
+
+Ali'nin örnekleri: "İstanbul trafiği neden böyle?", "Türkiye'nin kaynakları nasıl dağılıyor?", "İstanbul'daki garip
+istatistikler". Hepsi normal insan testinden (viral-analiz §4a) geçmeli. Sayılar **doğrulanmadı**; brif aşamasında
+kaynağı bulunmayan hiçbir sayı ekrana çıkmaz.
+
+| Fikir | Neden tutar (test) | Veri kaynağı (doğrulanacak) | Görsel dil |
+| --- | --- | --- | --- |
+| İstanbul'da trafikte yılda kaç gün geçiriyorsun? | Herkes yaşıyor; İstanbullu iş arkadaşına gönderilir | TomTom Traffic Index (İstanbul), İBB Açık Veri | 24 saatlik dairesel ısı saati + takvimden silinen günler |
+| İstanbul trafiği neden böyle? | Herkesin bir teorisi var | İBB boğaz geçiş sayıları, köprü/tünel kapasiteleri | Huni/akış animasyonu: milyonlarca araç 5 geçitten |
+| Vergin nereden toplanıp nerede harcanıyor? | Herkesin fikri var; "benim ilim" | Strateji ve Bütçe / Muhasebat il bazında gelir-gider | Sankey akışı, il seçmeli |
+| Türkiye 100 kişilik bir köy olsaydı | Kendini bulma; çok paylaşılır formatı | TÜİK ADNKS | Kare (waffle) grafik, insan ikonları |
+| İstanbul bir ülke olsaydı Avrupa'da kaçıncı olurdu? | Şaşırtıcı ama tanıdık | TÜİK + Eurostat nüfus | Sıralama yarışı (bar race) |
+| Suyun nereden geliyor? (İstanbul barajları) | Kuraklık gündemi, her ev | İSKİ günlük doluluk açık verisi | Dolup boşalan su tankları |
+| Elektriğin nereden geliyor? | Fatura derdi | TEİAŞ / EPİAŞ kaynak dağılımı | Yığılmış çubuk + harita üzerinde santraller |
+
+**Görsel çeşitlilik (harita yorgunluğu):** kare grafik, sankey, sıralama yarışı, dairesel saat ısı haritası,
+izotip (insan ikonları), büyüyen 3B sütunlar (Three.js), bölünmüş ekran karşılaştırma, kinetik büyük sayılar.
+Harita sadece bağlam için; ana sahne grafik. Ortak araçlar `lib/` altında tekrar kullanılabilir modül olarak yazılmalı.
+
 ---
 
 ## 2. Yüksek Potansiyelli Yeni Video Fikirleri (V2 Motoru İçin)

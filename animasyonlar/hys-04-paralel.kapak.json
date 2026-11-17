@@ -1,0 +1,84 @@
+{
+  "kaynak": "hys-04-paralel.html",
+  "varyantlar": [
+    {
+      "ad": "newyork",
+      "tur": "yanlış inanış",
+      "t": 21.6,
+      "karart": 0.25,
+      "baslik": [
+        "NEW YORK",
+        "*İSTANBUL'UN*",
+        "*GÜNEYİNDE*"
+      ],
+      "baslikY": 250,
+      "boyut": 150,
+      "alt": "Hem de *33 km*",
+      "altY": 1620,
+      "emoji": [
+        {
+          "ad": "statue-of-liberty",
+          "x": 880,
+          "y": 1330,
+          "boyut": 200,
+          "aci": 8
+        }
+      ]
+    },
+    {
+      "ad": "17ulke",
+      "tur": "sayı şoku",
+      "t": 33,
+      "karart": 0.2,
+      "baslik": [
+        "DÜMDÜZ DOĞUYA",
+        "GİTSEN",
+        "*17 ÜLKE*"
+      ],
+      "baslikY": 250,
+      "boyut": 145,
+      "alt": "İstanbul'dan çıkıp *eve dönüyorsun*",
+      "altY": 1620,
+      "emoji": [
+        {
+          "ad": "globe-showing-asia-australia",
+          "x": 880,
+          "y": 1360,
+          "boyut": 190,
+          "aci": -8
+        }
+      ]
+    },
+    {
+      "ad": "roma",
+      "tur": "paradoks",
+      "t": 26.7,
+      "karart": 0.2,
+      "baslik": [
+        "ROMA KUZEYDE",
+        "NEW YORK",
+        "*GÜNEYDE*"
+      ],
+      "baslikY": 250,
+      "boyut": 145,
+      "alt": "İstanbul'a göre",
+      "altY": 1620,
+      "bayraklar": [
+        {
+          "kod": "it",
+          "x": 200,
+          "y": 1380,
+          "h": 110,
+          "aci": -6
+        },
+        {
+          "kod": "us",
+          "x": 880,
+          "y": 1380,
+          "h": 110,
+          "aci": 6
+        }
+      ]
+    }
+  ]
+}

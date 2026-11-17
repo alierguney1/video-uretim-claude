@@ -1,15 +1,24 @@
 ad,platform,tarih,sure_sn,kanca_turu,yapi,url,goruntulenme_48s,izlenme_yuzde_48s,devam_orani_48s,gonderme_48s,kaydetme_48s,goruntulenme_7g,izlenme_yuzde_7g,notlar
-hys-01-kirsehir,,,38.2,yanlış inanış,soru → 3 hesap → canlı hesap → sonuç → döngü,,,,,,,,,ilk bölüm
-hys-02-gronland,,,35.4,tahmin et,soru → taşıma (canlı sayaç) → gerçek → neden → afrika bonusu → döngü,,,,,,,,,seri motorunun ilk bölümü
-hys-03-rota,,,38.2,görsel paradoks,iki çizgi → sayaçlar → küreye geçiş → düz rota → tokyo → dürüstlük → döngü,,,,,,,,,
-hys-04-paralel,,,35.6,ya …olursa,soru → yolculuk (canlı sayaç) → NY ve Roma karşılaştırması → toplam → soru → döngü,,,,,,,,,
+hys-01-kirsehir,youtube,2026-11-10,38.2,yanlış inanış,soru → 3 hesap → canlı hesap → sonuç → döngü,https://youtube.com/shorts/NAE60-zp0wo,,,,,,,,ilk bölüm; platformdan eşitlendi (16 Kas)
+hys-01-kirsehir,instagram,2026-11-10,38.2,yanlış inanış,soru → 3 hesap → canlı hesap → sonuç → döngü,https://www.instagram.com/reel/DfkKBySit73/,,,,,,,,vidIQ ile yayınlandı; AI etiketi açık; platformdan eşitlendi (16 Kas)
+hys-02-gronland,youtube,2026-11-09,35.4,tahmin et,soru → taşıma (canlı sayaç) → gerçek → neden → afrika bonusu → döngü,https://youtube.com/shorts/qpYg7_D8tho,,,,,,,,"seri motorunun ilk bölümü; platformdan eşitlendi (16 Kas); YT başlığı '9 Kasım 2026', süre/tarihten eşleştirildi"
+hys-02-gronland,instagram,2026-11-09,35.4,tahmin et,soru → taşıma (canlı sayaç) → gerçek → neden → afrika bonusu → döngü,https://www.instagram.com/reel/DfhbAZ3gUM6/,,,,,,,,vidIQ ile yayınlandı; AI etiketi açık
+hys-02-gronland,tiktok,2026-11-09,35.4,tahmin et,soru → taşıma (canlı sayaç) → gerçek → neden → afrika bonusu → döngü,,,,,,,,,elle yüklendi; URL eklenecek
+hys-03-rota,youtube,2026-11-11,38.2,görsel paradoks,iki çizgi → sayaçlar → küreye geçiş → düz rota → tokyo → dürüstlük → döngü,https://youtube.com/shorts/Adv1BD3FZrU,,,,,,,,
+hys-03-rota,instagram,2026-11-11,38.2,görsel paradoks,iki çizgi → sayaçlar → küreye geçiş → düz rota → tokyo → dürüstlük → döngü,https://www.instagram.com/reel/DfmqqLFHNul/,,,,,,,,AI etiketi açık
+hys-04-paralel,youtube,2026-11-16,35.6,ya …olursa,soru → yolculuk (canlı sayaç) → NY ve Roma karşılaştırması → toplam → soru → döngü,https://youtube.com/shorts/0Eoxv_SrfRo,,,,,,,,v2: viral analiz sonrası yeni kanca (New York daha güneyde); kapak: newyork
+hys-04-paralel,instagram,2026-11-16,35.6,ya …olursa,soru → yolculuk (canlı sayaç) → NY ve Roma karşılaştırması → toplam → soru → döngü,https://www.instagram.com/reel/Df0DJL3gXQs/,,,,,,,,v2 yeni kanca; AI etiketi açık; kapak: newyork
 hys-05-sandy,,,41.7,sonuçtan başla,hikâye: iddia → konum → gemi → ada yok → derinlik → silinme → köken → slogan → döngü,,,,,,,,,
 hys-06-diomede,,,35.6,tahmin et,soru → cevap → çizgi → UTC → adlar → buzda yürüyüş → yaz → döngü,,,,,,,,,
 hys-07-sulun,,,33.5,ya …olursa,iddia → konum → 1659 → sırayla → takvim → boyut → yasak → yıl sayacı → döngü,,,,,,,,,
 hys-08-samoa,,,38.7,yanlış inanış,iddia → gece → neden → 23 saat → hafta şeridi → silinme → 1892 → soru → döngü,,,,,,,,,
-hys-09-plaka,,,42.85,sayı şoku,kanca → ilk 4 il → alfabe → 35-36 → 70 geçildi → 11 il → 46.555 → akıllı rota → durdur-bul → 50-51 → döngü,,,,,,,,,V2 motoruyla plaka vs akıllı rota (46.555 vs 6.948 km)
+hys-09-plaka,youtube,2026-11-15,42.85,sayı şoku,kanca → ilk 4 il → alfabe → 35-36 → 70 geçildi → 11 il → 46.555 → akıllı rota → durdur-bul → 50-51 → döngü,https://youtube.com/shorts/vRCTlpNgyfo,,,,,,,,V2 motoruyla plaka vs akıllı rota (46.555 vs 6.948 km); platformdan eşitlendi (16 Kas)
+hys-09-plaka,instagram,2026-11-15,42.85,sayı şoku,kanca → ilk 4 il → alfabe → 35-36 → 70 geçildi → 11 il → 46.555 → akıllı rota → durdur-bul → 50-51 → döngü,https://www.instagram.com/reel/Dfxm1U2i1tW/,,,,,,,,platformdan eşitlendi (16 Kas)
 hys-10-anamur,youtube,2026-11-12,45.8,gizem (cold open),soru → ufuk ? → kimlik → ters köşe (Hatay) → o ülke → gerilim (ufuk) → büyük an → durdur-bul → cliffhanger/döngü,https://youtube.com/shorts/RkoND30TCq8,,,,,,,,
 hys-10-anamur,instagram,2026-11-12,45.8,gizem (cold open),soru → ufuk ? → kimlik → ters köşe (Hatay) → o ülke → gerilim (ufuk) → büyük an → durdur-bul → cliffhanger/döngü,https://www.instagram.com/reel/DfpYP4jCYs4/,,,,,,,,AI etiketi açık
 hys-11-kuzey,youtube,2026-11-13,46.5,itiraf/düzeltme,itiraf (YANLIŞ damgası) → İnceburun → gizem (Trakya ?) → Kofçaz → gerilim (iki çizgi) → büyüteç 800 m → ters köşe (Anadolu) → söz (Roma/Chicago) → durdur-bul → cliffhanger (en batı),https://youtube.com/shorts/Agh8PCuHkKg,,,,,,,,kapak: yanlış inanış
 hys-11-kuzey,instagram,2026-11-13,46.5,itiraf/düzeltme,itiraf (YANLIŞ damgası) → İnceburun → gizem (Trakya ?) → Kofçaz → gerilim (iki çizgi) → büyüteç 800 m → ters köşe (Anadolu) → söz (Roma/Chicago) → durdur-bul → cliffhanger (en batı),https://www.instagram.com/reel/DfsSNFFDIVb/,,,,,,,,AI etiketi açık; kapak: yanlış inanış
-
+hys-12-bati,youtube,2026-11-14,43,yanlış inanış + geri sayım,yanlış inanış (Babakale 4.) → Bozcaada 3. → Enez 2. → gizem (birinci?) → Gökçeada 1. → gün batımı 73 dk → durdur-bul → cliffhanger (en doğu),https://youtube.com/shorts/lT_oA0cPzgA,,,,,,,,kapak: gizem; Instagram URL eklenecek
+hys-12-bati,instagram,2026-11-14,43,yanlış inanış + geri sayım,yanlış inanış (Babakale 4.) → Bozcaada 3. → Enez 2. → gizem (birinci?) → Gökçeada 1. → gün batımı 73 dk → durdur-bul → cliffhanger (en doğu),https://www.instagram.com/reel/Dfu3HEtCmb0/,,,,,,,,platformdan eşitlendi (16 Kas)
+hys-13-vergi,instagram,2026-11-17,,,,https://www.instagram.com/reel/Df2na4fEbMj/,,,,,,,,AI etiketi açık; kapak: 72il; Ali isteğiyle aynı gün elle tetiklendi
+hys-13-vergi,youtube,2026-11-17,,,,https://youtube.com/shorts/ZLPQVEOuWm8,,,,,,,,kapak: 72il; Ali isteğiyle aynı gün elle tetiklendi
