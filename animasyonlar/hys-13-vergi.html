@@ -1,0 +1,425 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vergi nereden, nereye</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@600;800&family=IBM+Plex+Mono:wght@500&display=block" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/d3-array@3.2.4/dist/d3-array.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/d3-geo@3.1.1/dist/d3-geo.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/topojson-client@3.1.0/dist/topojson-client.min.js"></script>
+<style>
+  html, body { margin: 0; height: 100%; background: #0b141b; }
+  body { display: grid; place-items: center; overflow: hidden; }
+  canvas { display: block; }
+  #hud { position: fixed; left: 12px; bottom: 10px; font: 12px/1.4 ui-monospace, monospace;
+         color: #bbb; background: rgba(0,0,0,.55); padding: 4px 8px; border-radius: 4px; user-select: none; }
+  body.render #hud { display: none; }
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div id="hud">yükleniyor…</div>
+<audio id="vo" src="../ses/hys-13-vergi/voice.wav" preload="auto"></audio>
+<script src="../lib/ikonlar.js"></script>
+<script src="../lib/ikon-seti.js"></script>
+<script src="../lib/iller.js"></script>
+<script src="../lib/ikon-katmani.js"></script>
+<script src="../veri/hys-13/vergi-2025.js"></script>
+<script src="../lib/harita-motoru.js"></script>
+<script>
+'use strict';
+// Harita Yalan Söyler · Bölüm 13 — "Vergi nereden toplanıyor, nerede harcanıyor?"
+// Brif: hys-13-vergi.brief.md. Veri: HMB Muhasebat GM, İller İtibarıyla Merkezi Yönetim Bütçe İstatistikleri, 2025
+// (Aralık, kümülatif) → tools/hys-13-vergi.py → veri/hys-13/vergi-2025.js. Ekrandaki her oran aşağıda hesaplanır.
+
+/*VO:BEGIN*/ const VO = {"duration":38.58,"lines":[{"id":"l1","start":0.15,"end":4.603,"text":"Türkiye'de toplanan verginin yarısından fazlası, tek bir ilden geliyor."},{"id":"l2","start":4.853,"end":9.245,"text":"İstanbul. Geçen yıl, diğer 80 ilin toplamından bile fazla vergi ödedi."},{"id":"l3","start":9.495,"end":11.645,"text":"İlk beş ili ekle: verginin %81'i."},{"id":"l4","start":11.895,"end":15.561,"text":"Ama dikkat: vergi, şirketin kayıtlı olduğu ilde sayılıyor."},{"id":"l5","start":15.811,"end":17.9,"text":"Peki bu para, nerede harcanıyor?"},{"id":"l6","start":18.15,"end":21.633,"text":"81 ilin 72'si, topladığı vergiden fazla harcama alıyor."},{"id":"l7","start":21.883,"end":25.185,"text":"En uçta Hakkari: 1 liralık vergiye, 16 lira harcama."},{"id":"l8","start":25.435,"end":28.312,"text":"İstanbul'da ise 100 liralık vergiye, 11 lira."},{"id":"l9","start":28.562,"end":33.621,"text":"Bir de şu var: harcamanın %60'ı, faiz ve transferler gibi, hiçbir ile yazılmıyor."},{"id":"l10","start":33.871,"end":36.385,"text":"Senin ilin kaç kat alıyor? Durdur, bul."}],"taslak":true}; /*VO:END*/
+const { C, SANS, MONO, W, H, SAFE, GLOBE, ctx, clamp, lerp, prog, win, ease, text, textTab, pin } = HYS;
+
+// ── veri ve hesaplar ──
+const TEAL = '#3FB8AF', TEAL_D = '#2B8A83', ACC_D = '#C24E1C', ACC_L = '#FF9A66', GREY = '#55636C';
+const V = VERGI, IL = Object.entries(V.iller).map(([ad, [vergi, gider]]) => ({ ad, vergi, gider, oran: gider / vergi }));
+const BY = Object.fromEntries(IL.map(i => [i.ad, i]));
+const IST = BY['İstanbul'], HAK = BY['Hakkari'];
+const DIGER80 = IL.filter(i => i !== IST).reduce((s, i) => s + i.vergi, 0);
+const PAY_IST = IST.vergi / V.toplam.vergi;                                   // ≈ 0,508
+const TOP5 = [...IL].sort((a, b) => b.vergi - a.vergi).slice(0, 5);
+const PAY5 = TOP5.reduce((s, i) => s + i.vergi, 0) / V.toplam.vergi;          // ≈ 0,811
+const FAZLA = IL.filter(i => i.gider > i.vergi);                              // 72 il
+const MERKEZ_PAY = V.merkez.gider / V.toplam.gider;                           // ≈ 0,603
+const ORAN_SIRA = [...IL].sort((a, b) => b.oran - a.oran);
+const pct = x => Math.round(x * 100);
+const trl = x => (x / 1000).toFixed(2).replace('.', ',');                    // milyar → trilyon, "5,61"
+const dec = (x, n) => x.toFixed(n).replace('.', ',');
+// kare grafik: ilk 5 il + diğerleri, 100 kare (en büyük kalan yöntemi)
+const WAF = (() => {
+  const parts = [...TOP5.map(i => ({ ad: i.ad, v: i.vergi })), { ad: 'Diğer 76 il', v: V.toplam.vergi - TOP5.reduce((s, i) => s + i.vergi, 0) }];
+  const raw = parts.map(p => p.v / V.toplam.vergi * 100), fl = raw.map(Math.floor);
+  let left = 100 - fl.reduce((s, x) => s + x, 0);
+  raw.map((r, i) => [r - fl[i], i]).sort((a, b) => b[0] - a[0]).slice(0, left).forEach(([, i]) => fl[i]++);
+  return parts.map((p, i) => ({ ...p, n: fl[i] }));
+})();
+const WAF_COL = [C.accent, '#FF8A55', '#FFA77F', '#FFC2A3', '#FFDCC9', GREY];
+
+let T, FEATS = [], MESH = null, OUTER = null, NEAR = null, YC = GLOBE.cy;
+
+// ── eğik harita (2,5B): y = YC + (y − YC)·sy ──
+const tiltK = t => Math.max(1 - prog(t, T.s5 - .1, T.s5 + .9), prog(t, T.loop, T.DUR - .25));
+const SY = t => 1 - .42 * ease.inOutCubic(tiltK(t));
+function withTilt(sy, fn) { ctx.save(); ctx.translate(0, YC * (1 - sy)); ctx.scale(1, sy); fn(); ctx.restore(); }
+const P = (pr, sy, p) => { const xy = pr(p); return xy ? [xy[0], YC + (xy[1] - YC) * sy] : null; };
+
+// ── 3B sütun (prizma) ──
+function prism(x, yb, h, w, col, side, top, a) {
+  h = Math.max(0, h); if (a <= .001 || h <= .3) return;
+  const dx = w * .42, dy = -w * .26;
+  ctx.save(); ctx.globalAlpha = a;
+  ctx.fillStyle = side; ctx.beginPath(); ctx.moveTo(x + w / 2, yb); ctx.lineTo(x + w / 2 + dx, yb + dy); ctx.lineTo(x + w / 2 + dx, yb - h + dy); ctx.lineTo(x + w / 2, yb - h); ctx.fill();
+  ctx.fillStyle = col; ctx.fillRect(x - w / 2, yb - h, w, h);
+  ctx.fillStyle = top; ctx.beginPath(); ctx.moveTo(x - w / 2, yb - h); ctx.lineTo(x + w / 2, yb - h); ctx.lineTo(x + w / 2 + dx, yb - h + dy); ctx.lineTo(x - w / 2 + dx, yb - h + dy); ctx.fill();
+  ctx.restore();
+}
+// il sütunları: diğerleri önce, İstanbul en son ve en yükseğe
+const H_IST = 440;
+const colH = (i, t) => {
+  const isI = i === IST, rank = ORAN_SIRA.length ? IL.indexOf(i) : 0;
+  const t0 = isI ? .35 : .05 + (rank % 81) * .004, t1 = isI ? 1.7 : t0 + .55;
+  const grow = ease.outCubic(prog(t, t0, t1)), loopGrow = ease.outCubic(prog(t, T.loop + .05, T.DUR + .4));
+  return H_IST * (i.vergi / IST.vergi) * (t >= T.loop ? loopGrow : grow);
+};
+
+// ── terazi ──
+function balance(t, a) {
+  if (a <= .001) return;
+  const cx = W / 2, cy = 720, half = 330, drop = 200;
+  const target = -clamp((IST.vergi - DIGER80) / (IST.vergi + DIGER80) * 3.2, -.2, .2);   // sola (İstanbul) hafif eğik
+  const k = prog(t, T.s2 + .15, T.s2 + 2.6);
+  const ang = target * ease.outCubic(k) + .16 * Math.exp(-k * 4.5) * Math.sin(k * 15) * (k > 0 ? 1 : 0);
+  const L = [cx - Math.cos(ang) * half, cy - Math.sin(ang) * half], R = [cx + Math.cos(ang) * half, cy + Math.sin(ang) * half];
+  ctx.save(); ctx.globalAlpha = a; ctx.strokeStyle = C.land; ctx.fillStyle = C.land; ctx.lineCap = 'round';
+  ctx.lineWidth = 10; ctx.beginPath(); ctx.moveTo(cx, cy - 6); ctx.lineTo(cx, cy + 560); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(cx - 90, cy + 560); ctx.lineTo(cx + 90, cy + 560); ctx.stroke();
+  ctx.lineWidth = 12; ctx.beginPath(); ctx.moveTo(L[0], L[1]); ctx.lineTo(R[0], R[1]); ctx.stroke();
+  ctx.beginPath(); ctx.arc(cx, cy, 16, 0, 2 * Math.PI); ctx.fill();
+  ctx.lineWidth = 3;
+  for (const [p, s] of [[L, -1], [R, 1]]) {
+    ctx.beginPath(); ctx.moveTo(p[0], p[1]); ctx.lineTo(p[0] - 120, p[1] + drop); ctx.moveTo(p[0], p[1]); ctx.lineTo(p[0] + 120, p[1] + drop); ctx.stroke();
+    ctx.beginPath(); ctx.ellipse(p[0], p[1] + drop, 135, 22, 0, 0, Math.PI); ctx.fill();
+  }
+  ctx.restore();
+  // kefe içerikleri: il silüetleri (gerçek şekil)
+  const sil = (feats, p, col, box) => {
+    const pr = d3.geoMercator().fitExtent([[p[0] - box / 2, p[1] + drop - box - 6], [p[0] + box / 2, p[1] + drop - 6]], { type: 'FeatureCollection', features: feats });
+    const path = d3.geoPath(pr, ctx); ctx.save(); ctx.globalAlpha = a; ctx.fillStyle = col; ctx.beginPath(); feats.forEach(f => path(f)); ctx.fill(); ctx.restore();
+  };
+  sil(FEATS.filter(f => f.properties.ad === 'İstanbul'), L, C.accent, 190);
+  sil(FEATS.filter(f => f.properties.ad !== 'İstanbul'), R, C.land, 250);
+  const ka = a * prog(t, T.s2 + .5, T.s2 + .9);
+  text('İstanbul', L[0], L[1] + drop + 82, 46, { alpha: ka, align: 'center' });
+  textTab(trl(IST.vergi) + ' trilyon TL', L[0], L[1] + drop + 130, 36, { alpha: ka, color: C.accent, align: 'center' });
+  text('Diğer 80 il', R[0], R[1] + drop + 82, 46, { alpha: ka, align: 'center' });
+  textTab(trl(DIGER80) + ' trilyon TL', R[0], R[1] + drop + 130, 36, { alpha: ka, color: C.land, align: 'center' });
+}
+
+// ── kare grafik (100 kare = vergi) ──
+function waffle(t, a) {
+  if (a <= .001) return;
+  const cell = 54, gap = 7, x0 = 120, y0 = 650;
+  ctx.save(); ctx.globalAlpha = a * .94; ctx.fillStyle = C.bg; ctx.beginPath(); ctx.roundRect(x0 - 30, y0 - 30, 900, 10 * (cell + gap) + 52, 22); ctx.fill(); ctx.restore();
+  let n = 0;
+  WAF.forEach((p, pi) => {
+    for (let j = 0; j < p.n; j++, n++) {
+      const r = Math.floor(n / 10), c = n % 10, k = ease.outBackSoft(prog(t, T.s3 + .1 + n * .012, T.s3 + .32 + n * .012));
+      const s = Math.max(0, cell * clamp(k, 0, 1.15));
+      ctx.save(); ctx.globalAlpha = a * clamp(k * 2); ctx.fillStyle = WAF_COL[pi];
+      ctx.beginPath(); ctx.roundRect(x0 + c * (cell + gap) + (cell - s) / 2, y0 + r * (cell + gap) + (cell - s) / 2, s, s, Math.max(0, 8 * s / cell)); ctx.fill(); ctx.restore();
+    }
+  });
+  // lejant
+  WAF.forEach((p, pi) => {
+    const y = y0 + 40 + pi * 92, la = a * prog(t, T.s3 + .4 + pi * .12, T.s3 + .7 + pi * .12), lx = x0 + 10 * (cell + gap) + 24;
+    ctx.save(); ctx.globalAlpha = la; ctx.fillStyle = WAF_COL[pi]; ctx.beginPath(); ctx.roundRect(lx, y - 26, 26, 26, 5); ctx.fill(); ctx.restore();
+    text(p.ad.replace('Diğer 76 il', 'Diğer 76'), lx + 38, y, 30, { weight: 600, alpha: la, maxW: 190 });
+    textTab('%' + p.n, lx + 38, y + 40, 30, { alpha: la, color: pi < 5 ? C.accent : C.mute });
+  });
+}
+
+// ── çubuk karşılaştırması (Hakkari / İstanbul) ──
+function bars(t, a, t0, vVal, gVal, unitPx, vLab, gLab, ad) {
+  if (a <= .001) return;
+  const base = 1230, xs = [380, 700], w = 150;
+  ctx.save(); ctx.globalAlpha = a * .9; ctx.fillStyle = C.bg; ctx.beginPath(); ctx.roundRect(200, 560, 680, base - 560 + 130, 24); ctx.fill(); ctx.restore();
+  const k1 = ease.outCubic(prog(t, t0, t0 + .5)), k2 = ease.outCubic(prog(t, t0 + .45, t0 + 1.6));
+  prism(xs[0], base, vVal * unitPx * k1, w, C.accent, ACC_D, ACC_L, a);
+  prism(xs[1], base, gVal * unitPx * k2, w, TEAL, TEAL_D, '#7FD6CF', a);
+  textTab(vLab, xs[0] + 18, base - vVal * unitPx * k1 - 46, 44, { alpha: a * k1, color: C.accent, align: 'center' });
+  textTab(gLab(k2), xs[1] + 18, base - gVal * unitPx * k2 - 46, 44, { alpha: a * prog(t, t0 + .5, t0 + .7), color: TEAL, align: 'center' });
+  const ik = IKON.il(ad), pp = IKON.pop(t, t0 - .1, .45);
+  const nx = vVal * unitPx > gVal * unitPx ? 590 : 268;                     // ad, kısa çubuğun üstüne
+  if (ik) IKON.ciz(ctx, ik.ikon, nx, 630, 76 * pp.olcek, { alpha: a * pp.alpha, aci: pp.aci });
+  text(ad, nx + 52, 645, 40, { alpha: a });
+  text('vergi', xs[0] + 18, base + 62, 36, { weight: 600, alpha: a, color: C.text, align: 'center' });
+  text('harcama', xs[1] + 18, base + 62, 36, { weight: 600, alpha: a, color: C.text, align: 'center' });
+}
+
+// ── halka grafik (%60 hiçbir ile yazılmayan) ──
+function donut(t, a) {
+  if (a <= .001) return;
+  const cx = W / 2, cy = 960, r = 250, th = 92, k = ease.inOutCubic(prog(t, T.s9 + .2, T.s9 + 1.6));
+  ctx.save(); ctx.globalAlpha = a * .92; ctx.fillStyle = C.bg; ctx.beginPath(); ctx.arc(cx, cy, r + th, 0, 2 * Math.PI); ctx.fill(); ctx.restore();
+  const a0 = -Math.PI / 2, aM = a0 + 2 * Math.PI * MERKEZ_PAY * k, aE = a0 + 2 * Math.PI * k;
+  ctx.save(); ctx.globalAlpha = a; ctx.lineWidth = th; ctx.lineCap = 'butt';
+  ctx.strokeStyle = GREY; ctx.beginPath(); ctx.arc(cx, cy, r, a0, aM); ctx.stroke();
+  if (k > MERKEZ_PAY) { ctx.strokeStyle = TEAL; ctx.beginPath(); ctx.arc(cx, cy, r, aM + .02, aE); ctx.stroke(); }
+  ctx.restore();
+  textTab('%' + pct(MERKEZ_PAY * k / Math.max(k, 1e-6) * Math.min(1, k / MERKEZ_PAY)), cx, cy + 10, 120, { alpha: a, align: 'center' });
+  text('hiçbir ile yazılmıyor', cx, cy + 72, 34, { weight: 600, alpha: a, color: C.mute, align: 'center' });
+  const la = a * prog(t, T.s9 + 1.4, T.s9 + 1.8);
+  text('faiz · transfer · merkez', cx - 120, cy - r - th + 12, 30, { weight: 600, alpha: la, color: C.land, align: 'center' });
+  text('%' + pct(1 - MERKEZ_PAY) + ' illere', cx + r + 10, cy + r + th - 4, 34, { weight: 800, alpha: la, color: TEAL, align: 'right' });
+}
+
+// ── durdur-bul: 81 il, 1 TL vergiye kaç TL harcama ──
+function table(t, a) {
+  if (a <= .001) return;
+  const cols = 3, rows = 27, x0 = SAFE.x0 - 26, colW = (SAFE.x1 - SAFE.x0 + 52) / cols, y0 = 570, rowH = 33.5;
+  ctx.save(); ctx.globalAlpha = a; ctx.fillStyle = C.bg; ctx.fillRect(0, 500, W, H - 500); ctx.restore();
+  const push = 1 + .035 * ease.inOutCubic(prog(t, T.s10 + .8, T.loop));       // hafif kamera itmesi
+  ctx.save(); ctx.translate(W / 2, 1000); ctx.scale(push, push); ctx.translate(-W / 2, -1000);
+  ORAN_SIRA.forEach((i, n) => {
+    const c = Math.floor(n / rows), r = n % rows, x = x0 + c * colW, y = y0 + r * rowH;
+    const al = a * prog(t, T.s10 + .05 + n * .007, T.s10 + .25 + n * .007);
+    if (al <= .001) return;
+    const under = i.oran < 1, ik = IKON.il(i.ad);
+    if (under || n === 0) {                                                    // 9 turuncu il + en üstteki: nabız
+      ctx.save(); ctx.globalAlpha = al * (.10 + .08 * Math.sin(t * 5 + n)); ctx.fillStyle = under ? C.accent : TEAL;
+      ctx.beginPath(); ctx.roundRect(x - 4, y - 26, colW - 6, 34, 7); ctx.fill(); ctx.restore();
+    }
+    if (ik) IKON.ciz(ctx, ik.ikon, x + 14, y - 9, 28, { alpha: al });
+    const s = under ? dec(i.oran, 2) : dec(i.oran, 1), right = x + colW - 14;
+    textTab(s, right, y, 22, { alpha: al, color: under ? C.accent : TEAL, align: 'right' });
+    let size = 23; ctx.font = `600 ${size}px ${SANS}`; const room = colW - 44 - 74, need = ctx.measureText(i.ad).width;
+    if (need > room) size = Math.max(15, size * room / need);
+    text(i.ad, x + 32, y, size, { weight: 600, color: under ? C.accent : C.text, alpha: al });
+  });
+  ctx.restore();
+  text('1 TL vergiye kaç TL il harcaması · turuncu: verdiğinden az alan', SAFE.x0 - 20, y0 + rows * rowH + 4, 23, { weight: 600, color: C.mute, alpha: a });
+  text('Kaynak: ' + V.kaynak, SAFE.x0 - 20, y0 + rows * rowH + 36, 20, { weight: 600, color: C.mute, alpha: a * .8 });
+}
+
+// ── kayıt okları (S4): Anadolu'dan İstanbul'a, temsilî ──
+const KAYIT = ['Konya', 'Kayseri', 'Samsun', 'Gaziantep', 'Erzurum', 'Antalya', 'Trabzon', 'Diyarbakır'];
+
+HYS.run({
+  vo: VO, cover: 2.0, flat: true, seed: 13, captionStyle: 'kinetic', captionSkip: [9],
+  init(D) {
+    FEATS = IKON.ilSekilleri();
+    MESH = topojson.mesh(ILLER.topo, ILLER.topo.objects.iller, (a, b) => a !== b);
+    OUTER = topojson.mesh(ILLER.topo, ILLER.topo.objects.iller, (a, b) => a === b);
+    const inBox = c => c[0] > 18 && c[0] < 52 && c[1] > 30 && c[1] < 47;
+    NEAR = { type: 'MultiPolygon', coordinates: D.LAND.features[0].geometry.coordinates.filter(p => p[0].some(inBox)) };
+    FEATS.forEach(f => { f.il = BY[f.properties.ad]; });
+    // il rengi değişimi (S6): batıdan doğuya
+    const byLon = [...FEATS].sort((a, b) => IKON.il(a.properties.ad).nokta[0] - IKON.il(b.properties.ad).nokta[0]);
+    byLon.forEach((f, n) => { f.flip = n / 80; });
+  },
+  times(L, at, DUR) {
+    T = {
+      s2: at(1) - .1, s3: at(2) - .1, s4: at(3) - .1, s5: at(4) - .1, s6: at(5) - .1,
+      s7: at(6) - .1, s8: at(7) - .1, s9: at(8) - .1, s10: at(9) - .1,
+      flip0: at(5) + .3, flip1: at(5, 'end') - .2, loop: DUR - 1.3, DUR,
+    };
+    return T;
+  },
+  scenes: (T, at, DUR) => [
+    { name: 'kanca: sütunlar', start: 0, end: T.s2 }, { name: 'terazi', start: T.s2, end: T.s3 },
+    { name: 'ilk 5: kareler', start: T.s3, end: T.s4 }, { name: 'kayıt ili', start: T.s4, end: T.s5 },
+    { name: 'nerede harcanıyor?', start: T.s5, end: T.s6 }, { name: '72/81', start: T.s6, end: T.s7 },
+    { name: 'hakkari', start: T.s7, end: T.s8 }, { name: 'istanbul', start: T.s8, end: T.s9 },
+    { name: '%60 merkez', start: T.s9, end: T.s10 }, { name: 'durdur-bul', start: T.s10, end: T.loop },
+    { name: 'döngü', start: T.loop, end: DUR },
+  ],
+  keys: (T, at, DUR) => [
+    [0, 35.2, 40.0, 16.6], [T.s2, 35.1, 40.0, 17.2], [T.s4, 34.9, 40.0, 17.8],
+    [T.s4 + .9, 31.6, 40.4, 21], [T.s5, 31.3, 40.4, 21.8],
+    [T.s5 + 1.0, 35.2, 39.2, 16.8], [T.s7 - .2, 35.6, 39.2, 17.4],
+    [T.s7 + 1.0, 41.0, 38.4, 24], [T.s8, 41.2, 38.3, 25],
+    [T.s8 + 1.0, 30.6, 40.4, 24], [T.s9, 30.4, 40.5, 25],
+    [T.s9 + 1.0, 35.2, 39.2, 16.8], [T.loop, 35.2, 39.2, 16.8], [DUR, 35.2, 40.0, 16.6],
+  ],
+  beats: (T, at, DUR) => [
+    { t: .3, ac: 'A', soru: 'Bu vergi nerede harcanıyor?' },
+    { t: .5, ac: 'B', soru: 'Hangi il?' },
+    { t: 1.7, odul: 'İstanbul sütunu ekranı deler, %50,8' },
+    { t: at(1) + .2, kapa: 'B' },
+    { t: T.s2 + 1.8, odul: 'terazi İstanbul tarafına eğilir' },
+    { t: T.s3 + .9, odul: '100 karenin 81i' },
+    { t: T.s4 + 1.2, odul: 'kayıt ili okları İstanbul’a akar' },
+    { t: T.s5 + .3, ac: 'C', soru: 'Peki nerede harcanıyor? (sesli)' },
+    { t: T.s5 + 1.2, odul: 'harcama akışı Ankara’dan illere' },
+    { t: (T.flip0 + T.flip1) / 2, odul: 'sayaç yükselir, harita renk değiştirir' },
+    { t: T.flip1, kapa: 'C' },
+    { t: T.s7 + .9, odul: 'Hakkari 1 → 16' },
+    { t: T.s8 + .9, odul: 'İstanbul 100 → 11' },
+    { t: T.s9 + 1.6, odul: '%60 halkası' },
+    { t: T.s10, kapa: 'A' },
+    { t: T.s10 + .1, ac: 'D', soru: 'Benim ilim kaç kat?' },
+    { t: T.s10 + 1.2, odul: '81 il tablosu' },
+    { t: T.loop, kapa: 'D' },
+    { t: T.loop + .2, odul: 'döngü: sütunlar yeniden yükselir' },
+  ],
+  draw(t, g) {
+    const { pr, path, DUR } = g;
+    const tabA = win(t, T.s10, T.loop + .15, .3);
+    const mapA = 1 - tabA;
+    if (mapA <= .001) return;
+    const sy = SY(t);
+    // arka plan ve iller
+    const dim = 1 - .85 * Math.max(win(t, T.s2, T.s4, .35), win(t, T.s9, T.s10 + .2, .35));
+    ctx.save(); ctx.globalAlpha = mapA * dim;
+    withTilt(sy, () => {
+      for (const f of FEATS) {
+        const i = f.il, fk = prog(t, lerp(T.flip0, T.flip1, f.flip), lerp(T.flip0, T.flip1, f.flip) + .25);
+        const back = prog(t, T.loop, T.DUR - .4);
+        let col = C.land;
+        if (fk > 0 && back < 1) col = (i.gider > i.vergi ? TEAL : C.accent);
+        ctx.fillStyle = col; ctx.globalAlpha = mapA * dim * (fk > 0 && back < 1 ? lerp(1, .999, 0) : 1);
+        ctx.beginPath(); path(f); ctx.fill();
+        if (fk > 0 && fk < 1) { ctx.fillStyle = C.land; ctx.globalAlpha = mapA * dim * (1 - fk); ctx.beginPath(); path(f); ctx.fill(); }
+        if (back > 0 && fk > 0) { ctx.fillStyle = C.land; ctx.globalAlpha = mapA * dim * back; ctx.beginPath(); path(f); ctx.fill(); }
+      }
+      ctx.globalAlpha = mapA * dim; ctx.strokeStyle = 'rgba(15,28,38,.55)'; ctx.lineWidth = 1.4 / sy;
+      ctx.beginPath(); path(MESH); ctx.stroke();
+      ctx.strokeStyle = 'rgba(15,28,38,.9)'; ctx.lineWidth = 2.2 / sy; ctx.beginPath(); path(OUTER); ctx.stroke();
+    });
+    ctx.restore();
+
+    // S4: kayıt ili okları (temsilî)
+    const kA = win(t, T.s4 + .5, T.s5 + .3, .3) * mapA;
+    if (kA > 0) {
+      const ist = P(pr, sy, IKON.il('İstanbul').nokta);
+      KAYIT.forEach((ad, n) => {
+        const p = P(pr, sy, IKON.il(ad).nokta), k = ease.outCubic(prog(t, T.s4 + .6 + n * .08, T.s4 + 1.4 + n * .08));
+        if (!p || !ist || k <= 0) return;
+        const mx = (p[0] + ist[0]) / 2, my = Math.min(p[1], ist[1]) - 120;
+        ctx.save(); ctx.globalAlpha = kA * .9; ctx.strokeStyle = C.accent; ctx.lineWidth = 4; ctx.setLineDash([12, 10]); ctx.lineCap = 'round';
+        ctx.beginPath(); ctx.moveTo(p[0], p[1]);
+        const N = 24; for (let s = 1; s <= Math.round(N * k); s++) { const u = s / N; ctx.lineTo((1 - u) ** 2 * p[0] + 2 * u * (1 - u) * mx + u * u * ist[0], (1 - u) ** 2 * p[1] + 2 * u * (1 - u) * my + u * u * ist[1]); }
+        ctx.stroke(); ctx.restore();
+        pin(p, { color: C.land, r: 8, alpha: kA });
+      });
+      pin(ist, { color: C.accent, r: 14, alpha: kA, pulse: (t * 1.2) % 1 });
+    }
+    // S5: harcama akışı Ankara'dan illere
+    const fA = win(t, T.s5 + .2, T.s6 + .6, .3) * mapA;
+    if (fA > 0) {
+      const ank = P(pr, sy, IKON.il('Ankara').nokta);
+      FEATS.forEach((f, n) => {
+        if (n % 4) return;
+        const p = P(pr, sy, IKON.il(f.properties.ad).nokta), k = ease.outCubic(prog(t, T.s5 + .3 + (n % 9) * .06, T.s5 + 1.1 + (n % 9) * .06));
+        if (!p || !ank || k <= 0) return;
+        ctx.save(); ctx.globalAlpha = fA * .85; ctx.strokeStyle = TEAL; ctx.lineWidth = 3.5; ctx.lineCap = 'round';
+        ctx.beginPath(); ctx.moveTo(ank[0], ank[1]); ctx.lineTo(lerp(ank[0], p[0], k), lerp(ank[1], p[1], k)); ctx.stroke();
+        ctx.fillStyle = TEAL; ctx.beginPath(); ctx.arc(lerp(ank[0], p[0], k), lerp(ank[1], p[1], k), 6, 0, 2 * Math.PI); ctx.fill(); ctx.restore();
+      });
+      pin(ank, { color: TEAL, r: 12, alpha: fA });
+    }
+    // S7 / S8: il işaretleri
+    const hA = win(t, T.s7 + .6, T.s8 + .2, .3) * mapA, iA = win(t, T.s8 + .6, T.s9 + .2, .3) * mapA;
+    if (hA > 0) { const p = P(pr, sy, IKON.il('Hakkari').nokta); pin(p, { color: TEAL, r: 13, alpha: hA, pulse: (t * 1.2) % 1 }); if (p) IKON.ilIkonu(ctx, 'Hakkari', () => [p[0], p[1] - 90], 84, { t, t0: T.s7 + .7, alpha: hA }); }
+    if (iA > 0) { const p = P(pr, sy, IKON.il('İstanbul').nokta); pin(p, { color: C.accent, r: 13, alpha: iA, pulse: (t * 1.2) % 1 }); if (p) IKON.ilIkonu(ctx, 'İstanbul', () => [p[0], p[1] - 90], 84, { t, t0: T.s8 + .7, alpha: iA }); }
+  },
+  header(t, g) {
+    const { pr, DUR } = g;
+    const sy = SY(t);
+    // sütunlar (başlık bandının üstünde net kalsın diye burada)
+    const cA = Math.max(1 - prog(t, T.s2 - .05, T.s2 + .45), prog(t, T.loop, T.loop + .2));
+    if (cA > .001) {
+      const pts = IL.map(i => ({ i, p: P(pr, sy, IKON.il(i.ad).nokta) })).filter(o => o.p).sort((a, b) => a.p[1] - b.p[1]);
+      for (const { i, p } of pts) {
+        const isI = i === IST, h = Math.max(2, colH(i, t));
+        prism(p[0], p[1], h, isI ? 34 : 16, isI ? C.accent : '#E8B48F', isI ? ACC_D : '#B98A68', isI ? ACC_L : '#F6D2B6', cA);
+      }
+      const ip = pts.find(o => o.i === IST).p, lk = cA * prog(t, 1.2, 1.6) * (t < T.loop ? 1 : 0);
+      if (lk > 0) {
+        const top = ip[1] - colH(IST, t);
+        const ly = Math.max(top + 150, 640);
+        textTab('%' + dec(PAY_IST * 100, 1), ip[0] + 50, ly, 64, { alpha: lk, color: C.accent });
+        text('İstanbul', ip[0] + 50, ly + 46, 36, { weight: 600, alpha: lk });
+      }
+    }
+    balance(t, win(t, T.s2 + .05, T.s3 + .15, .3));
+    waffle(t, win(t, T.s3, T.s4 + .1, .3));
+    bars(t, win(t, T.s7 + .4, T.s8 + .1, .3), T.s7 + .6, 1, HAK.oran, 40, '1 TL', k => Math.round(HAK.oran * k) + ' TL', 'Hakkari');
+    bars(t, win(t, T.s8 + .4, T.s9 + .1, .3), T.s8 + .6, 100, 100 * IST.oran, 5, '100 TL', k => Math.round(100 * IST.oran * k) + ' TL', 'İstanbul');
+    donut(t, win(t, T.s9 + .1, T.s10 + .1, .3));
+    table(t, win(t, T.s10, T.loop + .15, .3));
+
+    // başlıklar
+    const Y1 = SAFE.y0 + 40 + 80, Y2 = Y1 + 80;
+    const h1 = Math.max(1 - prog(t, T.s2 - .2, T.s2 + .1), prog(t, T.loop + .2, DUR - .2));
+    text('Verginin yarısından fazlası', SAFE.x0, Y1, 62, { alpha: h1 });
+    text('TEK BİR İLDEN', SAFE.x0, Y2, 80, { color: C.accent, alpha: h1 });
+    text(V.yil + ' · merkezi bütçe vergi tahsilatı', SAFE.x0, Y2 + 52, 30, { weight: 600, color: C.mute, alpha: h1 });
+    const h2 = win(t, T.s2 + .05, T.s3 + .1, .3);
+    text('İstanbul tek başına', SAFE.x0, Y1, 66, { alpha: h2 });
+    text('diğer 80 ilden fazla', SAFE.x0, Y2, 62, { color: C.accent, alpha: h2 });
+    const h3 = win(t, T.s3 + .05, T.s4 + .1, .3);
+    text('İlk 5 il', SAFE.x0, Y1, 72, { alpha: h3 });
+    text('verginin %' + pct(PAY5) + '’i', SAFE.x0, Y2, 66, { color: C.accent, alpha: h3 });
+    const h4 = win(t, T.s4 + .05, T.s5 + .1, .3);
+    text('Ama dikkat', SAFE.x0, Y1, 72, { alpha: h4 });
+    text('Vergi, mükellefin kayıtlı olduğu', SAFE.x0, Y2 - 10, 44, { weight: 600, color: C.accent, alpha: h4 });
+    text('ilde sayılır (temsilî oklar)', SAFE.x0, Y2 + 42, 44, { weight: 600, color: C.accent, alpha: h4 });
+    const h5 = win(t, T.s5 + .05, T.s6 + .1, .3);
+    text('Peki nerede', SAFE.x0, Y1, 72, { alpha: h5 });
+    text('HARCANIYOR?', SAFE.x0, Y2, 80, { color: TEAL, alpha: h5 });
+    const h6 = win(t, T.s6 + .05, T.s7 + .1, .3);
+    const nTeal = FEATS.filter(f => f.il.gider > f.il.vergi && t >= lerp(T.flip0, T.flip1, f.flip)).length;
+    textTab(nTeal + ' / 81 il', SAFE.x0, Y1 + 6, 84, { alpha: h6, color: TEAL });
+    text('topladığından fazla harcama alıyor', SAFE.x0, Y2, 44, { weight: 600, alpha: h6 });
+    text('turuncu ' + (81 - FAZLA.length) + ' il: tersi', SAFE.x0, Y2 + 52, 36, { weight: 600, color: C.accent, alpha: h6 * prog(t, T.flip1, T.flip1 + .3) });
+    const h7 = win(t, T.s7 + .05, T.s8 + .1, .3);
+    text('HAKKARİ', SAFE.x0, Y1 + 6, 84, { alpha: h7 });
+    text('1 TL vergiye ' + Math.round(HAK.oran) + ' TL harcama', SAFE.x0, Y2, 48, { weight: 600, color: TEAL, alpha: h7 });
+    const h8 = win(t, T.s8 + .05, T.s9 + .1, .3);
+    text('İSTANBUL', SAFE.x0, Y1 + 6, 84, { alpha: h8 });
+    text('100 TL vergiye ' + Math.round(100 * IST.oran) + ' TL harcama', SAFE.x0, Y2, 48, { weight: 600, color: TEAL, alpha: h8 });
+    const h9 = win(t, T.s9 + .05, T.s10 + .1, .3);
+    text('Harcamanın %' + pct(MERKEZ_PAY) + '’ı', SAFE.x0, Y1, 66, { alpha: h9 });
+    text('hiçbir ile yazılmıyor', SAFE.x0, Y2, 62, { color: C.land, alpha: h9 });
+    const h10 = win(t, T.s10 + .1, T.loop, .3);
+    text('Senin ilin kaç kat alıyor?', SAFE.x0, Y1 - 10, 60, { alpha: h10 });
+    text('Durdur, bul', SAFE.x0, Y2 - 18, 52, { weight: 600, color: C.accent, alpha: h10 });
+  },
+  sounds(T, at, DUR) {
+    const S = [
+      { t: .05, type: 'rise', dur: 1.5, gain: .14, f0: 180, f1: 520 },
+      ...Array.from({ length: 10 }, (_, i) => ({ t: .1 + i * .045, type: 'tick', gain: .06, f: 900 + i * 60 })),
+      { t: 1.7, type: 'sub', gain: .32 }, { t: 1.72, type: 'ping', gain: .25, f: 659 },
+      { t: T.s2 + .1, type: 'whoosh', dur: .7, gain: .1 },
+      { t: T.s2 + .6, type: 'pulse', gain: .3, f: 98 }, { t: T.s2 + 1.6, type: 'chime', gain: .28 },
+      { t: T.s3 + .05, type: 'whoosh', dur: .5, gain: .08 },
+      ...Array.from({ length: 20 }, (_, i) => ({ t: T.s3 + .1 + i * .06, type: 'pop', gain: .07, f: 300 + i * 14 })),
+      { t: T.s3 + 1.4, type: 'ping', gain: .3, f: 784 },
+      { t: T.s4 + .5, type: 'whoosh', dur: 1.0, gain: .09 },
+      { t: T.s5, type: 'whoosh', dur: 1.1, gain: .1 }, { t: T.s5 + .5, type: 'pulse', gain: .22, f: 130 },
+      ...Array.from({ length: 24 }, (_, i) => ({ t: T.flip0 + (T.flip1 - T.flip0) * i / 23, type: 'tick', gain: .07, f: 1200 + i * 25 })),
+      { t: T.flip1 + .15, type: 'ping2', gain: .38 },
+      { t: T.s7, type: 'whoosh', dur: 1.0, gain: .1 },
+      { t: T.s7 + .6, type: 'rise', dur: 1.0, gain: .16 },
+      { t: T.s7 + 1.95, type: 'sub', gain: .4 }, { t: T.s7 + 1.96, type: 'ping', gain: .3, f: 880 },
+      { t: T.s8, type: 'whoosh', dur: 1.0, gain: .1 }, { t: T.s8 + 1.2, type: 'tick', gain: .3, f: 300 },
+      { t: T.s9, type: 'whoosh', dur: .8, gain: .09 }, { t: T.s9 + .2, type: 'rise', dur: 1.4, gain: .1, f0: 160, f1: 320 },
+      { t: T.s9 + 1.6, type: 'pulse', gain: .3, f: 82 },
+      ...Array.from({ length: 12 }, (_, i) => ({ t: T.s10 + .1 + i * .05, type: 'tick', gain: .07, f: 1300 + i * 30 })),
+      { t: T.loop, type: 'whoosh', dur: .9, gain: .08 },
+    ];
+    return S;
+  },
+});
+</script>
+</body>
+</html>

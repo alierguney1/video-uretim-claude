@@ -3,7 +3,12 @@
 Seri: Harita Yalan Söyler · Bölüm 13 · Ali (17 Kas 2026): "Vergi nereden toplanıp nerede harcanıyor bunu yap.
 Farklı şeyler koy ama haritadan çok uzaklaşma; kamera hareketleri hafif." STYLE.md "Konu ve görsel dil kuralları" ilk uygulaması.
 
-Durum: **sahne listesi onay bekliyor.** Onaydan önce kod yok.
+Durum: **sahne listesi onaylandı** (Ali, 17 Kas: "Tamamdır, üret"). Kod + check + kontak tamam; **seslendirme bekliyor**
+(Gemini TTS kredisi bitti, HTTP 402). VO bloğu şu an karakter sayısından tahmini taslak süre.
+
+**Güncelleme: video 2025 verisini kullanır** (aynı kaynak, Temmuz 2026'da yayımlanan yıl sonu dosyası; `veri/hys-13/vergi-2025.js`):
+toplam vergi 11,05 trilyon TL · İstanbul **%50,8** (5,61 trilyon) > diğer 80 il toplamı (5,37) · ilk 5 il %81,1 · 72/81 il ·
+Hakkari 1 TL vergiye 16,0 TL · İstanbul 100 TL vergiye 11 TL · merkez gideri %60,3. Aşağıdaki tablo 2024 için ilk analizdir.
 
 ## Veri (resmî, tek kaynak)
 

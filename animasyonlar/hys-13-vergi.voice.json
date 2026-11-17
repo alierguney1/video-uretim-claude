@@ -1,0 +1,17 @@
+{
+  "voice": "Charon",
+  "style": "enerjik ve merak uyandıran, hızlı tempolu, önemli kelimeleri vurgulayan, izleyiciye meydan okur gibi; tarafsız, haber anlatıcısı gibi net",
+  "tempo": 1.12, "lead": 0.15, "gap": 0.25, "tail": 2.2,
+  "lines": [
+    { "id": "l1", "text": "Türkiye'de toplanan verginin YARISINDAN FAZLASI, tek bir ilden geliyor.", "caption": "Türkiye'de toplanan verginin yarısından fazlası, tek bir ilden geliyor." },
+    { "id": "l2", "text": "İstanbul. Geçen yıl, diğer seksen ilin TOPLAMINDAN bile fazla vergi ödedi.", "caption": "İstanbul. Geçen yıl, diğer 80 ilin toplamından bile fazla vergi ödedi." },
+    { "id": "l3", "text": "İlk beş ili ekle: verginin YÜZDE SEKSEN BİRİ.", "caption": "İlk beş ili ekle: verginin %81'i." },
+    { "id": "l4", "text": "Ama dikkat: vergi, şirketin KAYITLI olduğu ilde sayılıyor.", "caption": "Ama dikkat: vergi, şirketin kayıtlı olduğu ilde sayılıyor." },
+    { "id": "l5", "text": "Peki bu para, nerede HARCANIYOR?", "caption": "Peki bu para, nerede harcanıyor?" },
+    { "id": "l6", "text": "Seksen bir ilin YETMİŞ İKİSİ, topladığı vergiden FAZLA harcama alıyor.", "caption": "81 ilin 72'si, topladığı vergiden fazla harcama alıyor." },
+    { "id": "l7", "text": "En uçta Hakkari: bir liralık vergiye, ON ALTI lira harcama.", "caption": "En uçta Hakkari: 1 liralık vergiye, 16 lira harcama." },
+    { "id": "l8", "text": "İstanbul'da ise yüz liralık vergiye, on bir lira.", "caption": "İstanbul'da ise 100 liralık vergiye, 11 lira." },
+    { "id": "l9", "text": "Bir de şu var: harcamanın yüzde ALTMIŞI, faiz ve transferler gibi, hiçbir ile yazılmıyor.", "caption": "Bir de şu var: harcamanın %60'ı, faiz ve transferler gibi, hiçbir ile yazılmıyor." },
+    { "id": "l10", "text": "Senin ilin kaç kat alıyor? Durdur, bul.", "caption": "Senin ilin kaç kat alıyor? Durdur, bul." }
+  ]
+}
