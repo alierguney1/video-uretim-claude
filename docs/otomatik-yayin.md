@@ -48,6 +48,7 @@ npm run yayin -- kaydet hys-12-bati instagram https://www.instagram.com/reel/...
 | --- | --- | --- |
 | YouTube | `UC7kBWHh-RPkkY7LGZVxy7Zw` | @haritayalansoyler |
 | Instagram | `40458087940456318` | @haritayalansoyler |
+| TikTok | `_000_eEQ0EFhG-W1GpGpV-36GbNK4Ff5d2Ke` | Harita Yalan Söyler (17 Kas'ta bağlandı) |
 
 `vidiq_social_account_list` ile doğrula; `canPublish: false` ise yayınlama, raporda yeniden bağlama iste.
 
