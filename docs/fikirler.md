@@ -5,6 +5,32 @@ Bu dosya diğer ajanların aynı araştırmayı sıfırdan tekrarlamaması için
 > Temel kural ([MOTION_RULES.md](../MOTION_RULES.md) · [STYLE.md](../STYLE.md)):
 > Ekrandaki her sayı **kodda gerçek veriden** hesaplanır. Uydurma istatistik yok. Her video kendi kancası, ters köşesi, ara ödülleri ve döngüsüyle ayrışır.
 
+## 0. Değerlendirme (18 Kas 2026, Instagram verisiyle)
+
+**Paylaşım / 1000 izlenme** (vidIQ owner insights, 18 Kas): Anamur 10,4 · Kuzey 7,3 · Kırşehir 6,5 · Batı 3,7 ·
+Plaka 3,3 · Vergi 2,3 (1 günlük) · Grönland 1,6 · Rota 0,8 · **New York (hys-04 v2) 0,39**.
+
+- **viral-analiz §7 testi sonuçlandı:** hys-04 v2 41 bin izlenme ve %59,5 izlenme oranı aldı (seride en yüksek) ama
+  paylaşım 0,39/1000. Yabancı karşılaştırma **izletiyor ama göndertmiyor.** Kanalı büyüten şey gönderme → yabancı
+  odaklı fikirler (meridyen ikizleri, NY tipi) son sıraya.
+- **Tek kanıtlı formül:** okulda öğrenilmiş bir Türkiye bilgisini bozmak + o yerin insanına gönderme. Ama uç nokta
+  serisi yoruluyor (10,4 → 7,3 → 3,7); aynı kalıbı dördüncü kez düz tekrarlamak yetmez, yeni bir ters köşe lazım.
+
+| Sıra | Fikir | Test (fikir/sorar/gönderir) | Neden | Karar |
+| :-: | --- | :-: | --- | --- |
+| 1 | **hys-14-dogu: "En doğu Iğdır. Ama güneş Türkiye'de ilk orada doğmuyor."** | ✓ ✓ ✓ | Cliffhanger borcu (12'de söz verildi) + okul bilgisi doğru olduğu için ters köşe güneşten gelir: 21 Aralık'ta güneş Hakkari'de 07:16, Iğdır'da 07:22 (`veri/hys-09/gunes-2026-12-21.json`, il merkezi; kış gündönümünde güney avantajı boylamı yener). Uç noktalar (Dilucu / Şemdinli) için ayrı hesap şart. | **Hemen** |
+| 2 | **hys-09-gunes** ("21 Aralık'ta güneş senin ilinde kaçta doğuyor?") | ✓ ✓ ✓ | Her kış "sabahlar karanlık" derdi; 81 il durdur-bul = herkesin kendi sayısı. Veri + brif hazır. **Pencere 1–21 Aralık.** 1 ile aynı veriyi paylaşır: 14 ↔ 09-gunes arasına en az 3 gün koy ya da 14 teaser, 09-gunes ana video olsun. | **Aralık başı** |
+| 3 | **ilçe ↔ komşu il** (Fikir D, yeniden çerçeve: "Bu ilçeler il olmak istiyor / aslında komşu ile bağlı olmalı") | ✓ ✓ ✓ | Mevcut tartışma (il olma talepleri, "biz X'e daha yakınız"). Kimlik tetikleyicisi en güçlüsü: ilçe adı ekranda = o ilçenin grupları. Kuşuçuşu / yol farkı dürüstlük notu. Koordinat doğrulaması ağır. | Yüksek |
+| 4 | **"Türkiye'nin en soğuk yeri"** (yeni) | ✓ ✓ ✓ | Herkesin cevabı var (Erzurum / Kars / Sarıkamış / Ardahan); kış mevsimi; memleket rekabeti yorumları açar. Ters köşe ancak MGM rekor verisi yaygın inanışı bozuyorsa var; **önce MGM ekstrem kayıtlarıyla doğrula, bozmuyorsa ele.** | Araştır |
+| 5 | İstanbul trafikte yılda kaç gün (2b) | ✓ ✓ ✓ | Herkesin derdi, İstanbullu iş arkadaşına gider. TomTom Traffic Index yıllık "kayıp saat" doğrulanınca. Haritadan çıkma riski: rota + takvimden silinen günler. | Orta-yüksek |
+| 6 | En az nüfuslu kaç il = İstanbul (Fikir B) | ✓ ~ ✓ | Tahmin kancası + küçük iller kimliği. Ama vergi bölümünün "İstanbul = 80 il" mesajına çok yakın; en az 3 bölüm ara ver. TÜİK ADNKS 2025. | Orta (sonra) |
+| 7 | İstanbul barajları (2b) | ✓ ✓ ~ | Gündemdeyse güçlü (aile grubuna gider), değilse sönük. İSKİ günlük veriyle anlık karar. | Gündeme bağlı |
+| 8 | Erivan'a Ankara'dan yakın iller (baskentler) | ~ ✗ ✓ | Doğu illeri bunu zaten biliyor; yabancı karşılaştırma (NY dersi). | Düşük |
+| 9 | Van Gölü kaç il (E) | ~ ✗ ~ | Boyut karşılaştırması Grönland'da 1,6 aldı. | Düşük |
+| — | Voronoi (A), plaka 2 (C), meridyen ikizleri (F), sınırlar (G), 100 kişilik köy, İstanbul ülke olsa, elektrik | ✗ | Kimse sormuyor / ders kitabı / yabancı / zayıf bölümün devamı. A'nın kimlik gücü 3'te (ilçe) kullanılıyor. | **Ele** |
+
+**Önerilen sıra:** 14-dogu → (3 gün) → 09-gunes (1–10 Aralık) → ilçe ↔ komşu il → trafik. "En soğuk" doğrulamadan geçerse Aralık ortasına.
+
 ---
 
 ## 1. Seri Durumu ve Açık Halkalar
