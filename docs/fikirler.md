@@ -27,10 +27,10 @@ Plaka 3,3 · Vergi 2,3 (1 günlük) · Grönland 1,6 · Rota 0,8 · **New York (
 | 7 | İstanbul barajları (2b) | ✓ ✓ ~ | Gündemdeyse güçlü (aile grubuna gider), değilse sönük. İSKİ günlük veriyle anlık karar. | Gündeme bağlı |
 | 8 | Erivan'a Ankara'dan yakın iller (baskentler) | ~ ✗ ✓ | Doğu illeri bunu zaten biliyor; yabancı karşılaştırma (NY dersi). | Düşük |
 | 9 | Van Gölü kaç il (E) | ~ ✗ ~ | Boyut karşılaştırması Grönland'da 1,6 aldı. | Düşük |
-| 1b | **Voronoi (A), yeniden çerçeve: "Türkiye'nin en büyük ili Konya değil(miş)"** | ✓ ✓ ✓ | Ali'nin itirazıyla (18 Kas) hesaplandı (`tools/hys-voronoi.mjs`, taslak): sınırlar en yakın il merkezine göre çizilirse **Karaman 35. sıradan 1.'ye** çıkar (24.777 km², Konya 24.563), **Uşak 68. → 14.** (alanı 3,1 kat), **İzmir 20. → 68.** (toprağının %59'u başka ile). Türkiye'nin %27'si il değiştirir. Okul bilgisi ("en büyük il Konya") bozuluyor + Karaman–Konya rekabeti (Karaman 1989'a kadar Konya'nındı) = gönderme. **Dikkat:** Karaman–Konya farkı %0,9; ince ızgara + iki kaynaklı il merkezi (valilik/HGM) ile yeniden hesaplanmadan ekrana çıkmaz. Fark kapanırsa kanca Uşak/İzmir'e kayar. | **Hemen (1 ile yarışır)** |
+| 1b | **Voronoi (A), yeniden çerçeve: "Türkiye'nin en büyük ili Konya değil(miş)"** | ✓ ✓ ✓ | Ali'nin itirazıyla (18 Kas) hesaplandı (`tools/hys-voronoi.mjs`, taslak): sınırlar en yakın il merkezine göre çizilirse **Karaman 35. sıradan 1.'ye** çıkar (24.777 km², Konya 24.563), **Uşak 68. → 14.** (alanı 3,1 kat), **İzmir 20. → 68.** (toprağının %59'u başka ile). Türkiye'nin %27'si il değiştirir. Okul bilgisi ("en büyük il Konya") bozuluyor + Karaman–Konya rekabeti (Karaman 1989'a kadar Konya'nındı) = gönderme. **Dikkat:** Karaman–Konya farkı %0,9; ince ızgara + iki kaynaklı il merkezi (valilik/HGM) ile yeniden hesaplanmadan ekrana çıkmaz. Fark kapanırsa kanca Uşak/İzmir'e kayar. | **Üretildi: `hys-14-konya` (18 Kas, kuyrukta).** 6 hesabın 6'sında Karaman 1. (fark %0,8–2); Efes→Aydın, Bergama→Manisa, Hattuşa→Yozgat, Uzungöl→Bayburt, Anamur→Karaman. Doğu bölümü artık `hys-15`. |
 | — | plaka 2 (C), meridyen ikizleri (F), sınırlar (G), 100 kişilik köy, İstanbul ülke olsa, elektrik | ✗ | Kimse sormuyor / ders kitabı / yabancı / zayıf bölümün devamı. | **Ele** |
 
-**Önerilen sıra:** 14-dogu → (3 gün) → 09-gunes (1–10 Aralık) → ilçe ↔ komşu il → trafik. "En soğuk" doğrulamadan geçerse Aralık ortasına.
+**Önerilen sıra:** 14-konya (yayında/kuyrukta) → 15-dogu → (3 gün) → 09-gunes (1–10 Aralık) → ilçe ↔ komşu il → trafik. "En soğuk" doğrulamadan geçerse Aralık ortasına.
 
 ---
 

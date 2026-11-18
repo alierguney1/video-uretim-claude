@@ -1,0 +1,1741 @@
+{
+ "yontem": "0.01° ızgara, küresel en yakın il merkezi; alan göller dahil harita alanı",
+ "kaynak": {
+  "sinir": "geoBoundaries TUR ADM1 (gbOpen)",
+  "merkez": "GeoNames TR dökümü (download.geonames.org/export/dump/TR.zip), PPLA/PPLC il merkezi noktası",
+  "resmiAlan": "HGM İl ve İlçe Yüz Ölçümleri (km², Vikipedi \"Türkiye'nin illeri\" tablosu, erişim 18 Kas 2026)"
+ },
+ "degisenPct": 27.3,
+ "birinci": "Karaman",
+ "ikinci": "Konya",
+ "fark": 462,
+ "farkPct": 1.9,
+ "capraz": [
+  {
+   "sinir": "gb",
+   "merkez": "wd",
+   "birinci": "Karaman",
+   "karaman": 24567,
+   "konya": 24365,
+   "degisenPct": 27.3
+  },
+  {
+   "sinir": "ne",
+   "merkez": "gn",
+   "birinci": "Karaman",
+   "karaman": 24765,
+   "konya": 24276,
+   "degisenPct": 27.6
+  },
+  {
+   "sinir": "ne",
+   "merkez": "wd",
+   "birinci": "Karaman",
+   "karaman": 24591,
+   "konya": 24365,
+   "degisenPct": 27.6
+  }
+ ],
+ "yerler": [
+  {
+   "ad": "Efes",
+   "p": [
+    27.34083,
+    37.93972
+   ],
+   "resmi": "İzmir",
+   "yeni": "Aydın",
+   "kmResmi": 55,
+   "kmYeni": 45,
+   "wdAyni": true
+  },
+  {
+   "ad": "Bergama",
+   "p": [
+    27.18412,
+    39.13212
+   ],
+   "resmi": "İzmir",
+   "yeni": "Manisa",
+   "kmResmi": 80,
+   "kmYeni": 62,
+   "wdAyni": true
+  },
+  {
+   "ad": "Hattuşa",
+   "p": [
+    34.61548,
+    40.01994
+   ],
+   "resmi": "Çorum",
+   "yeni": "Yozgat",
+   "kmResmi": 65,
+   "kmYeni": 27,
+   "wdAyni": true
+  },
+  {
+   "ad": "Uzungöl",
+   "p": [
+    40.28853,
+    40.61594
+   ],
+   "resmi": "Trabzon",
+   "yeni": "Bayburt",
+   "kmResmi": 64,
+   "kmYeni": 40,
+   "wdAyni": true
+  },
+  {
+   "ad": "Anamur",
+   "p": [
+    32.8,
+    36.08
+   ],
+   "resmi": "Mersin",
+   "yeni": "Karaman",
+   "kmResmi": 184,
+   "kmYeni": 128,
+   "wdAyni": true
+  }
+ ],
+ "iller": [
+  {
+   "ad": "Karaman",
+   "hgm": 8678,
+   "sResmi": 36,
+   "vor": 24738,
+   "sVor": 1,
+   "harita": 8536,
+   "kayipPct": 5.2,
+   "kayip": {
+    "Mersin": 444
+   },
+   "kazanc": {
+    "Mersin": 7855,
+    "Konya": 5590,
+    "Antalya": 3200
+   }
+  },
+  {
+   "ad": "Konya",
+   "hgm": 40838,
+   "sResmi": 1,
+   "vor": 24276,
+   "sVor": 2,
+   "harita": 40785,
+   "kayipPct": 42.2,
+   "kayip": {
+    "Karaman": 5590,
+    "Aksaray": 3638,
+    "Afyonkarahisar": 2227,
+    "Niğde": 1752,
+    "Ankara": 1486,
+    "Kırşehir": 908,
+    "Isparta": 857,
+    "Mersin": 288,
+    "Antalya": 264,
+    "Kırıkkale": 205
+   },
+   "kazanc": {
+    "Antalya": 633,
+    "Isparta": 69,
+    "Aksaray": 4,
+    "Ankara": 1
+   }
+  },
+  {
+   "ad": "Sivas",
+   "hgm": 28164,
+   "sResmi": 2,
+   "vor": 22531,
+   "sVor": 3,
+   "harita": 28582,
+   "kayipPct": 27.1,
+   "kayip": {
+    "Malatya": 2017,
+    "Tokat": 1295,
+    "Giresun": 1231,
+    "Kayseri": 1193,
+    "Erzincan": 1011,
+    "Ordu": 668,
+    "Kahramanmaraş": 231,
+    "Elazığ": 64,
+    "Gümüşhane": 44
+   },
+   "kazanc": {
+    "Kayseri": 1044,
+    "Yozgat": 320,
+    "Tokat": 296,
+    "Malatya": 42
+   }
+  },
+  {
+   "ad": "Ankara",
+   "hgm": 25632,
+   "sResmi": 3,
+   "vor": 18391,
+   "sVor": 4,
+   "harita": 25626,
+   "kayipPct": 39,
+   "kayip": {
+    "Bolu": 3112,
+    "Kırıkkale": 2453,
+    "Kırşehir": 1705,
+    "Çankırı": 879,
+    "Eskişehir": 569,
+    "Karabük": 564,
+    "Aksaray": 542,
+    "Düzce": 147,
+    "Afyonkarahisar": 12,
+    "Konya": 1
+   },
+   "kazanc": {
+    "Konya": 1486,
+    "Eskişehir": 1262
+   }
+  },
+  {
+   "ad": "Kayseri",
+   "hgm": 16970,
+   "sResmi": 8,
+   "vor": 18110,
+   "sVor": 5,
+   "harita": 17185,
+   "kayipPct": 21.6,
+   "kayip": {
+    "Niğde": 1744,
+    "Sivas": 1044,
+    "Nevşehir": 584,
+    "Kahramanmaraş": 345
+   },
+   "kazanc": {
+    "Yozgat": 2176,
+    "Adana": 1236,
+    "Sivas": 1193,
+    "Nevşehir": 37
+   }
+  },
+  {
+   "ad": "Antalya",
+   "hgm": 20177,
+   "sResmi": 6,
+   "vor": 17948,
+   "sVor": 6,
+   "harita": 20319,
+   "kayipPct": 21.8,
+   "kayip": {
+    "Karaman": 3200,
+    "Konya": 633,
+    "Burdur": 414,
+    "Muğla": 159,
+    "Isparta": 19
+   },
+   "kazanc": {
+    "Muğla": 1076,
+    "Burdur": 677,
+    "Konya": 264,
+    "Isparta": 37
+   }
+  },
+  {
+   "ad": "Balıkesir",
+   "hgm": 14583,
+   "sResmi": 11,
+   "vor": 17215,
+   "sVor": 7,
+   "harita": 14546,
+   "kayipPct": 14,
+   "kayip": {
+    "Çanakkale": 785,
+    "Tekirdağ": 511,
+    "Bursa": 501,
+    "Manisa": 241,
+    "Uşak": 3
+   },
+   "kazanc": {
+    "Manisa": 1951,
+    "Çanakkale": 1422,
+    "Bursa": 731,
+    "İzmir": 502,
+    "Kütahya": 102
+   }
+  },
+  {
+   "ad": "Afyonkarahisar",
+   "hgm": 14016,
+   "sResmi": 13,
+   "vor": 16486,
+   "sVor": 8,
+   "harita": 13979,
+   "kayipPct": 19,
+   "kayip": {
+    "Burdur": 1839,
+    "Uşak": 391,
+    "Isparta": 339,
+    "Kütahya": 58,
+    "Denizli": 22
+   },
+   "kazanc": {
+    "Konya": 2227,
+    "Eskişehir": 1589,
+    "Isparta": 890,
+    "Kütahya": 401,
+    "Uşak": 39,
+    "Ankara": 12
+   }
+  },
+  {
+   "ad": "Van",
+   "hgm": 20921,
+   "sResmi": 5,
+   "vor": 16116,
+   "sVor": 9,
+   "harita": 20699,
+   "kayipPct": 30.5,
+   "kayip": {
+    "Hakkari": 3800,
+    "Ağrı": 940,
+    "Iğdır": 683,
+    "Şırnak": 682,
+    "Bitlis": 207
+   },
+   "kazanc": {
+    "Bitlis": 1463,
+    "Ağrı": 252,
+    "Muş": 13
+   }
+  },
+  {
+   "ad": "Erzurum",
+   "hgm": 25006,
+   "sResmi": 4,
+   "vor": 15807,
+   "sVor": 10,
+   "harita": 24974,
+   "kayipPct": 39.9,
+   "kayip": {
+    "Artvin": 2352,
+    "Ağrı": 1980,
+    "Bayburt": 1966,
+    "Rize": 960,
+    "Kars": 944,
+    "Muş": 887,
+    "Ardahan": 753,
+    "Bingöl": 113
+   },
+   "kazanc": {
+    "Bingöl": 305,
+    "Erzincan": 291,
+    "Muş": 139,
+    "Kars": 31,
+    "Artvin": 22
+   }
+  },
+  {
+   "ad": "Malatya",
+   "hgm": 12259,
+   "sResmi": 21,
+   "vor": 15178,
+   "sVor": 11,
+   "harita": 12289,
+   "kayipPct": 14,
+   "kayip": {
+    "Adıyaman": 884,
+    "Elazığ": 799,
+    "Sivas": 42
+   },
+   "kazanc": {
+    "Sivas": 2017,
+    "Kahramanmaraş": 1130,
+    "Elazığ": 920,
+    "Adıyaman": 513,
+    "Erzincan": 35
+   }
+  },
+  {
+   "ad": "Kahramanmaraş",
+   "hgm": 14520,
+   "sResmi": 12,
+   "vor": 14677,
+   "sVor": 12,
+   "harita": 14265,
+   "kayipPct": 14.5,
+   "kayip": {
+    "Malatya": 1130,
+    "Gaziantep": 480,
+    "Osmaniye": 344,
+    "Adıyaman": 120
+   },
+   "kazanc": {
+    "Adana": 1162,
+    "Kayseri": 345,
+    "Adıyaman": 340,
+    "Gaziantep": 234,
+    "Sivas": 231,
+    "Osmaniye": 173
+   }
+  },
+  {
+   "ad": "Ağrı",
+   "hgm": 11099,
+   "sResmi": 26,
+   "vor": 14489,
+   "sVor": 13,
+   "harita": 11312,
+   "kayipPct": 27.7,
+   "kayip": {
+    "Iğdır": 2879,
+    "Van": 252
+   },
+   "kazanc": {
+    "Erzurum": 1980,
+    "Kars": 1590,
+    "Muş": 1415,
+    "Van": 940,
+    "Iğdır": 383
+   }
+  },
+  {
+   "ad": "Uşak",
+   "hgm": 5555,
+   "sResmi": 61,
+   "vor": 13830,
+   "sVor": 14,
+   "harita": 5557,
+   "kayipPct": 3.3,
+   "kayip": {
+    "Denizli": 148,
+    "Afyonkarahisar": 39
+   },
+   "kazanc": {
+    "Kütahya": 3410,
+    "Manisa": 3319,
+    "Denizli": 1335,
+    "Afyonkarahisar": 391,
+    "Balıkesir": 3
+   }
+  },
+  {
+   "ad": "Muğla",
+   "hgm": 12654,
+   "sResmi": 19,
+   "vor": 12997,
+   "sVor": 15,
+   "harita": 12579,
+   "kayipPct": 15.5,
+   "kayip": {
+    "Antalya": 1076,
+    "Aydın": 872
+   },
+   "kazanc": {
+    "Denizli": 1361,
+    "Aydın": 701,
+    "Antalya": 159,
+    "Burdur": 145
+   }
+  },
+  {
+   "ad": "Şanlıurfa",
+   "hgm": 19242,
+   "sResmi": 7,
+   "vor": 12901,
+   "sVor": 16,
+   "harita": 19242,
+   "kayipPct": 33,
+   "kayip": {
+    "Diyarbakır": 2419,
+    "Adıyaman": 1546,
+    "Mardin": 1541,
+    "Gaziantep": 729,
+    "Elazığ": 107
+   },
+   "kazanc": {}
+  },
+  {
+   "ad": "Kastamonu",
+   "hgm": 13064,
+   "sResmi": 18,
+   "vor": 12685,
+   "sVor": 17,
+   "harita": 13125,
+   "kayipPct": 17.1,
+   "kayip": {
+    "Bartın": 831,
+    "Karabük": 818,
+    "Çankırı": 492,
+    "Sinop": 103
+   },
+   "kazanc": {
+    "Çorum": 919,
+    "Sinop": 701,
+    "Çankırı": 184
+   }
+  },
+  {
+   "ad": "Hakkari",
+   "hgm": 7095,
+   "sResmi": 48,
+   "vor": 12019,
+   "sVor": 18,
+   "harita": 7048,
+   "kayipPct": 0,
+   "kayip": {},
+   "kazanc": {
+    "Van": 3800,
+    "Şırnak": 1171
+   }
+  },
+  {
+   "ad": "Denizli",
+   "hgm": 12134,
+   "sResmi": 22,
+   "vor": 11972,
+   "sVor": 19,
+   "harita": 11948,
+   "kayipPct": 28,
+   "kayip": {
+    "Muğla": 1361,
+    "Uşak": 1335,
+    "Burdur": 648
+   },
+   "kazanc": {
+    "Aydın": 1426,
+    "Burdur": 1048,
+    "Manisa": 725,
+    "Uşak": 148,
+    "Afyonkarahisar": 22
+   }
+  },
+  {
+   "ad": "Erzincan",
+   "hgm": 11815,
+   "sResmi": 24,
+   "vor": 11968,
+   "sVor": 20,
+   "harita": 11678,
+   "kayipPct": 28.1,
+   "kayip": {
+    "Bayburt": 1649,
+    "Tunceli": 643,
+    "Elazığ": 592,
+    "Erzurum": 291,
+    "Bingöl": 72,
+    "Malatya": 35
+   },
+   "kazanc": {
+    "Gümüşhane": 1286,
+    "Tunceli": 1057,
+    "Sivas": 1011,
+    "Bayburt": 164,
+    "Giresun": 53
+   }
+  },
+  {
+   "ad": "Yozgat",
+   "hgm": 13690,
+   "sResmi": 16,
+   "vor": 11852,
+   "sVor": 21,
+   "harita": 13395,
+   "kayipPct": 31.2,
+   "kayip": {
+    "Kayseri": 2176,
+    "Tokat": 930,
+    "Amasya": 330,
+    "Sivas": 320,
+    "Çorum": 297,
+    "Kırıkkale": 90,
+    "Nevşehir": 26,
+    "Kırşehir": 6
+   },
+   "kazanc": {
+    "Çorum": 2063,
+    "Kırşehir": 442,
+    "Nevşehir": 107,
+    "Kırıkkale": 20
+   }
+  },
+  {
+   "ad": "Eskişehir",
+   "hgm": 13960,
+   "sResmi": 14,
+   "vor": 11750,
+   "sVor": 22,
+   "harita": 13962,
+   "kayipPct": 26.3,
+   "kayip": {
+    "Afyonkarahisar": 1589,
+    "Ankara": 1262,
+    "Kütahya": 489,
+    "Bolu": 322,
+    "Bilecik": 14
+   },
+   "kazanc": {
+    "Ankara": 569,
+    "Bolu": 463,
+    "Bilecik": 419,
+    "Kütahya": 13
+   }
+  },
+  {
+   "ad": "Niğde",
+   "hgm": 7234,
+   "sResmi": 46,
+   "vor": 11512,
+   "sVor": 23,
+   "harita": 7283,
+   "kayipPct": 8.5,
+   "kayip": {
+    "Aksaray": 334,
+    "Nevşehir": 211,
+    "Mersin": 71
+   },
+   "kazanc": {
+    "Konya": 1752,
+    "Kayseri": 1744,
+    "Adana": 1294,
+    "Mersin": 47,
+    "Aksaray": 4,
+    "Nevşehir": 4
+   }
+  },
+  {
+   "ad": "Aksaray",
+   "hgm": 7659,
+   "sResmi": 41,
+   "vor": 11359,
+   "sVor": 24,
+   "harita": 7822,
+   "kayipPct": 12.7,
+   "kayip": {
+    "Kırşehir": 815,
+    "Nevşehir": 170,
+    "Konya": 4,
+    "Niğde": 4
+   },
+   "kazanc": {
+    "Konya": 3638,
+    "Ankara": 542,
+    "Niğde": 334,
+    "Nevşehir": 16
+   }
+  },
+  {
+   "ad": "Diyarbakır",
+   "hgm": 15101,
+   "sResmi": 10,
+   "vor": 11301,
+   "sVor": 25,
+   "harita": 15152,
+   "kayipPct": 44.4,
+   "kayip": {
+    "Batman": 2994,
+    "Bingöl": 1297,
+    "Elazığ": 1165,
+    "Muş": 1051,
+    "Mardin": 220
+   },
+   "kazanc": {
+    "Şanlıurfa": 2419,
+    "Mardin": 442,
+    "Elazığ": 16
+   }
+  },
+  {
+   "ad": "Manisa",
+   "hgm": 13339,
+   "sResmi": 17,
+   "vor": 10375,
+   "sVor": 26,
+   "harita": 13243,
+   "kayipPct": 49.3,
+   "kayip": {
+    "Uşak": 3319,
+    "Balıkesir": 1951,
+    "Denizli": 725,
+    "Aydın": 538
+   },
+   "kazanc": {
+    "İzmir": 3424,
+    "Balıkesir": 241
+   }
+  },
+  {
+   "ad": "Çorum",
+   "hgm": 12428,
+   "sResmi": 20,
+   "vor": 10318,
+   "sVor": 27,
+   "harita": 12520,
+   "kayipPct": 35.6,
+   "kayip": {
+    "Yozgat": 2063,
+    "Çankırı": 1248,
+    "Kastamonu": 919,
+    "Amasya": 126,
+    "Kırıkkale": 96
+   },
+   "kazanc": {
+    "Amasya": 1174,
+    "Samsun": 655,
+    "Yozgat": 297,
+    "Sinop": 113,
+    "Tokat": 10
+   }
+  },
+  {
+   "ad": "Aydın",
+   "hgm": 8116,
+   "sResmi": 39,
+   "vor": 10307,
+   "sVor": 28,
+   "harita": 8074,
+   "kayipPct": 26.3,
+   "kayip": {
+    "Denizli": 1426,
+    "Muğla": 701
+   },
+   "kazanc": {
+    "İzmir": 2950,
+    "Muğla": 872,
+    "Manisa": 538
+   }
+  },
+  {
+   "ad": "Bingöl",
+   "hgm": 8003,
+   "sResmi": 40,
+   "vor": 10296,
+   "sVor": 29,
+   "harita": 8253,
+   "kayipPct": 16.1,
+   "kayip": {
+    "Muş": 784,
+    "Erzurum": 305,
+    "Tunceli": 243
+   },
+   "kazanc": {
+    "Elazığ": 1759,
+    "Diyarbakır": 1297,
+    "Tunceli": 135,
+    "Erzurum": 113,
+    "Erzincan": 72
+   }
+  },
+  {
+   "ad": "Çanakkale",
+   "hgm": 9817,
+   "sResmi": 30,
+   "vor": 10243,
+   "sVor": 30,
+   "harita": 9791,
+   "kayipPct": 19.3,
+   "kayip": {
+    "Balıkesir": 1422,
+    "Tekirdağ": 471
+   },
+   "kazanc": {
+    "Edirne": 1539,
+    "Balıkesir": 785,
+    "Tekirdağ": 21
+   }
+  },
+  {
+   "ad": "Tokat",
+   "hgm": 10042,
+   "sResmi": 29,
+   "vor": 10140,
+   "sVor": 31,
+   "harita": 10028,
+   "kayipPct": 26.1,
+   "kayip": {
+    "Amasya": 1593,
+    "Ordu": 513,
+    "Sivas": 296,
+    "Samsun": 203,
+    "Çorum": 10
+   },
+   "kazanc": {
+    "Sivas": 1295,
+    "Yozgat": 930,
+    "Ordu": 402,
+    "Amasya": 100
+   }
+  },
+  {
+   "ad": "Elazığ",
+   "hgm": 9383,
+   "sResmi": 32,
+   "vor": 9829,
+   "sVor": 32,
+   "harita": 9150,
+   "kayipPct": 37.4,
+   "kayip": {
+    "Bingöl": 1759,
+    "Malatya": 920,
+    "Tunceli": 724,
+    "Diyarbakır": 16
+   },
+   "kazanc": {
+    "Diyarbakır": 1165,
+    "Tunceli": 1081,
+    "Malatya": 799,
+    "Erzincan": 592,
+    "Adıyaman": 289,
+    "Şanlıurfa": 107,
+    "Sivas": 64
+   }
+  },
+  {
+   "ad": "Muş",
+   "hgm": 8718,
+   "sResmi": 35,
+   "vor": 9801,
+   "sVor": 33,
+   "harita": 8791,
+   "kayipPct": 31.7,
+   "kayip": {
+    "Ağrı": 1415,
+    "Bitlis": 1218,
+    "Erzurum": 139,
+    "Van": 13
+   },
+   "kazanc": {
+    "Diyarbakır": 1051,
+    "Erzurum": 887,
+    "Bingöl": 784,
+    "Batman": 729,
+    "Bitlis": 344
+   }
+  },
+  {
+   "ad": "Kırşehir",
+   "hgm": 6584,
+   "sResmi": 53,
+   "vor": 9708,
+   "sVor": 34,
+   "harita": 6579,
+   "kayipPct": 18.1,
+   "kayip": {
+    "Kırıkkale": 748,
+    "Yozgat": 442
+   },
+   "kazanc": {
+    "Ankara": 1705,
+    "Konya": 908,
+    "Nevşehir": 885,
+    "Aksaray": 815,
+    "Yozgat": 6
+   }
+  },
+  {
+   "ad": "Isparta",
+   "hgm": 8946,
+   "sResmi": 33,
+   "vor": 9612,
+   "sVor": 35,
+   "harita": 8680,
+   "kayipPct": 16.4,
+   "kayip": {
+    "Afyonkarahisar": 890,
+    "Burdur": 425,
+    "Konya": 69,
+    "Antalya": 37
+   },
+   "kazanc": {
+    "Burdur": 1140,
+    "Konya": 857,
+    "Afyonkarahisar": 339,
+    "Antalya": 19
+   }
+  },
+  {
+   "ad": "Kars",
+   "hgm": 10193,
+   "sResmi": 28,
+   "vor": 9461,
+   "sVor": 36,
+   "harita": 10270,
+   "kayipPct": 19.6,
+   "kayip": {
+    "Ağrı": 1590,
+    "Iğdır": 278,
+    "Ardahan": 117,
+    "Erzurum": 31
+   },
+   "kazanc": {
+    "Erzurum": 944,
+    "Ardahan": 263
+   }
+  },
+  {
+   "ad": "Bolu",
+   "hgm": 8313,
+   "sResmi": 37,
+   "vor": 9313,
+   "sVor": 37,
+   "harita": 8205,
+   "kayipPct": 38.3,
+   "kayip": {
+    "Düzce": 1294,
+    "Karabük": 880,
+    "Sakarya": 496,
+    "Eskişehir": 463,
+    "Bilecik": 11
+   },
+   "kazanc": {
+    "Ankara": 3112,
+    "Düzce": 563,
+    "Eskişehir": 322,
+    "Zonguldak": 240,
+    "Karabük": 16
+   }
+  },
+  {
+   "ad": "Çankırı",
+   "hgm": 7542,
+   "sResmi": 43,
+   "vor": 9240,
+   "sVor": 38,
+   "harita": 7603,
+   "kayipPct": 17.2,
+   "kayip": {
+    "Karabük": 1123,
+    "Kastamonu": 184
+   },
+   "kazanc": {
+    "Çorum": 1248,
+    "Ankara": 879,
+    "Kastamonu": 492,
+    "Kırıkkale": 326
+   }
+  },
+  {
+   "ad": "Artvin",
+   "hgm": 7393,
+   "sResmi": 44,
+   "vor": 9110,
+   "sVor": 39,
+   "harita": 7349,
+   "kayipPct": 14.9,
+   "kayip": {
+    "Ardahan": 1010,
+    "Rize": 63,
+    "Erzurum": 22
+   },
+   "kazanc": {
+    "Erzurum": 2352,
+    "Rize": 502
+   }
+  },
+  {
+   "ad": "Adıyaman",
+   "hgm": 7337,
+   "sResmi": 45,
+   "vor": 8986,
+   "sVor": 40,
+   "harita": 7423,
+   "kayipPct": 16.1,
+   "kayip": {
+    "Malatya": 513,
+    "Kahramanmaraş": 340,
+    "Elazığ": 289,
+    "Gaziantep": 53
+   },
+   "kazanc": {
+    "Şanlıurfa": 1546,
+    "Malatya": 884,
+    "Gaziantep": 208,
+    "Kahramanmaraş": 120
+   }
+  },
+  {
+   "ad": "Mardin",
+   "hgm": 8780,
+   "sResmi": 34,
+   "vor": 8684,
+   "sVor": 41,
+   "harita": 8600,
+   "kayipPct": 19.9,
+   "kayip": {
+    "Batman": 616,
+    "Siirt": 596,
+    "Diyarbakır": 442,
+    "Şırnak": 55
+   },
+   "kazanc": {
+    "Şanlıurfa": 1541,
+    "Diyarbakır": 220,
+    "Şırnak": 31
+   }
+  },
+  {
+   "ad": "Tekirdağ",
+   "hgm": 6190,
+   "sResmi": 55,
+   "vor": 8473,
+   "sVor": 42,
+   "harita": 6187,
+   "kayipPct": 5.8,
+   "kayip": {
+    "Kırklareli": 327,
+    "Çanakkale": 21,
+    "Edirne": 11
+   },
+   "kazanc": {
+    "İstanbul": 725,
+    "Edirne": 546,
+    "Balıkesir": 511,
+    "Çanakkale": 471,
+    "Kırklareli": 392
+   }
+  },
+  {
+   "ad": "Mersin",
+   "hgm": 16010,
+   "sResmi": 9,
+   "vor": 8460,
+   "sVor": 43,
+   "harita": 16139,
+   "kayipPct": 52.9,
+   "kayip": {
+    "Karaman": 7855,
+    "Adana": 643,
+    "Niğde": 47
+   },
+   "kazanc": {
+    "Karaman": 444,
+    "Konya": 288,
+    "Niğde": 71,
+    "Adana": 64
+   }
+  },
+  {
+   "ad": "Bursa",
+   "hgm": 10813,
+   "sResmi": 27,
+   "vor": 8438,
+   "sVor": 44,
+   "harita": 10780,
+   "kayipPct": 31.1,
+   "kayip": {
+    "Bilecik": 1361,
+    "Yalova": 950,
+    "Balıkesir": 731,
+    "Kocaeli": 312
+   },
+   "kazanc": {
+    "Balıkesir": 501,
+    "Kütahya": 478,
+    "Yalova": 32
+   }
+  },
+  {
+   "ad": "Osmaniye",
+   "hgm": 3320,
+   "sResmi": 77,
+   "vor": 8184,
+   "sVor": 45,
+   "harita": 3348,
+   "kayipPct": 5.2,
+   "kayip": {
+    "Kahramanmaraş": 173
+   },
+   "kazanc": {
+    "Adana": 2579,
+    "Hatay": 1384,
+    "Gaziantep": 703,
+    "Kahramanmaraş": 344
+   }
+  },
+  {
+   "ad": "Bitlis",
+   "hgm": 8294,
+   "sResmi": 38,
+   "vor": 8087,
+   "sVor": 46,
+   "harita": 8355,
+   "kayipPct": 23.4,
+   "kayip": {
+    "Van": 1463,
+    "Muş": 344,
+    "Siirt": 92,
+    "Şırnak": 53
+   },
+   "kazanc": {
+    "Muş": 1218,
+    "Van": 207,
+    "Siirt": 197,
+    "Batman": 61
+   }
+  },
+  {
+   "ad": "Kırıkkale",
+   "hgm": 4791,
+   "sResmi": 67,
+   "vor": 8007,
+   "sVor": 47,
+   "harita": 4760,
+   "kayipPct": 7.3,
+   "kayip": {
+    "Çankırı": 326,
+    "Yozgat": 20
+   },
+   "kazanc": {
+    "Ankara": 2453,
+    "Kırşehir": 748,
+    "Konya": 205,
+    "Çorum": 96,
+    "Yozgat": 90
+   }
+  },
+  {
+   "ad": "Amasya",
+   "hgm": 5628,
+   "sResmi": 60,
+   "vor": 7984,
+   "sVor": 48,
+   "harita": 5634,
+   "kayipPct": 26.2,
+   "kayip": {
+    "Çorum": 1174,
+    "Samsun": 202,
+    "Tokat": 100
+   },
+   "kazanc": {
+    "Samsun": 1720,
+    "Tokat": 1593,
+    "Yozgat": 330,
+    "Çorum": 126,
+    "Sinop": 57
+   }
+  },
+  {
+   "ad": "Adana",
+   "hgm": 13844,
+   "sResmi": 15,
+   "vor": 7982,
+   "sVor": 49,
+   "harita": 13674,
+   "kayipPct": 46.3,
+   "kayip": {
+    "Osmaniye": 2579,
+    "Niğde": 1294,
+    "Kayseri": 1236,
+    "Kahramanmaraş": 1162,
+    "Mersin": 64
+   },
+   "kazanc": {
+    "Mersin": 643
+   }
+  },
+  {
+   "ad": "Kütahya",
+   "hgm": 11634,
+   "sResmi": 25,
+   "vor": 7915,
+   "sVor": 50,
+   "harita": 11802,
+   "kayipPct": 39.3,
+   "kayip": {
+    "Uşak": 3410,
+    "Bursa": 478,
+    "Afyonkarahisar": 401,
+    "Bilecik": 238,
+    "Balıkesir": 102,
+    "Eskişehir": 13
+   },
+   "kazanc": {
+    "Eskişehir": 489,
+    "Bilecik": 209,
+    "Afyonkarahisar": 58
+   }
+  },
+  {
+   "ad": "Şırnak",
+   "hgm": 7078,
+   "sResmi": 49,
+   "vor": 7890,
+   "sVor": 51,
+   "harita": 7223,
+   "kayipPct": 22.5,
+   "kayip": {
+    "Hakkari": 1171,
+    "Siirt": 416,
+    "Mardin": 31,
+    "Batman": 8
+   },
+   "kazanc": {
+    "Siirt": 1504,
+    "Van": 682,
+    "Mardin": 55,
+    "Bitlis": 53
+   }
+  },
+  {
+   "ad": "Bayburt",
+   "hgm": 3746,
+   "sResmi": 73,
+   "vor": 7829,
+   "sVor": 52,
+   "harita": 3588,
+   "kayipPct": 5.3,
+   "kayip": {
+    "Erzincan": 164,
+    "Gümüşhane": 27
+   },
+   "kazanc": {
+    "Erzurum": 1966,
+    "Erzincan": 1649,
+    "Trabzon": 497,
+    "Gümüşhane": 216,
+    "Rize": 97,
+    "Tunceli": 8
+   }
+  },
+  {
+   "ad": "Karabük",
+   "hgm": 4142,
+   "sResmi": 71,
+   "vor": 7823,
+   "sVor": 53,
+   "harita": 4176,
+   "kayipPct": 3.4,
+   "kayip": {
+    "Zonguldak": 101,
+    "Bartın": 25,
+    "Bolu": 16
+   },
+   "kazanc": {
+    "Çankırı": 1123,
+    "Bolu": 880,
+    "Kastamonu": 818,
+    "Ankara": 564,
+    "Bartın": 353,
+    "Zonguldak": 51
+   }
+  },
+  {
+   "ad": "Burdur",
+   "hgm": 7175,
+   "sResmi": 47,
+   "vor": 7644,
+   "sVor": 54,
+   "harita": 7326,
+   "kayipPct": 41.1,
+   "kayip": {
+    "Isparta": 1140,
+    "Denizli": 1048,
+    "Antalya": 677,
+    "Muğla": 145
+   },
+   "kazanc": {
+    "Afyonkarahisar": 1839,
+    "Denizli": 648,
+    "Isparta": 425,
+    "Antalya": 414
+   }
+  },
+  {
+   "ad": "Samsun",
+   "hgm": 9725,
+   "sResmi": 31,
+   "vor": 7458,
+   "sVor": 55,
+   "harita": 9636,
+   "kayipPct": 31.5,
+   "kayip": {
+    "Amasya": 1720,
+    "Çorum": 655,
+    "Sinop": 646,
+    "Ordu": 19
+   },
+   "kazanc": {
+    "Ordu": 430,
+    "Tokat": 203,
+    "Amasya": 202,
+    "Sinop": 28
+   }
+  },
+  {
+   "ad": "Gümüşhane",
+   "hgm": 6668,
+   "sResmi": 52,
+   "vor": 7110,
+   "sVor": 56,
+   "harita": 6666,
+   "kayipPct": 24.3,
+   "kayip": {
+    "Erzincan": 1286,
+    "Bayburt": 216,
+    "Giresun": 77,
+    "Trabzon": 39
+   },
+   "kazanc": {
+    "Giresun": 1284,
+    "Trabzon": 708,
+    "Sivas": 44,
+    "Bayburt": 27
+   }
+  },
+  {
+   "ad": "Iğdır",
+   "hgm": 3664,
+   "sResmi": 74,
+   "vor": 7029,
+   "sVor": 57,
+   "harita": 3573,
+   "kayipPct": 10.7,
+   "kayip": {
+    "Ağrı": 383
+   },
+   "kazanc": {
+    "Ağrı": 2879,
+    "Van": 683,
+    "Kars": 278
+   }
+  },
+  {
+   "ad": "Tunceli",
+   "hgm": 7582,
+   "sResmi": 42,
+   "vor": 6946,
+   "sVor": 58,
+   "harita": 7616,
+   "kayipPct": 29.9,
+   "kayip": {
+    "Elazığ": 1081,
+    "Erzincan": 1057,
+    "Bingöl": 135,
+    "Bayburt": 8
+   },
+   "kazanc": {
+    "Elazığ": 724,
+    "Erzincan": 643,
+    "Bingöl": 243
+   }
+  },
+  {
+   "ad": "Batman",
+   "hgm": 4477,
+   "sResmi": 69,
+   "vor": 6906,
+   "sVor": 59,
+   "harita": 4561,
+   "kayipPct": 31.8,
+   "kayip": {
+    "Muş": 729,
+    "Siirt": 660,
+    "Bitlis": 61
+   },
+   "kazanc": {
+    "Diyarbakır": 2994,
+    "Mardin": 616,
+    "Siirt": 177,
+    "Şırnak": 8
+   }
+  },
+  {
+   "ad": "Kırklareli",
+   "hgm": 6459,
+   "sResmi": 54,
+   "vor": 6745,
+   "sVor": 60,
+   "harita": 6370,
+   "kayipPct": 7,
+   "kayip": {
+    "Tekirdağ": 392,
+    "Edirne": 53
+   },
+   "kazanc": {
+    "Edirne": 448,
+    "Tekirdağ": 327,
+    "İstanbul": 44
+   }
+  },
+  {
+   "ad": "Ardahan",
+   "hgm": 4934,
+   "sResmi": 65,
+   "vor": 6544,
+   "sVor": 61,
+   "harita": 4927,
+   "kayipPct": 5.3,
+   "kayip": {
+    "Kars": 263
+   },
+   "kazanc": {
+    "Artvin": 1010,
+    "Erzurum": 753,
+    "Kars": 117
+   }
+  },
+  {
+   "ad": "Giresun",
+   "hgm": 6972,
+   "sResmi": 50,
+   "vor": 6508,
+   "sVor": 62,
+   "harita": 6961,
+   "kayipPct": 25.6,
+   "kayip": {
+    "Gümüşhane": 1284,
+    "Ordu": 284,
+    "Trabzon": 160,
+    "Erzincan": 53
+   },
+   "kazanc": {
+    "Sivas": 1231,
+    "Gümüşhane": 77,
+    "Ordu": 20
+   }
+  },
+  {
+   "ad": "Ordu",
+   "hgm": 5914,
+   "sResmi": 57,
+   "vor": 6416,
+   "sVor": 63,
+   "harita": 5784,
+   "kayipPct": 14.7,
+   "kayip": {
+    "Samsun": 430,
+    "Tokat": 402,
+    "Giresun": 20
+   },
+   "kazanc": {
+    "Sivas": 668,
+    "Tokat": 513,
+    "Giresun": 284,
+    "Samsun": 19
+   }
+  },
+  {
+   "ad": "Gaziantep",
+   "hgm": 6803,
+   "sResmi": 51,
+   "vor": 6410,
+   "sVor": 64,
+   "harita": 6797,
+   "kayipPct": 24.6,
+   "kayip": {
+    "Osmaniye": 703,
+    "Kilis": 526,
+    "Kahramanmaraş": 234,
+    "Adıyaman": 208
+   },
+   "kazanc": {
+    "Şanlıurfa": 729,
+    "Kahramanmaraş": 480,
+    "Adıyaman": 53,
+    "Kilis": 23
+   }
+  },
+  {
+   "ad": "Sinop",
+   "hgm": 5717,
+   "sResmi": 59,
+   "vor": 5465,
+   "sVor": 65,
+   "harita": 5615,
+   "kayipPct": 16,
+   "kayip": {
+    "Kastamonu": 701,
+    "Çorum": 113,
+    "Amasya": 57,
+    "Samsun": 28
+   },
+   "kazanc": {
+    "Samsun": 646,
+    "Kastamonu": 103
+   }
+  },
+  {
+   "ad": "Nevşehir",
+   "hgm": 5485,
+   "sResmi": 63,
+   "vor": 5419,
+   "sVor": 66,
+   "harita": 5477,
+   "kayipPct": 19.2,
+   "kayip": {
+    "Kırşehir": 885,
+    "Yozgat": 107,
+    "Kayseri": 37,
+    "Aksaray": 16,
+    "Niğde": 4
+   },
+   "kazanc": {
+    "Kayseri": 584,
+    "Niğde": 211,
+    "Aksaray": 170,
+    "Yozgat": 26
+   }
+  },
+  {
+   "ad": "Siirt",
+   "hgm": 5717,
+   "sResmi": 58,
+   "vor": 5407,
+   "sVor": 67,
+   "harita": 5522,
+   "kayipPct": 34,
+   "kayip": {
+    "Şırnak": 1504,
+    "Bitlis": 197,
+    "Batman": 177
+   },
+   "kazanc": {
+    "Batman": 660,
+    "Mardin": 596,
+    "Şırnak": 416,
+    "Bitlis": 92
+   }
+  },
+  {
+   "ad": "Bilecik",
+   "hgm": 4179,
+   "sResmi": 70,
+   "vor": 5278,
+   "sVor": 68,
+   "harita": 4154,
+   "kayipPct": 17.6,
+   "kayip": {
+    "Eskişehir": 419,
+    "Kütahya": 209,
+    "Kocaeli": 88,
+    "Sakarya": 16
+   },
+   "kazanc": {
+    "Bursa": 1361,
+    "Kütahya": 238,
+    "Sakarya": 232,
+    "Eskişehir": 14,
+    "Bolu": 11
+   }
+  },
+  {
+   "ad": "Rize",
+   "hgm": 3835,
+   "sResmi": 72,
+   "vor": 5119,
+   "sVor": 69,
+   "harita": 3828,
+   "kayipPct": 15.6,
+   "kayip": {
+    "Artvin": 502,
+    "Bayburt": 97
+   },
+   "kazanc": {
+    "Erzurum": 960,
+    "Trabzon": 867,
+    "Artvin": 63
+   }
+  },
+  {
+   "ad": "İzmir",
+   "hgm": 11891,
+   "sResmi": 23,
+   "vor": 5098,
+   "sVor": 70,
+   "harita": 11973,
+   "kayipPct": 57.4,
+   "kayip": {
+    "Manisa": 3424,
+    "Aydın": 2950,
+    "Balıkesir": 502
+   },
+   "kazanc": {}
+  },
+  {
+   "ad": "Sakarya",
+   "hgm": 4824,
+   "sResmi": 66,
+   "vor": 4690,
+   "sVor": 71,
+   "harita": 4818,
+   "kayipPct": 22.8,
+   "kayip": {
+    "Düzce": 600,
+    "Kocaeli": 267,
+    "Bilecik": 232
+   },
+   "kazanc": {
+    "Bolu": 496,
+    "Kocaeli": 459,
+    "Bilecik": 16
+   }
+  },
+  {
+   "ad": "Düzce",
+   "hgm": 2492,
+   "sResmi": 78,
+   "vor": 4322,
+   "sVor": 72,
+   "harita": 2606,
+   "kayipPct": 21.6,
+   "kayip": {
+    "Bolu": 563
+   },
+   "kazanc": {
+    "Bolu": 1294,
+    "Sakarya": 600,
+    "Zonguldak": 238,
+    "Ankara": 147
+   }
+  },
+  {
+   "ad": "Hatay",
+   "hgm": 5524,
+   "sResmi": 62,
+   "vor": 4014,
+   "sVor": 73,
+   "harita": 5536,
+   "kayipPct": 27.5,
+   "kayip": {
+    "Osmaniye": 1384,
+    "Kilis": 139
+   },
+   "kazanc": {}
+  },
+  {
+   "ad": "İstanbul",
+   "hgm": 5461,
+   "sResmi": 64,
+   "vor": 3945,
+   "sVor": 74,
+   "harita": 5451,
+   "kayipPct": 27.6,
+   "kayip": {
+    "Tekirdağ": 725,
+    "Kocaeli": 500,
+    "Yalova": 236,
+    "Kırklareli": 44
+   },
+   "kazanc": {}
+  },
+  {
+   "ad": "Edirne",
+   "hgm": 6145,
+   "sResmi": 56,
+   "vor": 3744,
+   "sVor": 75,
+   "harita": 6214,
+   "kayipPct": 40.8,
+   "kayip": {
+    "Çanakkale": 1539,
+    "Tekirdağ": 546,
+    "Kırklareli": 448
+   },
+   "kazanc": {
+    "Kırklareli": 53,
+    "Tekirdağ": 11
+   }
+  },
+  {
+   "ad": "Kocaeli",
+   "hgm": 3397,
+   "sResmi": 75,
+   "vor": 3646,
+   "sVor": 76,
+   "harita": 3415,
+   "kayipPct": 27.4,
+   "kayip": {
+    "Yalova": 478,
+    "Sakarya": 459
+   },
+   "kazanc": {
+    "İstanbul": 500,
+    "Bursa": 312,
+    "Sakarya": 267,
+    "Bilecik": 88
+   }
+  },
+  {
+   "ad": "Bartın",
+   "hgm": 2330,
+   "sResmi": 79,
+   "vor": 3160,
+   "sVor": 77,
+   "harita": 2378,
+   "kayipPct": 14.8,
+   "kayip": {
+    "Karabük": 353
+   },
+   "kazanc": {
+    "Kastamonu": 831,
+    "Zonguldak": 279,
+    "Karabük": 25
+   }
+  },
+  {
+   "ad": "Trabzon",
+   "hgm": 4628,
+   "sResmi": 68,
+   "vor": 2797,
+   "sVor": 78,
+   "harita": 4669,
+   "kayipPct": 44.4,
+   "kayip": {
+    "Rize": 867,
+    "Gümüşhane": 708,
+    "Bayburt": 497
+   },
+   "kazanc": {
+    "Giresun": 160,
+    "Gümüşhane": 39
+   }
+  },
+  {
+   "ad": "Zonguldak",
+   "hgm": 3342,
+   "sResmi": 76,
+   "vor": 2468,
+   "sVor": 79,
+   "harita": 3175,
+   "kayipPct": 25.4,
+   "kayip": {
+    "Bartın": 279,
+    "Bolu": 240,
+    "Düzce": 238,
+    "Karabük": 51
+   },
+   "kazanc": {
+    "Karabük": 101
+   }
+  },
+  {
+   "ad": "Yalova",
+   "hgm": 798,
+   "sResmi": 81,
+   "vor": 2422,
+   "sVor": 80,
+   "harita": 790,
+   "kayipPct": 4,
+   "kayip": {
+    "Bursa": 32
+   },
+   "kazanc": {
+    "Bursa": 950,
+    "Kocaeli": 478,
+    "İstanbul": 236
+   }
+  },
+  {
+   "ad": "Kilis",
+   "hgm": 1412,
+   "sResmi": 80,
+   "vor": 2044,
+   "sVor": 81,
+   "harita": 1402,
+   "kayipPct": 1.6,
+   "kayip": {
+    "Gaziantep": 23
+   },
+   "kazanc": {
+    "Gaziantep": 526,
+    "Hatay": 139
+   }
+  }
+ ]
+}

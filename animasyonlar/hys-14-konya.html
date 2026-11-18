@@ -1,0 +1,379 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>En büyük il Konya değil</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@600;800&family=IBM+Plex+Mono:wght@500&display=block" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/d3-array@3.2.4/dist/d3-array.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/d3-geo@3.1.1/dist/d3-geo.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/topojson-client@3.1.0/dist/topojson-client.min.js"></script>
+<style>
+  html, body { margin: 0; height: 100%; background: #0b141b; }
+  body { display: grid; place-items: center; overflow: hidden; }
+  canvas { display: block; }
+  #hud { position: fixed; left: 12px; bottom: 10px; font: 12px/1.4 ui-monospace, monospace;
+         color: #bbb; background: rgba(0,0,0,.55); padding: 4px 8px; border-radius: 4px; user-select: none; }
+  body.render #hud { display: none; }
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div id="hud">yükleniyor…</div>
+<audio id="vo" src="../ses/hys-14-konya/voice.wav" preload="auto"></audio>
+<script src="../lib/ikonlar.js"></script>
+<script src="../lib/ikon-seti.js"></script>
+<script src="../lib/iller.js"></script>
+<script src="../lib/ikon-katmani.js"></script>
+<script src="../veri/hys-14/konya.js"></script>
+<script src="../lib/harita-motoru.js"></script>
+<script>
+'use strict';
+// Harita Yalan Söyler · Bölüm 14 — "Türkiye'nin en büyük ili artık Konya değil"
+// Kural: her yer kuşuçuşu en yakın il merkezine bağlanır (küresel Voronoi). Brif: hys-14-konya.brief.md.
+// Veri: tools/hys-14-konya.mjs → veri/hys-14/konya.js (geoBoundaries sınırları, GeoNames il merkezleri, HGM resmî alanlar).
+// Ekrandaki her sayı aşağıda KONYA verisinden hesaplanır.
+
+/*VO:BEGIN*/ const VO = {"duration":43.81,"lines":[{"id":"l1","start":0.15,"end":3.291,"text":"Türkiye'nin en büyük ili, artık Konya değil."},{"id":"l2","start":3.541,"end":7.989,"text":"Tek bir kural koydum: her yer, kuşuçuşu en yakın il merkezine bağlansın."},{"id":"l3","start":8.239,"end":11.103,"text":"Türkiye'nin dörtte birinden fazlası, il değiştiriyor."},{"id":"l4","start":11.353,"end":16.425,"text":"İzmir, toprağının yarısından fazlasını kaybediyor. Efes Aydın'a, Bergama Manisa'ya geçiyor."},{"id":"l5","start":16.675,"end":21.944,"text":"Hititlerin başkenti Hattuşa, Çorum'dan Yozgat'a. Trabzon'un Uzungöl'ü bile, Bayburt'a."},{"id":"l6","start":22.194,"end":25.333,"text":"Konya ise, toprağının %42'sini kaybediyor."},{"id":"l7","start":25.583,"end":28.955,"text":"Peki en büyük il kim? Zirvede iki il var, başa baş."},{"id":"l8","start":29.555,"end":33.208,"text":"Birinci: Karaman! 36. sıradan, birinciliğe."},{"id":"l9","start":33.458,"end":37.261,"text":"Üstelik Karaman, 1989'a kadar, Konya'nın bir ilçesiydi."},{"id":"l10","start":37.511,"end":40.213,"text":"Senin ilin büyüdü mü, küçüldü mü? Durdur, bul."}]}; /*VO:END*/
+const { C, SANS, MONO, W, H, SAFE, GLOBE, ctx, clamp, lerp, prog, win, ease, text, textTab, pin } = HYS;
+
+// ── veri ──
+const K = KONYA, BY = Object.fromEntries(K.iller.map(i => [i.ad, i]));
+const KON = BY['Konya'], KAR = BY['Karaman'], IZM = BY['İzmir'];
+const BIRINCI = K.iller[0], IKINCI = K.iller[1];                       // Karaman, Konya (hesaptan)
+const YER = Object.fromEntries(K.yerler.map(y => [y.ad, y]));
+const DEG = K.degisenPct;                                                 // ≈ 27,3
+const dec = (x, n) => x.toFixed(n).replace('.', ',');
+const bin = x => Math.round(x).toLocaleString('tr-TR');
+const ACC_D = '#C24E1C', DARK = 'rgba(15,28,38,.62)';
+const CELL = Object.fromEntries(Object.entries(K.hucre).map(([ad, c]) => [ad, { type: 'Polygon', coordinates: c }]));
+const ALFA = [...K.iller].sort((a, b) => a.ad.localeCompare(b.ad, 'tr'));
+
+let T, FEATS = [], FBY = {}, MESH = null, TR = null;
+
+// ── harita katmanları ──
+const clipTR = path => { ctx.beginPath(); path(TR); ctx.clip(); };
+// il resmî poligonu içinde, yeni hücresinin dışında kalan kısım (evenodd)
+function lostPart(path, ad, color, a) {
+  if (a <= .001) return;
+  ctx.save(); ctx.beginPath(); path(FBY[ad]); ctx.clip();
+  ctx.globalAlpha = a; ctx.fillStyle = color;
+  ctx.beginPath(); ctx.rect(-10, -10, W + 20, H + 20); path(CELL[ad]); ctx.fill('evenodd');
+  ctx.restore();
+}
+function cellFill(path, ad, color, a) {
+  if (a <= .001) return;
+  ctx.save(); clipTR(path); ctx.globalAlpha = a; ctx.fillStyle = color; ctx.beginPath(); path(CELL[ad]); ctx.fill(); ctx.restore();
+}
+function cellStroke(path, ad, a, w = 5) {
+  if (a <= .001) return;
+  ctx.save(); clipTR(path); ctx.globalAlpha = a; ctx.strokeStyle = C.accent; ctx.lineWidth = w; ctx.lineJoin = 'round';
+  ctx.beginPath(); path(CELL[ad]); ctx.stroke(); ctx.restore();
+}
+function officialStroke(path, ad, a, color = C.ocean, w = 4) {
+  if (a <= .001) return;
+  ctx.save(); ctx.globalAlpha = a; ctx.strokeStyle = color; ctx.lineWidth = w; ctx.lineJoin = 'round'; ctx.setLineDash([10, 8]);
+  ctx.beginPath(); path(FBY[ad]); ctx.stroke(); ctx.restore();
+}
+const scr = (pr, p) => pr(p);
+
+// ── ünlü yer: eski il merkezine kâğıt kesik çizgi, yeni il merkezine turuncu çizgi; il adı döner ──
+function landmark(pr, t, y, t0, a, { lab = 'üst', eskiAd = true } = {}) {
+  if (a <= .001) return;
+  const p = pr(y.p), po = pr(K.merkez[y.resmi]), pn = pr(K.merkez[y.yeni]);
+  if (!p) return;
+  const k1 = ease.outCubic(prog(t, t0 + .1, t0 + .6)), k2 = ease.outCubic(prog(t, t0 + .7, t0 + 1.25)), fl = prog(t, t0 + 1.2, t0 + 1.5);
+  ctx.save(); ctx.lineCap = 'round';
+  ctx.globalAlpha = a * (1 - .45 * fl); ctx.strokeStyle = C.ocean; ctx.lineWidth = 5; ctx.setLineDash([12, 10]);
+  ctx.beginPath(); ctx.moveTo(p[0], p[1]); ctx.lineTo(lerp(p[0], po[0], k1), lerp(p[1], po[1], k1)); ctx.stroke();
+  ctx.setLineDash([]); ctx.globalAlpha = a; ctx.strokeStyle = C.ocean; ctx.lineWidth = 11;
+  ctx.beginPath(); ctx.moveTo(p[0], p[1]); ctx.lineTo(lerp(p[0], pn[0], k2), lerp(p[1], pn[1], k2)); ctx.stroke();
+  ctx.strokeStyle = C.accent; ctx.lineWidth = 6;
+  ctx.beginPath(); ctx.moveTo(p[0], p[1]); ctx.lineTo(lerp(p[0], pn[0], k2), lerp(p[1], pn[1], k2)); ctx.stroke();
+  ctx.restore();
+  pin(po, { color: C.land, r: 10, alpha: a * k1 });
+  pin(pn, { color: C.accent, r: 12, alpha: a * k2, pulse: k2 >= 1 ? ((t - t0) * 1.3) % 1 : 0 });
+  if (eskiAd) text(y.resmi, po[0], po[1] + (po[1] > p[1] ? 52 : -24), 36, { alpha: a * k1, align: 'center', color: C.ocean, stroke: C.land, strokeWidth: 9 });
+  text(y.yeni, pn[0], pn[1] + (pn[1] > p[1] ? 52 : -24), 40, { alpha: a * k2, align: 'center', color: C.accent, stroke: C.ocean, strokeWidth: 10 });
+  // mesafe etiketleri (çizgilerin ortası)
+  const mid = (q, k) => [lerp(p[0], q[0], .5), lerp(p[1], q[1], .5)];
+  if (k1 > .6) { const m = mid(po); textTab(y.kmResmi + ' km', m[0] + 14, m[1] - 14, 34, { alpha: a * (k1 - .6) / .4 * (1 - .5 * fl), color: C.text, align: 'center', stroke: C.ocean, strokeWidth: 7 }); }
+  if (k2 > .6) { const m = mid(pn); textTab(y.kmYeni + ' km', m[0] + 14, m[1] - 14, 40, { alpha: a * (k2 - .6) / .4, color: C.accent, align: 'center', stroke: C.ocean, strokeWidth: 8 }); }
+  // yer işareti + ad kartı
+  const pp = IKON.pop(t, t0, .45);
+  pin(p, { color: C.text, r: 12 * pp.olcek, alpha: a });
+  const ly = lab === 'üst' ? p[1] - 54 : p[1] + 80;
+  text(y.ad, p[0], ly, 54, { alpha: a * pp.alpha, align: 'center', stroke: C.ocean, strokeWidth: 10 });
+  // il adı: eski (üstü çizili) → yeni (turuncu)
+  const iy = ly + (lab === 'üst' ? -56 : 50);
+  const old = y.resmi.toLocaleUpperCase('tr'), neu = y.yeni.toLocaleUpperCase('tr');
+  const sh = Math.sin(Math.PI * fl) * 10;
+  if (fl < 1) {
+    const ow = text(old, p[0], iy - sh, 38, { weight: 800, alpha: a * (1 - fl), color: C.mute, align: 'center', stroke: C.ocean, strokeWidth: 8 });
+    if (fl > 0) { ctx.save(); ctx.globalAlpha = a * (1 - fl); ctx.strokeStyle = C.accent; ctx.lineWidth = 4; ctx.beginPath(); ctx.moveTo(p[0] - ow / 2 - 4, iy - 10); ctx.lineTo(p[0] - ow / 2 - 4 + (ow + 8) * clamp(fl * 3), iy - 10); ctx.stroke(); ctx.restore(); }
+  }
+  if (fl > 0) { const q = IKON.pop(t, t0 + 1.3, .4); text('→ ' + neu, p[0], iy + sh, 44 * q.olcek, { weight: 800, alpha: a * fl, color: C.accent, align: 'center', stroke: C.ocean, strokeWidth: 9 }); }
+}
+
+// ── sıralama yarışı: resmî alan → en yakın merkez alanı ──
+const RACE = (() => {
+  const s = new Set([...K.iller].sort((a, b) => b.hgm - a.hgm).slice(0, 7).map(i => i.ad));
+  K.iller.slice(0, 7).forEach(i => s.add(i.ad));
+  return [...s].map(ad => BY[ad]);
+})();
+const raceK = t => {                                                        // 0→.97 (başa baş), sessizlik, .97→1 (geçiş)
+  const a = .97 * ease.inOutCubic(prog(t, T.r0, T.r1));
+  return a + .03 * ease.inOutCubic(prog(t, T.r2, T.r2 + .55));
+};
+function race(t, a) {
+  if (a <= .001) return;
+  const k = raceK(t), x0 = SAFE.x0 - 20, y0 = 690, rowH = 74, maxW = 560, N = 7;
+  const v = i => lerp(i.hgm, i.vor, k), vmax = Math.max(...RACE.map(v));
+  ctx.save(); ctx.globalAlpha = a * .93; ctx.fillStyle = C.bg; ctx.beginPath(); ctx.roundRect(x0 - 26, y0 - 70, W - 2 * (x0 - 26), N * rowH + 120, 26); ctx.fill(); ctx.restore();
+  text(k < .5 ? 'resmî alan (HGM)' : 'en yakın il merkezine göre alan', x0, y0 - 24, 28, { weight: 600, color: C.mute, alpha: a });
+  for (const i of RACE) {
+    const vi = v(i), rc = RACE.reduce((s, j) => s + (j === i ? 0 : 1 / (1 + Math.exp(-(v(j) - vi) / 15))), 0);
+    if (rc > N - .05) continue;
+    const ra = a * clamp(N - .05 - rc), y = y0 + rc * rowH + 10, bw = Math.max(0, maxW * vi / vmax);
+    const hot = i === KAR || i === KON, col = i === KAR ? C.accent : i === KON ? C.land : '#5C6A73';
+    ctx.save(); ctx.globalAlpha = ra; ctx.fillStyle = col; ctx.beginPath(); ctx.roundRect(x0 + 230, y, bw, rowH - 22, 8); ctx.fill(); ctx.restore();
+    const ik = IKON.il(i.ad); if (ik) IKON.ciz(ctx, ik.ikon, x0 + 20, y + 25, 40, { alpha: ra });
+    text(i.ad, x0 + 48, y + 38, 34, { weight: hot ? 800 : 600, alpha: ra, color: hot ? (i === KAR ? C.accent : C.text) : C.mute, maxW: 175 });
+    textTab(bin(vi), x0 + 240 + bw, y + 38, 30, { alpha: ra, color: hot ? C.text : C.mute });
+    textTab((Math.round(rc) + 1) + '.', x0 - 4, y + 38, 26, { alpha: ra * .9, color: C.mute, align: 'right' });
+  }
+  text('km²', x0 + 230 + maxW + 110, y0 - 24, 26, { weight: 600, color: C.mute, alpha: a });
+}
+
+// ── durdur-bul: 81 il, alfabetik, resmî sıra → yeni sıra ──
+function table(t, a) {
+  if (a <= .001) return;
+  const cols = 3, rows = 27, x0 = SAFE.x0 - 26, colW = (SAFE.x1 - SAFE.x0 + 52) / cols, y0 = 560, rowH = 33.5;
+  ctx.save(); ctx.globalAlpha = a; ctx.fillStyle = C.bg; ctx.fillRect(0, 470, W, H - 470); ctx.restore();
+  const push = 1 + .03 * ease.inOutCubic(prog(t, T.tab + .8, T.loop));
+  ctx.save(); ctx.translate(W / 2, 1000); ctx.scale(push, push); ctx.translate(-W / 2, -1000);
+  ALFA.forEach((i, n) => {
+    const c = Math.floor(n / rows), r = n % rows, x = x0 + c * colW, y = y0 + r * rowH;
+    const al = a * prog(t, T.tab + .05 + n * .007, T.tab + .25 + n * .007);
+    if (al <= .001) return;
+    const d = i.sResmi - i.sVor, up = d > 0, big = Math.abs(d) >= 15;
+    if (big) { ctx.save(); ctx.globalAlpha = al * .14; ctx.fillStyle = up ? C.accent : C.land; ctx.beginPath(); ctx.roundRect(x - 4, y - 26, colW - 6, 34, 7); ctx.fill(); ctx.restore(); }
+    const right = x + colW - 12;
+    textTab(i.sResmi + '→' + i.sVor, right, y, 20, { alpha: al, color: up ? C.accent : d < 0 ? C.mute : C.text, align: 'right' });
+    let size = 22; ctx.font = `600 ${size}px ${SANS}`; const room = colW - 12 - 98, need = ctx.measureText(i.ad).width;
+    if (need > room) size = Math.max(15, size * room / need);
+    text(i.ad, x + 4, y, size, { weight: up && big ? 800 : 600, color: up ? C.accent : C.text, alpha: al });
+  });
+  ctx.restore();
+  text('alan sırası: resmî → en yakın il merkezine göre · turuncu: yükselen', SAFE.x0 - 20, y0 + rows * rowH + 6, 22, { weight: 600, color: C.mute, alpha: a, maxW: SAFE.x1 - SAFE.x0 + 40 });
+  text('Kuşuçuşu mesafe; dağ, yol, nüfus hesaba katılmadı. Sınır: geoBoundaries · merkez: GeoNames · resmî alan: HGM', SAFE.x0 - 20, y0 + rows * rowH + 38, 18, { weight: 600, color: C.mute, alpha: a * .85, maxW: SAFE.x1 - SAFE.x0 + 40 });
+}
+
+HYS.run({
+  vo: VO, cover: 1.6, flat: true, seed: 14, captionStyle: 'kinetic', captionSkip: [9],
+  init(D) {
+    FEATS = IKON.ilSekilleri();
+    FEATS.forEach(f => { FBY[f.properties.ad] = f; });
+    MESH = topojson.mesh(ILLER.topo, ILLER.topo.objects.iller, (a, b) => a !== b);
+    TR = topojson.merge(ILLER.topo, ILLER.topo.objects.iller.geometries);
+  },
+  times(L, at, DUR) {
+    T = {
+      s2: at(1) - .1, grow0: at(1) + .5, grow1: at(1, 'end') + .1, s3: at(2) - .1, s4: at(3) - .1, s5: at(4) - .1,
+      hat: at(4) + .2, uzn: at(4) + (at(4, 'end') - at(4)) * .52, s6: at(5) - .1, s7: at(6) - .1,
+      r0: at(6) + .3, r1: at(6, 'end') - .1, r2: at(7) - .05, s9: at(8) - .1, tab: at(9) - .1, loop: DUR - 1.4, DUR,
+    };
+    return T;
+  },
+  scenes: (T, at, DUR) => [
+    { name: 'kanca: Konya', start: 0, end: T.s2 }, { name: 'kural: daireler', start: T.s2, end: T.s3 },
+    { name: '%27', start: T.s3, end: T.s4 }, { name: 'İzmir · Efes · Bergama', start: T.s4, end: T.s5 },
+    { name: 'Hattuşa · Uzungöl', start: T.s5, end: T.s6 }, { name: 'Konya %42', start: T.s6, end: T.s7 },
+    { name: 'yarış', start: T.s7, end: T.r2 }, { name: 'KARAMAN', start: T.r2, end: T.s9 },
+    { name: '1989', start: T.s9, end: T.tab }, { name: 'durdur-bul', start: T.tab, end: T.loop },
+    { name: 'döngü', start: T.loop, end: DUR },
+  ],
+  keys: (T, at, DUR) => [
+    [0, 33.6, 38.3, 26], [T.s2 - .2, 33.5, 38.3, 27.5],
+    [T.s2 + .9, 35.4, 38.9, 18.2], [T.s4 - .2, 35.3, 38.9, 18.8],
+    [T.s4 + .9, 27.55, 38.42, 105], [T.s5 - .15, 27.55, 38.45, 112],
+    [(T.s5 + T.hat) / 2 + .3, 31.2, 39.3, 34], [T.hat + .8, 34.82, 40.12, 150], [T.uzn - .3, 34.82, 40.14, 158],
+    [T.uzn + .1, 37.4, 40.4, 50], [T.uzn + .8, 40.02, 40.63, 150], [T.s6 - .15, 40.02, 40.64, 158],
+    [T.s6 + .25, 36.5, 39.2, 34], [T.s6 + .9, 33.0, 37.75, 30], [T.s7, 33.0, 37.75, 31],
+    [T.s9 - .2, 33.0, 37.6, 30], [T.s9 + .6, 33.1, 37.35, 34], [T.tab, 33.1, 37.35, 35],
+    [T.loop, 33.5, 38.3, 26], [DUR, 33.6, 38.3, 26],
+  ],
+  beats: (T, at, DUR) => [
+    { t: .3, ac: 'A', soru: 'Konya değilse en büyük il kim?' },
+    { t: 1.2, odul: 'turuncu çizgi Konya’yı keser' },
+    { t: T.s2 + .2, ac: 'B', soru: 'Hangi kural? Harita nasıl değişiyor?' },
+    { t: T.s2 + 1.0, odul: '81 il merkezi yanar, daireler büyümeye başlar' },
+    { t: T.grow1 - .6, odul: '81 daire büyür, yeni sınırlar doğar' },
+    { t: T.s3, kapa: 'B' },
+    { t: T.s3 + 1.6, odul: '%' + dec(DEG, 0) + ' sayaç, değişen topraklar parlar' },
+    { t: T.s4 + .3, ac: 'C', soru: 'Başka ne el değiştiriyor?' },
+    { t: T.s4 + 2.6, odul: 'Efes → Aydın' },
+    { t: T.s4 + 4.0, odul: 'Bergama → Manisa' },
+    { t: T.hat + 1.4, odul: 'Hattuşa → Yozgat' },
+    { t: T.uzn + 1.4, odul: 'Uzungöl → Bayburt' },
+    { t: T.s6, kapa: 'C' },
+    { t: T.s6 + .3, ac: 'D', soru: 'Konya ne kadar kaybediyor, kim yetişiyor?' },
+    { t: T.s6 + 1.4, odul: 'Konya %42 kaybeder' },
+    { t: T.r0 + 1.5, odul: 'yarış: Karaman tırmanır' },
+    { t: T.r2 + .5, kapa: 'A' }, { t: T.r2 + .5, kapa: 'D' }, { t: T.r2 + .5, odul: 'KARAMAN birinci' },
+    { t: T.r2 + .4, ac: 'E', soru: '36. sıradan nasıl? Karaman kim?' },
+    { t: T.r2 + 2.0, odul: 'fark kıl payı: km² ve yüzde' },
+    { t: T.s9 + 1.3, odul: 'Anamur da Karaman’ın hücresinde' },
+    { t: T.s9 + 1.8, odul: '1989’a kadar Konya’nın ilçesi' },
+    { t: T.tab, kapa: 'E' },
+    { t: T.tab + .1, ac: 'F', soru: 'Benim ilim kaçıncı oldu?' },
+    { t: T.tab + 1.0, odul: '81 il tablosu' },
+    { t: T.loop, kapa: 'F' },
+    { t: T.loop + .2, odul: 'döngü: Konya yeniden kesilir' },
+  ],
+  draw(t, g) {
+    const { pr, path, DUR } = g;
+    const tabA = win(t, T.tab, T.loop + .15, .3), mapA = 1 - tabA;
+    if (mapA <= .001) return;
+    const raceA = win(t, T.s7 + .15, T.s9 + .1, .35);
+    const dim = 1 - .8 * raceA;
+    ctx.save(); ctx.globalAlpha = mapA * dim;
+    // kara
+    ctx.fillStyle = C.land; ctx.beginPath(); path(TR); ctx.fill();
+    // kanca + döngü: Konya resmî dolgu turuncu, yeni hücresi dışında kalan kısım kâğıda döner
+    const hookA = Math.max(1 - prog(t, T.s2 + .2, T.s2 + .8), prog(t, T.loop, T.loop + .4));
+    const cutK = t < T.loop ? ease.inOutCubic(prog(t, .45, 1.4)) : 0;              // döngü: son kare = ilk kare (kesilmemiş Konya)
+    if (hookA > .001) {
+      ctx.save(); ctx.globalAlpha = mapA * dim * hookA; ctx.fillStyle = C.accent; ctx.beginPath(); path(FBY['Konya']); ctx.fill(); ctx.restore();
+      lostPart(path, 'Konya', C.land, mapA * dim * hookA * cutK);
+    }
+    // kural: karartma + 81 merkezden eşit büyüyen daireler (hücre ∩ Türkiye içinde)
+    const growA = win(t, T.s2 + .1, T.s3 + .3, .3);
+    if (growA > .001) {
+      const r = 1.6 * ease.inOutSine(prog(t, T.grow0, T.grow1));
+      ctx.save(); ctx.globalAlpha = mapA * dim * growA * .62; ctx.fillStyle = C.ocean; ctx.beginPath(); path(TR); ctx.fill(); ctx.restore();
+      if (r > .001) {
+        ctx.save(); clipTR(path);
+        for (const f of FEATS) {
+          const ad = f.properties.ad;
+          ctx.save(); ctx.beginPath(); path(CELL[ad]); ctx.clip();
+          ctx.globalAlpha = mapA * dim * growA; ctx.fillStyle = C.land;
+          ctx.beginPath(); path(d3.geoCircle().center(K.merkez[ad]).radius(r).precision(4)()); ctx.fill();
+          ctx.restore();
+        }
+        ctx.restore();
+      }
+    }
+    // %27: il değiştiren topraklar
+    const chA = win(t, T.s3 + .1, T.s4 + .5, .45);
+    if (chA > .001) for (const f of FEATS) lostPart(path, f.properties.ad, C.accent, mapA * dim * chA * .55);
+    // odak iller: yeni hücre turuncu, resmî sınır kesik
+    const izA = win(t, T.s4 + .3, T.s5 + .2, .4), koA = win(t, T.s6 + .2, T.s7 + .4, .4), kaA = win(t, T.r2 + .2, T.tab + .2, .4);
+    cellFill(path, 'İzmir', C.accent, mapA * dim * izA * .55);
+    cellFill(path, 'Konya', C.accent, mapA * dim * koA * .5);
+    cellFill(path, 'Karaman', C.accent, mapA * dim * kaA * .6);
+    ctx.restore();
+    // sınırlar: resmî (koyu ince) + yeni (turuncu)
+    ctx.save(); ctx.globalAlpha = mapA * dim; ctx.strokeStyle = DARK; ctx.lineWidth = 1.4; ctx.beginPath(); path(MESH); ctx.stroke();
+    ctx.strokeStyle = 'rgba(15,28,38,.9)'; ctx.lineWidth = 2.4; ctx.beginPath(); path(TR); ctx.stroke(); ctx.restore();
+    const vorA = Math.max(prog(t, T.grow1 - .5, T.grow1 + .2) * (1 - prog(t, T.loop, T.loop + .3)), 0);
+    if (vorA > .001) { ctx.save(); clipTR(path); ctx.globalAlpha = mapA * dim * vorA * (1 - .5 * prog(t, T.s6, T.s6 + .6)); ctx.strokeStyle = C.accent; ctx.lineWidth = 3; ctx.lineJoin = 'round'; ctx.beginPath(); for (const f of FEATS) path(CELL[f.properties.ad]); ctx.stroke(); ctx.restore(); }
+    cellStroke(path, 'Konya', mapA * dim * hookA * cutK, 6);
+    officialStroke(path, 'İzmir', mapA * dim * izA, C.ocean, 4);
+    officialStroke(path, 'Konya', mapA * dim * Math.max(koA, hookA * cutK), C.ocean, 4);
+    officialStroke(path, 'Karaman', mapA * dim * kaA, C.ocean, 4);
+    cellStroke(path, 'Karaman', mapA * dim * kaA, 6);
+    // merkez noktaları (kural sahnesi)
+    const dotA = win(t, T.s2 + .2, T.s3 + .2, .3) * mapA;
+    if (dotA > .001) for (const f of FEATS) { const p = pr(K.merkez[f.properties.ad]); pin(p, { color: C.accent, r: 5, alpha: dotA * prog(t, T.s2 + .2 + (f.properties.plaka || 0) * 0, T.s2 + .6) }); }
+    // ünlü yerler
+    landmark(pr, t, YER['Efes'], T.s4 + 1.4, win(t, T.s4 + 1.3, T.s5 + .1, .3) * mapA, { lab: 'alt' });
+    landmark(pr, t, YER['Bergama'], T.s4 + 2.8, win(t, T.s4 + 2.7, T.s5 + .1, .3) * mapA, { lab: 'üst', eskiAd: false });
+    landmark(pr, t, YER['Hattuşa'], T.hat + .4, win(t, T.hat + .3, T.uzn + .4, .3) * mapA, { lab: 'üst' });
+    landmark(pr, t, YER['Uzungöl'], T.uzn + .4, win(t, T.uzn + .3, T.s6 + .1, .3) * mapA, { lab: 'alt' });
+    // Karaman: Anamur da yeni hücrede (hys-10 göndermesi)
+    const anA = win(t, T.s9 + 1.2, T.tab + .1, .3) * mapA;
+    if (anA > .001) { const p = pr(YER['Anamur'].p); pin(p, { color: C.text, r: 9, alpha: anA }); text('Anamur', p[0] + 18, p[1] + 44, 32, { alpha: anA, stroke: C.ocean, strokeWidth: 8 }); }
+    // kanca + döngü: Karaman'ın yeni hücresi '?' ile (o zaman kim?)
+    const qA = t < T.loop ? hookA * mapA * prog(t, .9, 1.3) : 0;
+    if (qA > .001) { cellStroke(path, 'Karaman', qA * .9, 5); const p = pr(K.merkez['Karaman']); const q = IKON.pop(t, 1.0, .45); text('?', p[0], p[1] + 34, 96 * q.olcek, { alpha: qA * q.alpha, align: 'center', color: C.accent, stroke: C.ocean, strokeWidth: 12 }); }
+    // il adları (odak sahnelerde)
+    const nm = (ad, a, dy = 0) => { if (a <= .001) return; const p = pr(K.merkez[ad]); if (p) text(ad, p[0], p[1] - 22 + dy, 34, { alpha: a, align: 'center', stroke: C.land, strokeWidth: 8, color: C.ocean }); };
+    nm('Konya', mapA * dim * Math.max(koA, hookA * (1 - cutK * 0)) * (t < T.s2 ? prog(t, .2, .5) : 1));
+    nm('Karaman', mapA * dim * Math.max(kaA, koA * .9));
+  },
+  header(t, g) {
+    const { DUR } = g;
+    race(t, win(t, T.s7 + .15, T.s9 + .1, .35));
+    table(t, win(t, T.tab, T.loop + .15, .3));
+    const Y1 = SAFE.y0 + 40 + 80, Y2 = Y1 + 86;
+    const h1 = Math.max(1 - prog(t, T.s2 - .2, T.s2 + .1), prog(t, T.loop + .2, DUR - .2));
+    text('Türkiye’nin en büyük ili', SAFE.x0, Y1, 62, { alpha: h1 });
+    text('KONYA DEĞİL', SAFE.x0, Y2, 96, { color: C.accent, alpha: h1 });
+    text('o zaman hangisi?', SAFE.x0, Y2 + 60, 40, { weight: 600, color: C.mute, alpha: h1 * (t < T.loop ? prog(t, 1.0, 1.4) : 0) });
+    const h2 = win(t, T.s2 + .05, T.s3 + .1, .3);
+    text('Kural: her yer', SAFE.x0, Y1, 62, { alpha: h2 });
+    text('EN YAKIN il merkezine', SAFE.x0, Y2 - 6, 70, { color: C.accent, alpha: h2 });
+    text('kuşuçuşu', SAFE.x0, Y2 + 52, 34, { weight: 600, color: C.mute, alpha: h2 });
+    const h3 = win(t, T.s3 + .05, T.s4 + .1, .3), cnt = DEG * ease.outCubic(prog(t, T.s3 + .3, T.s3 + 1.8));
+    textTab('%' + dec(cnt, 0), SAFE.x0, Y1 + 20, 110, { alpha: h3, color: C.accent });
+    text('Türkiye’nin bu kadarı', SAFE.x0 + 250, Y1 - 16, 40, { weight: 600, alpha: h3 });
+    text('il değiştiriyor', SAFE.x0 + 250, Y1 + 30, 40, { weight: 600, alpha: h3 });
+    const h4 = win(t, T.s4 + .05, T.s5 + .1, .3);
+    text('İZMİR', SAFE.x0, Y1, 84, { alpha: h4 });
+    textTab(IZM.sResmi + '. → ' + IZM.sVor + '.', SAFE.x1, Y1, 56, { alpha: h4, align: 'right', color: C.mute });
+    text('toprağının %' + Math.round(IZM.kayipPct) + '’si başka ile', SAFE.x0, Y2 - 6, 48, { weight: 600, color: C.accent, alpha: h4 });
+    const h5a = win(t, T.s5 + .05, T.uzn + .1, .3), h5b = win(t, T.uzn + .05, T.s6 + .1, .3);
+    text('Hititlerin başkenti', SAFE.x0, Y1, 60, { alpha: h5a });
+    text('Hattuşa → YOZGAT', SAFE.x0, Y2 - 6, 70, { color: C.accent, alpha: h5a });
+    text('Trabzon’un Uzungöl’ü', SAFE.x0, Y1, 60, { alpha: h5b });
+    text('→ BAYBURT', SAFE.x0, Y2 - 6, 70, { color: C.accent, alpha: h5b });
+    const h6 = win(t, T.s6 + .05, T.s7 + .1, .3);
+    text('KONYA', SAFE.x0, Y1, 84, { alpha: h6 });
+    text('toprağının %' + Math.round(KON.kayipPct) + '’sini kaybediyor', SAFE.x0, Y2 - 6, 48, { weight: 600, color: C.accent, alpha: h6 });
+    const h7 = win(t, T.s7 + .05, T.r2 + .25, .25);
+    text('Peki en büyük il kim?', SAFE.x0, Y1, 68, { alpha: h7 });
+    text('başa baş…', SAFE.x0, Y2 - 6, 60, { color: C.mute, alpha: h7 * prog(t, T.r1 - 1.2, T.r1 - .8) });
+    const h8 = win(t, T.r2 + .15, T.s9 + .1, .25), pp = IKON.pop(t, T.r2 + .5, .45);
+    text('1. KARAMAN', SAFE.x0, Y1 + 6, 96 * pp.olcek, { color: C.accent, alpha: h8 * pp.alpha });
+    textTab(KAR.sResmi + '. sıradan · fark ' + bin(BIRINCI.vor - IKINCI.vor) + ' km² (%' + dec(K.farkPct, 0) + ')', SAFE.x0, Y2, 38, { alpha: h8, color: C.text });
+    const h9 = win(t, T.s9 + .05, T.tab + .1, .3), st = IKON.pop(t, T.s9 + 1.5, .5);
+    text('Karaman', SAFE.x0, Y1, 72, { alpha: h9, color: C.accent });
+    text('1989’a kadar Konya’nın', SAFE.x0, Y2 - 6, 54, { alpha: h9 * prog(t, T.s9 + 1.3, T.s9 + 1.6) });
+    text('İLÇESİYDİ', SAFE.x0, Y2 + 62, 76 * st.olcek, { alpha: h9 * st.alpha });
+    const h10 = win(t, T.tab + .1, T.loop, .3);
+    text('Senin ilin kaçıncı oldu?', SAFE.x0, Y1 - 14, 60, { alpha: h10 });
+    text('Durdur, bul', SAFE.x0, Y2 - 26, 52, { weight: 600, color: C.accent, alpha: h10 });
+  },
+  sounds(T, at, DUR) {
+    return [
+      { t: .05, type: 'whoosh', dur: .6, gain: .1 },
+      { t: .5, type: 'rise', dur: .9, gain: .12, f0: 220, f1: 520 }, { t: 1.35, type: 'sub', gain: .3 }, { t: 1.37, type: 'ping', gain: .24, f: 659 },
+      { t: T.s2, type: 'whoosh', dur: .8, gain: .09 },
+      ...Array.from({ length: 16 }, (_, i) => ({ t: T.s2 + .25 + i * .025, type: 'tick', gain: .05, f: 1100 + i * 40 })),
+      { t: T.grow0, type: 'rise', dur: T.grow1 - T.grow0, gain: .12, f0: 150, f1: 420 },
+      ...Array.from({ length: 14 }, (_, i) => ({ t: lerp(T.grow0 + .6, T.grow1, i / 13), type: 'pop', gain: .06, f: 280 + i * 18 })),
+      { t: T.grow1 + .05, type: 'chime', gain: .26 },
+      { t: T.s3 + .3, type: 'rise', dur: 1.4, gain: .1, f0: 200, f1: 360 },
+      ...Array.from({ length: 14 }, (_, i) => ({ t: T.s3 + .3 + i * .1, type: 'tick', gain: .06, f: 1200 + i * 30 })),
+      { t: T.s3 + 1.8, type: 'pulse', gain: .26, f: 98 },
+      { t: T.s4, type: 'whoosh', dur: 1.0, gain: .1 },
+      ...[T.s4 + 1.4, T.s4 + 2.8, T.hat + .4, T.uzn + .4].flatMap(x => [
+        { t: x, type: 'pop', gain: .14, f: 520 }, { t: x + .7, type: 'whoosh', dur: .5, gain: .06 }, { t: x + 1.3, type: 'chime', gain: .2 },
+      ]),
+      { t: T.hat - .2, type: 'whoosh', dur: .9, gain: .08 }, { t: T.uzn - .2, type: 'whoosh', dur: .9, gain: .08 },
+      { t: T.s6, type: 'whoosh', dur: 1.0, gain: .1 }, { t: T.s6 + 1.2, type: 'pulse', gain: .28, f: 82 },
+      { t: T.r0, type: 'rise', dur: T.r1 - T.r0, gain: .14, f0: 140, f1: 480 },
+      ...Array.from({ length: 22 }, (_, i) => ({ t: lerp(T.r0, T.r1, (i / 21) ** .8), type: 'tick', gain: .06, f: 900 + i * 35 })),
+      { t: T.r2 + .5, type: 'sub', gain: .42 }, { t: T.r2 + .52, type: 'ping2', gain: .38 },
+      { t: T.s9 + 1.5, type: 'pulse', gain: .3, f: 98 }, { t: T.s9 + 1.52, type: 'pop', gain: .14, f: 380 },
+      ...Array.from({ length: 12 }, (_, i) => ({ t: T.tab + .1 + i * .05, type: 'tick', gain: .07, f: 1300 + i * 30 })),
+      { t: T.loop, type: 'whoosh', dur: .9, gain: .08 },
+    ];
+  },
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,17 @@
+{
+  "voice": "Charon",
+  "style": "enerjik ve merak uyandıran, hızlı tempolu, önemli kelimeleri vurgulayan, izleyiciye meydan okur gibi; sonuç anında kısa bir duraklama ve vurgu",
+  "tempo": 1.12, "lead": 0.15, "gap": 0.25, "tail": 3.6,
+  "lines": [
+    { "id": "l1", "text": "Türkiye'nin en büyük ili, artık KONYA DEĞİL.", "caption": "Türkiye'nin en büyük ili, artık Konya değil." },
+    { "id": "l2", "text": "Tek bir kural koydum: her yer, kuşuçuşu EN YAKIN il merkezine bağlansın.", "caption": "Tek bir kural koydum: her yer, kuşuçuşu en yakın il merkezine bağlansın." },
+    { "id": "l3", "text": "Türkiye'nin DÖRTTE BİRİNDEN fazlası, il değiştiriyor.", "caption": "Türkiye'nin dörtte birinden fazlası, il değiştiriyor." },
+    { "id": "l4", "text": "İzmir, toprağının YARISINDAN fazlasını kaybediyor. Efes Aydın'a, Bergama Manisa'ya geçiyor.", "caption": "İzmir, toprağının yarısından fazlasını kaybediyor. Efes Aydın'a, Bergama Manisa'ya geçiyor." },
+    { "id": "l5", "text": "Hititlerin başkenti Hattuşa, Çorum'dan YOZGAT'a. Trabzon'un Uzungöl'ü bile, BAYBURT'a.", "caption": "Hititlerin başkenti Hattuşa, Çorum'dan Yozgat'a. Trabzon'un Uzungöl'ü bile, Bayburt'a." },
+    { "id": "l6", "text": "Konya ise, toprağının yüzde KIRK İKİSİNİ kaybediyor.", "caption": "Konya ise, toprağının %42'sini kaybediyor." },
+    { "id": "l7", "text": "Peki en büyük il kim? Zirvede iki il var, BAŞA BAŞ.", "caption": "Peki en büyük il kim? Zirvede iki il var, başa baş." },
+    { "id": "l8", "text": "Birinci: KARAMAN! Otuz altıncı sıradan, BİRİNCİLİĞE.", "caption": "Birinci: Karaman! 36. sıradan, birinciliğe.", "pauseBefore": 0.35 },
+    { "id": "l9", "text": "Üstelik Karaman, bin dokuz yüz seksen dokuza kadar, Konya'nın bir İLÇESİYDİ.", "caption": "Üstelik Karaman, 1989'a kadar, Konya'nın bir ilçesiydi." },
+    { "id": "l10", "text": "Senin ilin büyüdü mü, küçüldü mü? Durdur, bul.", "caption": "Senin ilin büyüdü mü, küçüldü mü? Durdur, bul." }
+  ]
+}

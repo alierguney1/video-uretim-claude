@@ -1,0 +1,76 @@
+{
+  "kaynak": "hys-14-konya.html",
+  "varyantlar": [
+    {
+      "ad": "konya",
+      "tur": "yanlış inanış",
+      "t": 1.6,
+      "karart": 0.1,
+      "baslik": [
+        "EN BÜYÜK İL",
+        "*KONYA*",
+        "*DEĞİL*"
+      ],
+      "baslikY": 250,
+      "boyut": 140,
+      "alt": "*Tek kuralla* yeniden çizdim",
+      "altY": 1500,
+      "emoji": [
+        {
+          "ad": "exploding-head",
+          "x": 880,
+          "y": 1370,
+          "boyut": 170,
+          "aci": 8
+        }
+      ]
+    },
+    {
+      "ad": "karaman",
+      "tur": "paradoks",
+      "t": 34.6,
+      "karart": 0.1,
+      "baslik": [
+        "*36.* SIRADAKİ İL",
+        "*BİRİNCİ*",
+        "OLDU"
+      ],
+      "baslikY": 250,
+      "boyut": 130,
+      "alt": "Konya'yı *kıl payı* geçti",
+      "altY": 1560,
+      "emoji": [
+        {
+          "ad": "eyes",
+          "x": 880,
+          "y": 1370,
+          "boyut": 170,
+          "aci": -6
+        }
+      ]
+    },
+    {
+      "ad": "efes",
+      "tur": "kimlik",
+      "t": 15.6,
+      "karart": 0.12,
+      "baslik": [
+        "EFES ARTIK",
+        "*AYDIN'IN*"
+      ],
+      "baslikY": 260,
+      "boyut": 140,
+      "alt": "Senin ilin *kaçıncı* oldu?",
+      "altY": 1560,
+      "emoji": [
+        {
+          "ad": "face-screaming-in-fear",
+          "x": 880,
+          "y": 1370,
+          "boyut": 170,
+          "aci": 8
+        }
+      ]
+    }
+  ]
+}
