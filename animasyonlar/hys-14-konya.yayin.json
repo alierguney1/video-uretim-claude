@@ -5,9 +5,16 @@
   "kapak": "konya",
   "not": "Ali onayı: 18 Kas ('Onay, üret ve kuyruğa al'). Veri: tools/hys-14-konya.mjs (geoBoundaries + GeoNames + HGM).",
   "youtube": {
-    "baslik": "Türkiye'nin en büyük ili artık Konya değil 😳 Sınırları tek kuralla yeniden çizdim #harita #konya #karaman",
+    "baslik": "Türkiye'nin en büyük ili artık Konya değil 😳 Sınırları tek kuralla yeniden çizdim #harita #konya",
     "aciklama": "Kural: Türkiye'deki her yer, kuşuçuşu en yakın il merkezine bağlansın.\nSonuç: Türkiye'nin yüzde 27'si il değiştiriyor. İzmir toprağının yüzde 57'sini kaybediyor (alanda 23. sıradan 70.'ye); Efes Aydın'a, Bergama Manisa'ya geçiyor. Hattuşa Çorum'dan Yozgat'a, Uzungöl Trabzon'dan Bayburt'a gidiyor.\nKonya toprağının yüzde 42'sini kaybediyor ve en büyük il artık Karaman: yaklaşık 24.738 km² ile Konya'yı (24.276 km²) kıl payı geçiyor. Karaman resmî alanda 36. sırada; 1989'a kadar Konya'ya bağlı bir ilçeydi.\n\nNotlar: Bu bir düşünce deneyi, sınır önerisi değil. Mesafe kuşuçuşu; dağ, yol ve nüfus hesaba katılmadı. Alanlar göller dahil harita alanıdır. Karaman–Konya farkı yaklaşık yüzde 2; il merkezi noktası birkaç km oynarsa sıra değişebilir (iki sınır ve iki merkez kaynağıyla yapılan 4 hesabın 4'ünde de Karaman birinci).\nKaynaklar: il sınırları geoBoundaries (TUR ADM1), il merkezleri GeoNames ve Wikidata, resmî yüz ölçümleri Harita Genel Müdürlüğü.\n\n#harita #konya #karaman #türkiye #coğrafya",
-    "etiketler": ["harita", "konya", "karaman", "türkiye", "il", "coğrafya"],
+    "etiketler": [
+      "harita",
+      "konya",
+      "karaman",
+      "türkiye",
+      "il",
+      "coğrafya"
+    ],
     "gizlilik": "public",
     "kategori": 27,
     "sabitYorum": "Senin ilin kaçıncı oldu? Yaz 👇"
@@ -22,5 +29,15 @@
     "yorum": true,
     "aiEtiketi": true,
     "muzikOnay": true
+  },
+  "yayinlandi": {
+    "instagram": {
+      "url": "https://www.instagram.com/reel/Df7VYrSkt5V/",
+      "tarih": "2026-11-19"
+    },
+    "youtube": {
+      "url": "https://youtube.com/shorts/Sk-E7eNBZP0",
+      "tarih": "2026-11-19"
+    }
   }
 }

@@ -84,6 +84,8 @@ farklı bir şey yayınlama. Metni değiştirme, uydurma.
       isAiGenerated: instagram.aiEtiketi}` → `mcpJobId` dönerse `vidiq_job_poll` ile bekle, sonra aynı araçla
       `mcpJobId`; `containerId` dönerse `IN_PROGRESS` bitene dek `containerId` ile tekrar çağır →
       `PUBLISHED` + permalink.
+   5b. **YouTube başlığı en fazla 100 karakter.** Uzunsa sadece sondaki hashtag'leri (açıklamada zaten var) sondan
+      başa doğru çıkar, metne başka dokunma; raporda söyle. Bölüm yazarken `youtube.baslik` ≤ 100 karakter tutulur.
    6. Hata: **otomatik tekrar deneme, yeni gönderi açma.** Bir gönderinin gidip gitmediği belirsizse (zaman aşımı vb.)
       tekrar göndermeden önce adım 0'daki listeye yeniden bak. Hatayı raporla; öge kuyrukta kalır, ertesi gün denenir.
    7. Başarı: `npm run yayin -- kaydet <ad> <platform> <url>`.
