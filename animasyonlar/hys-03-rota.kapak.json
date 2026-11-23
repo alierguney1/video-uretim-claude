@@ -1,0 +1,89 @@
+{
+  "kaynak": "hys-03-rota.html",
+  "varyantlar": [
+    {
+      "ad": "egri",
+      "tur": "paradoks",
+      "t": 14.5,
+      "zoom": {
+        "x": 540,
+        "y": 900,
+        "olcek": 1.2,
+        "dy": 200
+      },
+      "baslik": [
+        "EĞRİ YOL",
+        "*DAHA KISA*"
+      ],
+      "baslikY": 250,
+      "boyut": 160,
+      "alt": "Haritada *1.967 km* fark",
+      "altY": 1580,
+      "emoji": [
+        {
+          "ad": "exploding-head",
+          "x": 900,
+          "y": 640,
+          "boyut": 170,
+          "aci": 8
+        }
+      ]
+    },
+    {
+      "ad": "hangisi",
+      "tur": "karşılaştırma",
+      "t": 6.9,
+      "zoom": {
+        "x": 540,
+        "y": 900,
+        "olcek": 1.2,
+        "dy": 200
+      },
+      "baslik": [
+        "HANGİ YOL",
+        "*KISA?*"
+      ],
+      "baslikY": 250,
+      "boyut": 160,
+      "alt": "İstanbul → Los Angeles",
+      "altY": 1580,
+      "emoji": [
+        {
+          "ad": "thinking-face",
+          "x": 900,
+          "y": 640,
+          "boyut": 170,
+          "aci": -8
+        }
+      ]
+    },
+    {
+      "ad": "gronland",
+      "tur": "imkânsız iddia",
+      "t": 22.0,
+      "zoom": {
+        "x": 540,
+        "y": 1000,
+        "olcek": 1.15,
+        "dy": 180
+      },
+      "baslik": [
+        "EN KISA YOL",
+        "*GRÖNLAND'DAN*",
+        "GEÇİYOR"
+      ],
+      "baslikY": 250,
+      "boyut": 140,
+      "altY": 1600,
+      "emoji": [
+        {
+          "ad": "airplane",
+          "x": 880,
+          "y": 1400,
+          "boyut": 170,
+          "aci": -20
+        }
+      ]
+    }
+  ]
+}

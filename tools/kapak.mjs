@@ -11,6 +11,7 @@
 //     "ad": "ufuk", "tur": "gizem",            // tür: rehberdeki 6 formülden biri
 //     "t": 32.6,                                // animasyonun hangi anı (altyazı ve başlık bandı gizlenir)
 //     "zoom": { "x": 700, "y": 900, "olcek": 1.3, "dy": 120 },   // isteğe bağlı: (x,y) etrafında büyüt, sonra dx/dy kaydır
+//     "ust": 320,                               // isteğe bağlı: üst N px'i koyu örtüyle kapat (eski bölümlerde gizlenemeyen başlık için)
 //     "karart": 0.35,                           // isteğe bağlı: arka planı karart (0–1), metin öne çıksın
 //     "baslik": ["BU SAHİLDEN", "*KIBRIS* GÖRÜNÜYOR"],  // *kelime* = sarı vurgu. 2–5 kelime, en fazla 3 satır
 //     "baslikY": 330, "boyut": 150,             // isteğe bağlı
@@ -74,7 +75,7 @@ function html(v, bg) {
   .r{position:absolute;transform:translate(-50%,-50%);font-family:Anton;font-size:64px;color:#000;background:#FFD23F;padding:4px 22px;border-radius:14px;
      border:6px solid #000;box-shadow:0 8px 0 #000}
 </style></head><body>
-<img id="bg" src="${bg}"><div class="k"></div><div class="g"></div>
+<img id="bg" src="${bg}"><div class="k"></div><div class="g"></div>${v.ust ? `<div style="position:absolute;left:0;right:0;top:0;height:${v.ust}px;background:linear-gradient(#05090E 0%,#05090E 70%,rgba(5,9,14,0) 100%)"></div>` : ''}
 ${(v.halkalar || []).map(h => `<div class="h" style="left:${h.x - h.r}px;top:${h.y - h.r}px;width:${2 * h.r - 28}px;height:${2 * h.r - 28}px"></div>`).join('')}
 ${(v.bayraklar || []).map(b => `<img class="f" data-flag="${b.kod}" style="left:${b.x}px;top:${b.y}px;height:${b.h || 110}px;transform:translate(-50%,-50%) rotate(${b.aci || 0}deg)">`).join('')}
 ${(v.etiketler || []).map(e => `<div class="r" style="left:${e.x}px;top:${e.y}px;font-size:${e.boyut || 64}px">${esc(e.metin)}</div>`).join('')}

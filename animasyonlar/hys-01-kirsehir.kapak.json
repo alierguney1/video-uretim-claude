@@ -1,0 +1,91 @@
+{
+  "kaynak": "hys-01-kirsehir.html",
+  "varyantlar": [
+    {
+      "ad": "merkez",
+      "tur": "yanlış inanış",
+      "t": 0,
+      "zoom": {
+        "x": 540,
+        "y": 1350,
+        "olcek": 1.4
+      },
+      "baslik": [
+        "DÜNYANIN",
+        "MERKEZİ",
+        "*KIRŞEHİR?*"
+      ],
+      "baslikY": 250,
+      "boyut": 150,
+      "alt": "1973 hesabı öyle diyor. *Ya bugün?*",
+      "altY": 1580,
+      "emoji": [
+        {
+          "ad": "thinking-face",
+          "x": 880,
+          "y": 1330,
+          "boyut": 180,
+          "aci": 8
+        }
+      ],
+      "ust": 330
+    },
+    {
+      "ad": "kaydi",
+      "tur": "sayı şoku",
+      "t": 27.0,
+      "zoom": {
+        "x": 540,
+        "y": 1400,
+        "olcek": 1.45
+      },
+      "baslik": [
+        "MERKEZ",
+        "*762 KM*",
+        "KAYDI"
+      ],
+      "baslikY": 250,
+      "boyut": 155,
+      "alt": "Peki *nereye?*",
+      "altY": 1600,
+      "emoji": [
+        {
+          "ad": "exploding-head",
+          "x": 880,
+          "y": 1380,
+          "boyut": 180,
+          "aci": 8
+        }
+      ],
+      "ust": 330
+    },
+    {
+      "ad": "uchesap",
+      "tur": "gizem nesnesi",
+      "t": 20.1,
+      "zoom": {
+        "x": 620,
+        "y": 700,
+        "olcek": 1.5
+      },
+      "baslik": [
+        "ÜÇ HESAP",
+        "ÜÇ FARKLI",
+        "*MERKEZ*"
+      ],
+      "baslikY": 250,
+      "boyut": 150,
+      "altY": 1600,
+      "emoji": [
+        {
+          "ad": "eyes",
+          "x": 900,
+          "y": 1500,
+          "boyut": 170,
+          "aci": -8
+        }
+      ],
+      "ust": 330
+    }
+  ]
+}

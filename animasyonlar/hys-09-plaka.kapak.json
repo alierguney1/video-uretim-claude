@@ -1,0 +1,90 @@
+{
+  "kaynak": "hys-09-plaka.html",
+  "varyantlar": [
+    {
+      "ad": "46bin",
+      "tur": "sayı şoku",
+      "t": 29.0,
+      "zoom": {
+        "x": 540,
+        "y": 820,
+        "olcek": 1.35,
+        "dy": 250
+      },
+      "baslik": [
+        "PLAKA SIRASIYLA",
+        "*46.555 KM*"
+      ],
+      "baslikY": 250,
+      "boyut": 140,
+      "alt": "Dünyanın çevresinden *uzun*",
+      "altY": 1580,
+      "emoji": [
+        {
+          "ad": "exploding-head",
+          "x": 930,
+          "y": 470,
+          "boyut": 160,
+          "aci": 8
+        }
+      ]
+    },
+    {
+      "ad": "7kat",
+      "tur": "karşılaştırma",
+      "t": 35.6,
+      "zoom": {
+        "x": 540,
+        "y": 820,
+        "olcek": 1.35,
+        "dy": 250
+      },
+      "baslik": [
+        "AYNI 81 İL",
+        "*7 KAT* KISA"
+      ],
+      "baslikY": 250,
+      "boyut": 155,
+      "alt": "Sadece *sırayı* değiştir",
+      "altY": 1580,
+      "emoji": [
+        {
+          "ad": "eyes",
+          "x": 900,
+          "y": 330,
+          "boyut": 170,
+          "aci": -8
+        }
+      ]
+    },
+    {
+      "ad": "durak",
+      "tur": "kendi ilin",
+      "t": 34.5,
+      "karart": 0.25,
+      "baslik": [
+        "SENİN İLİN",
+        "*KAÇINCI*",
+        "DURAK?"
+      ],
+      "baslikY": 260,
+      "boyut": 155,
+      "altY": 1580,
+      "emoji": [
+        {
+          "ad": "thinking-face",
+          "x": 900,
+          "y": 560,
+          "boyut": 180,
+          "aci": 8
+        }
+      ],
+      "zoom": {
+        "x": 540,
+        "y": 820,
+        "olcek": 1.35,
+        "dy": 250
+      }
+    }
+  ]
+}
