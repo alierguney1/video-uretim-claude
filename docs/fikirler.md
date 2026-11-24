@@ -5,6 +5,33 @@ Bu dosya diğer ajanların aynı araştırmayı sıfırdan tekrarlamaması için
 > Temel kural ([MOTION_RULES.md](../MOTION_RULES.md) · [STYLE.md](../STYLE.md)):
 > Ekrandaki her sayı **kodda gerçek veriden** hesaplanır. Uydurma istatistik yok. Her video kendi kancası, ters köşesi, ara ödülleri ve döngüsüyle ayrışır.
 
+## 00. Değerlendirme (24 Kas 2026): "yeniden dağıtım" formülü kanıtlandı
+
+Instagram (vidIQ owner insights, 24 Kas), 1000 izlenme başına:
+
+| Reel | İzlenme | Paylaşım | Yorum | Ne tetikledi |
+| --- | --: | --: | --: | --- |
+| Konya (en yakın il merkezi, hys-14) | 225.599 | **31,6** | 1,3 | Rekabet: "Karaman bizden çıktı", "Karaman'a deniz gelmiş", "Hangi Karamanlı yaptı" (355 beğeni) |
+| Plaka alfabe sırasıyla (21 Kas, **repoda yok**) | 155.900 | 4,4 | **4,8** | Tek kelimelik kimlik yorumu: "16'dan 21'e", "64 77 olmuş", "Kocaeli hâlâ 41" |
+| Anamur (hys-10) | 95.230 | 10,3 | 0,2 | Okul bilgisi bozma + Mersinli/Anamurlu |
+| New York (hys-04 v2) | 49.083 | 0,4 | 0,0 | Yabancı karşılaştırma: izletiyor, göndertmiyor |
+
+**Formül:** Herkesin ezberindeki bir Türkiye düzenini (il sınırı, plaka) **tek basit kuralla yeniden kur** → 81 ilin
+her biri yeni bir sonuç alır → herkes kendi ilini arar (durdur-bul) → yorum tek bir sayı/ad ("eski → yeni"), paylaşım
+rakip ile ("Karaman Konya'yı geçti"). Paylaşımı **kazanan/kaybeden ikilisi** (Karaman ↑ Konya ↓) taşıyor, yorumu
+**herkesin bir sayısı olması** taşıyor. İkisini aynı videoda birleştirmek hedef.
+
+**Not:** Plaka alfabe bölümünün brif/html/yayın dosyaları hiçbir dalda yok; `yayinlar.csv`'ye de girmemiş. Hangi
+oturumda/hangi repoda üretildiği bulunup eklenmeli (sıradaki bölüm numarası buna bağlı).
+
+| Sıra | Fikir | Test | Kanca | Veri | Karar |
+| :-: | --- | :-: | --- | --- | --- |
+| 1 | **Plakalar nüfusa göre dağıtılsaydı** ("01 artık Adana değil") | ✓ ✓ ✓ | tahmin et + kayıp (Adana 01'i kaybeder) | TÜİK ADNKS 2025 il nüfusu | **Bugün** |
+| 2 | **İl merkezi ilin en kalabalık ilçesi olsaydı** (Bodrum Muğla'yı, İskenderun Antakya'yı alır mı?) + yeniden Voronoi | ✓ ✓ ✓ | gizem / ters köşe | TÜİK ilçe nüfusu + ilçe merkezi koordinatı (2 kaynak) | Yüksek, veri ağır |
+| 3 | **Türkiye 81 eşit nüfuslu ile bölünseydi** ("İstanbul ~15 il olurdu, doğuda X il birleşirdi") | ✓ ✓ ✓ | sayı şoku | TÜİK ADNKS 2025 | Yüksek; vergi'den (17 Kas) sonra 3 bölüm geçti mi kontrol |
+| 4 | **Plakalar Ankara'ya uzaklığa göre verilseydi** (06 → 01, Kırıkkale 02…) | ✓ ~ ✓ | ya …olursa | `veri/hys-14/merkezler.json` hazır | Yedek (1'in alternatifi, aynı gün değil) |
+| 5 | hys-15-dogu (cliffhanger borcu) · hys-09-gunes (1–21 Aralık penceresi) | ✓ ✓ ✓ | — | hazır | Takvime bağlı, araya |
+
 ## 0. Değerlendirme (18 Kas 2026, Instagram verisiyle)
 
 **Paylaşım / 1000 izlenme** (vidIQ owner insights, 18 Kas): Anamur 10,4 · Kuzey 7,3 · Kırşehir 6,5 · Batı 3,7 ·
