@@ -1,0 +1,56 @@
+{
+  "kaynak": "hys-16-plaka-nufus.html",
+  "varyantlar": [
+    {
+      "ad": "adana",
+      "tur": "kimlik",
+      "t": 1.3,
+      "karart": 0.1,
+      "baslik": [
+        "ADANA",
+        "*01*'İ KAYBETTİ"
+      ],
+      "baslikY": 260,
+      "boyut": 140,
+      "alt": "Plakalar *nüfusa* göre olsaydı",
+      "altY": 1520,
+      "emoji": [
+        { "ad": "face-screaming-in-fear", "x": 880, "y": 1340, "boyut": 170, "aci": 8 }
+      ]
+    },
+    {
+      "ad": "hicbiri",
+      "tur": "sayı şoku",
+      "t": 7.6,
+      "karart": 0.08,
+      "baslik": [
+        "81 İL",
+        "*0* KORUYAN"
+      ],
+      "baslikY": 260,
+      "boyut": 150,
+      "alt": "Senin plakan *kaç* oldu?",
+      "altY": 1560,
+      "emoji": [
+        { "ad": "exploding-head", "x": 880, "y": 1400, "boyut": 170, "aci": 8 }
+      ]
+    },
+    {
+      "ad": "konya",
+      "tur": "imkânsız iddia",
+      "t": 17.0,
+      "karart": 0.1,
+      "baslik": [
+        "*06* ARTIK",
+        "KONYA'NIN"
+      ],
+      "baslikY": 260,
+      "boyut": 140,
+      "alt": "Ankara *02* oldu",
+      "altY": 1540,
+      "emoji": [
+        { "ad": "eyes", "x": 880, "y": 1360, "boyut": 170, "aci": -6 }
+      ]
+    }
+  ]
+}

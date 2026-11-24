@@ -26,7 +26,7 @@ oturumda/hangi repoda üretildiği bulunup eklenmeli (sıradaki bölüm numaras�
 
 | Sıra | Fikir | Test | Kanca | Veri | Karar |
 | :-: | --- | :-: | --- | --- | --- |
-| 1 | **Plakalar nüfusa göre dağıtılsaydı** ("01 artık Adana değil") | ✓ ✓ ✓ | tahmin et + kayıp (Adana 01'i kaybeder) | TÜİK ADNKS 2025 il nüfusu | **Bugün** |
+| 1 | **Plakalar nüfusa göre dağıtılsaydı** ("01 artık Adana değil") | ✓ ✓ ✓ | kayıp + sayı şoku | TÜİK ADNKS 2025 il nüfusu | **Üretildi: `hys-16-plaka-nufus` (24 Kas, kuyrukta).** 81 ilin 0'ı plakasını koruyor; Konya 06, Adana 07 (Antalya'nın), Şanlıurfa 63→08 = Artvin'in plakası, Artvin 08→76 (en çok düşen). |
 | 2 | **İl merkezi ilin en kalabalık ilçesi olsaydı** (Bodrum Muğla'yı, İskenderun Antakya'yı alır mı?) + yeniden Voronoi | ✓ ✓ ✓ | gizem / ters köşe | TÜİK ilçe nüfusu + ilçe merkezi koordinatı (2 kaynak) | Yüksek, veri ağır |
 | 3 | **Türkiye 81 eşit nüfuslu ile bölünseydi** ("İstanbul ~15 il olurdu, doğuda X il birleşirdi") | ✓ ✓ ✓ | sayı şoku | TÜİK ADNKS 2025 | Yüksek; vergi'den (17 Kas) sonra 3 bölüm geçti mi kontrol |
 | 4 | **Plakalar Ankara'ya uzaklığa göre verilseydi** (06 → 01, Kırıkkale 02…) | ✓ ~ ✓ | ya …olursa | `veri/hys-14/merkezler.json` hazır | Yedek (1'in alternatifi, aynı gün değil) |

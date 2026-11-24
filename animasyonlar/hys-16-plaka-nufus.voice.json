@@ -1,0 +1,18 @@
+{
+  "voice": "Charon",
+  "style": "enerjik ve merak uyandıran, hızlı tempolu, önemli kelimeleri vurgulayan, izleyiciye meydan okur gibi; sonuç anında kısa bir duraklama ve vurgu. Plaka numaralarını Türkiye'de söylendiği gibi oku: 01 = sıfır bir.",
+  "tempo": 1.12, "lead": 0.15, "gap": 0.22, "tail": 3.4,
+  "lines": [
+    { "id": "l1", "text": "Adana, sıfır biri KAYBEDİYOR.", "caption": "Adana, 01'i kaybediyor." },
+    { "id": "l2", "text": "Kural basit: plakaları NÜFUSA göre dağıttım. En kalabalık il sıfır bir, en az nüfuslu il seksen bir.", "caption": "Kural basit: plakaları nüfusa göre dağıttım. En kalabalık il 01, en az nüfuslu il 81." },
+    { "id": "l3", "text": "Sıfır bir, tabii ki İSTANBUL. Ama asıl sürpriz, sıfır altıda.", "caption": "01, tabii ki İstanbul. Ama asıl sürpriz 06'da." },
+    { "id": "l4", "text": "Ankara, sıfır ikiye düşüyor. Sıfır altıyı alan il ise…", "caption": "Ankara 02'ye düşüyor. 06'yı alan il ise…" },
+    { "id": "l5", "text": "KONYA! Kırk ikiden, sıfır altıya.", "caption": "Konya! 42'den 06'ya.", "pauseBefore": 0.4 },
+    { "id": "l6", "text": "Peki Adana? Sıfır yedi. Yani ANTALYA'NIN plakası.", "caption": "Peki Adana? 07. Yani Antalya'nın plakası." },
+    { "id": "l7", "text": "En büyük sıçrama Şanlıurfa'nın: altmış üçten, sıfır sekize. Tam ELLİ BEŞ basamak.", "caption": "En büyük sıçrama Şanlıurfa'nın: 63'ten 08'e. Tam 55 basamak." },
+    { "id": "l8", "text": "Sıfır sekiz kimin plakasıydı? ARTVİN'in. Artvin ise, yetmiş altıya düşüyor.", "caption": "08 kimin plakasıydı? Artvin'in. Artvin ise 76'ya düşüyor." },
+    { "id": "l9", "text": "Alfabe sırasıyla dağıttığımızda, dört il plakasını korumuştu. Nüfusla kaç il koruyor?", "caption": "Alfabe sırasıyla dağıttığımızda 4 il plakasını korumuştu. Nüfusla kaç il koruyor?" },
+    { "id": "l10", "text": "HİÇBİRİ. Seksen bir ilin, seksen biri değişiyor.", "caption": "Hiçbiri. 81 ilin 81'i değişiyor.", "pauseBefore": 0.45 },
+    { "id": "l11", "text": "Senin plakan kaç oldu? Durdur, bul.", "caption": "Senin plakan kaç oldu? Durdur, bul." }
+  ]
+}

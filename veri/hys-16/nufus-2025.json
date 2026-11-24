@@ -1,0 +1,412 @@
+{
+ "kaynak": "TÜİK, Adrese Dayalı Nüfus Kayıt Sistemi (ADNKS) Sonuçları 2025 (31.12.2025 nüfusu). İki ikincil kopyadan alındı ve 81 ilde birebir karşılaştırıldı: tr.wikipedia.org/wiki/Türkiye%27nin_illeri (Nüfus (2025) sütunu) ve nufusu.com/iller (2025). TÜİK veri portalı otomatik isteklere kapalı (24 Kas 2026).",
+ "alindi": "2026-11-24",
+ "toplam": 86092168,
+ "iller": [
+  {
+   "ad": "Adana",
+   "plaka": 1,
+   "nufus": 2283609
+  },
+  {
+   "ad": "Adıyaman",
+   "plaka": 2,
+   "nufus": 617821
+  },
+  {
+   "ad": "Afyonkarahisar",
+   "plaka": 3,
+   "nufus": 751808
+  },
+  {
+   "ad": "Ağrı",
+   "plaka": 4,
+   "nufus": 491489
+  },
+  {
+   "ad": "Aksaray",
+   "plaka": 68,
+   "nufus": 441136
+  },
+  {
+   "ad": "Amasya",
+   "plaka": 5,
+   "nufus": 342242
+  },
+  {
+   "ad": "Ankara",
+   "plaka": 6,
+   "nufus": 5910320
+  },
+  {
+   "ad": "Antalya",
+   "plaka": 7,
+   "nufus": 2777677
+  },
+  {
+   "ad": "Ardahan",
+   "plaka": 75,
+   "nufus": 90392
+  },
+  {
+   "ad": "Artvin",
+   "plaka": 8,
+   "nufus": 167531
+  },
+  {
+   "ad": "Aydın",
+   "plaka": 9,
+   "nufus": 1172107
+  },
+  {
+   "ad": "Balıkesir",
+   "plaka": 10,
+   "nufus": 1284517
+  },
+  {
+   "ad": "Bartın",
+   "plaka": 74,
+   "nufus": 206663
+  },
+  {
+   "ad": "Batman",
+   "plaka": 72,
+   "nufus": 662626
+  },
+  {
+   "ad": "Bayburt",
+   "plaka": 69,
+   "nufus": 82836
+  },
+  {
+   "ad": "Bilecik",
+   "plaka": 11,
+   "nufus": 228995
+  },
+  {
+   "ad": "Bingöl",
+   "plaka": 12,
+   "nufus": 282299
+  },
+  {
+   "ad": "Bitlis",
+   "plaka": 13,
+   "nufus": 360423
+  },
+  {
+   "ad": "Bolu",
+   "plaka": 14,
+   "nufus": 327173
+  },
+  {
+   "ad": "Burdur",
+   "plaka": 15,
+   "nufus": 277226
+  },
+  {
+   "ad": "Bursa",
+   "plaka": 16,
+   "nufus": 3263011
+  },
+  {
+   "ad": "Çanakkale",
+   "plaka": 17,
+   "nufus": 573976
+  },
+  {
+   "ad": "Çankırı",
+   "plaka": 18,
+   "nufus": 200549
+  },
+  {
+   "ad": "Çorum",
+   "plaka": 19,
+   "nufus": 519590
+  },
+  {
+   "ad": "Denizli",
+   "plaka": 20,
+   "nufus": 1060975
+  },
+  {
+   "ad": "Diyarbakır",
+   "plaka": 21,
+   "nufus": 1852356
+  },
+  {
+   "ad": "Düzce",
+   "plaka": 81,
+   "nufus": 415622
+  },
+  {
+   "ad": "Edirne",
+   "plaka": 22,
+   "nufus": 422438
+  },
+  {
+   "ad": "Elazığ",
+   "plaka": 23,
+   "nufus": 605678
+  },
+  {
+   "ad": "Erzincan",
+   "plaka": 24,
+   "nufus": 239625
+  },
+  {
+   "ad": "Erzurum",
+   "plaka": 25,
+   "nufus": 736877
+  },
+  {
+   "ad": "Eskişehir",
+   "plaka": 26,
+   "nufus": 927956
+  },
+  {
+   "ad": "Gaziantep",
+   "plaka": 27,
+   "nufus": 2222415
+  },
+  {
+   "ad": "Giresun",
+   "plaka": 28,
+   "nufus": 455074
+  },
+  {
+   "ad": "Gümüşhane",
+   "plaka": 29,
+   "nufus": 138807
+  },
+  {
+   "ad": "Hakkari",
+   "plaka": 30,
+   "nufus": 279681
+  },
+  {
+   "ad": "Hatay",
+   "plaka": 31,
+   "nufus": 1577531
+  },
+  {
+   "ad": "Iğdır",
+   "plaka": 76,
+   "nufus": 205071
+  },
+  {
+   "ad": "Isparta",
+   "plaka": 32,
+   "nufus": 445303
+  },
+  {
+   "ad": "İstanbul",
+   "plaka": 34,
+   "nufus": 15754053
+  },
+  {
+   "ad": "İzmir",
+   "plaka": 35,
+   "nufus": 4504185
+  },
+  {
+   "ad": "Kahramanmaraş",
+   "plaka": 46,
+   "nufus": 1146278
+  },
+  {
+   "ad": "Karabük",
+   "plaka": 78,
+   "nufus": 249614
+  },
+  {
+   "ad": "Karaman",
+   "plaka": 70,
+   "nufus": 262355
+  },
+  {
+   "ad": "Kars",
+   "plaka": 36,
+   "nufus": 268991
+  },
+  {
+   "ad": "Kastamonu",
+   "plaka": 37,
+   "nufus": 379934
+  },
+  {
+   "ad": "Kayseri",
+   "plaka": 38,
+   "nufus": 1458991
+  },
+  {
+   "ad": "Kırıkkale",
+   "plaka": 71,
+   "nufus": 282830
+  },
+  {
+   "ad": "Kırklareli",
+   "plaka": 39,
+   "nufus": 379595
+  },
+  {
+   "ad": "Kırşehir",
+   "plaka": 40,
+   "nufus": 242777
+  },
+  {
+   "ad": "Kilis",
+   "plaka": 79,
+   "nufus": 157363
+  },
+  {
+   "ad": "Kocaeli",
+   "plaka": 41,
+   "nufus": 2161171
+  },
+  {
+   "ad": "Konya",
+   "plaka": 42,
+   "nufus": 2343409
+  },
+  {
+   "ad": "Kütahya",
+   "plaka": 43,
+   "nufus": 570478
+  },
+  {
+   "ad": "Malatya",
+   "plaka": 44,
+   "nufus": 755854
+  },
+  {
+   "ad": "Manisa",
+   "plaka": 45,
+   "nufus": 1477756
+  },
+  {
+   "ad": "Mardin",
+   "plaka": 47,
+   "nufus": 903576
+  },
+  {
+   "ad": "Mersin",
+   "plaka": 33,
+   "nufus": 1956428
+  },
+  {
+   "ad": "Muğla",
+   "plaka": 48,
+   "nufus": 1099547
+  },
+  {
+   "ad": "Muş",
+   "plaka": 49,
+   "nufus": 389127
+  },
+  {
+   "ad": "Nevşehir",
+   "plaka": 50,
+   "nufus": 320150
+  },
+  {
+   "ad": "Niğde",
+   "plaka": 51,
+   "nufus": 374492
+  },
+  {
+   "ad": "Ordu",
+   "plaka": 52,
+   "nufus": 768087
+  },
+  {
+   "ad": "Osmaniye",
+   "plaka": 80,
+   "nufus": 564123
+  },
+  {
+   "ad": "Rize",
+   "plaka": 53,
+   "nufus": 346947
+  },
+  {
+   "ad": "Sakarya",
+   "plaka": 54,
+   "nufus": 1123693
+  },
+  {
+   "ad": "Samsun",
+   "plaka": 55,
+   "nufus": 1392403
+  },
+  {
+   "ad": "Siirt",
+   "plaka": 56,
+   "nufus": 332369
+  },
+  {
+   "ad": "Sinop",
+   "plaka": 57,
+   "nufus": 225848
+  },
+  {
+   "ad": "Sivas",
+   "plaka": 58,
+   "nufus": 631401
+  },
+  {
+   "ad": "Şanlıurfa",
+   "plaka": 63,
+   "nufus": 2265800
+  },
+  {
+   "ad": "Şırnak",
+   "plaka": 73,
+   "nufus": 573666
+  },
+  {
+   "ad": "Tekirdağ",
+   "plaka": 59,
+   "nufus": 1208441
+  },
+  {
+   "ad": "Tokat",
+   "plaka": 60,
+   "nufus": 614141
+  },
+  {
+   "ad": "Trabzon",
+   "plaka": 61,
+   "nufus": 823323
+  },
+  {
+   "ad": "Tunceli",
+   "plaka": 62,
+   "nufus": 85083
+  },
+  {
+   "ad": "Uşak",
+   "plaka": 64,
+   "nufus": 374405
+  },
+  {
+   "ad": "Van",
+   "plaka": 65,
+   "nufus": 1112013
+  },
+  {
+   "ad": "Yalova",
+   "plaka": 77,
+   "nufus": 311635
+  },
+  {
+   "ad": "Yozgat",
+   "plaka": 66,
+   "nufus": 413208
+  },
+  {
+   "ad": "Zonguldak",
+   "plaka": 67,
+   "nufus": 585203
+  }
+ ]
+}

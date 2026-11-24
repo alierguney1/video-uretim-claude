@@ -1,0 +1,410 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Plakalar nüfusa göre</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@600;800&family=IBM+Plex+Mono:wght@500&display=block" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/d3-array@3.2.4/dist/d3-array.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/d3-geo@3.1.1/dist/d3-geo.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/topojson-client@3.1.0/dist/topojson-client.min.js"></script>
+<style>
+  html, body { margin: 0; height: 100%; background: #0b141b; }
+  body { display: grid; place-items: center; overflow: hidden; }
+  canvas { display: block; }
+  #hud { position: fixed; left: 12px; bottom: 10px; font: 12px/1.4 ui-monospace, monospace;
+         color: #bbb; background: rgba(0,0,0,.55); padding: 4px 8px; border-radius: 4px; user-select: none; }
+  body.render #hud { display: none; }
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div id="hud">yükleniyor…</div>
+<audio id="vo" src="../ses/hys-16-plaka-nufus/voice.wav" preload="auto"></audio>
+<script src="../lib/ikonlar.js"></script>
+<script src="../lib/ikon-seti.js"></script>
+<script src="../lib/iller.js"></script>
+<script src="../lib/ikon-katmani.js"></script>
+<script src="../veri/hys-16/plaka-nufus.js"></script>
+<script src="../lib/harita-motoru.js"></script>
+<script>
+'use strict';
+// Harita Yalan Söyler · Bölüm 16 — "Plakalar nüfusa göre dağıtılsaydı"
+// Kural: en kalabalık il 01, en az nüfuslu il 81 (TÜİK ADNKS 2025). Brif: hys-16-plaka-nufus.brief.md.
+// Veri: tools/hys-16-plaka-nufus.mjs → veri/hys-16/plaka-nufus.js. Ekrandaki her sayı PN verisinden hesaplanır.
+
+/*VO:BEGIN*/ const VO = {"duration":45.66,"lines":[{"id":"l1","start":0.15,"end":1.877,"text":"Adana, 01'i kaybediyor."},{"id":"l2","start":2.097,"end":7.519,"text":"Kural basit: plakaları nüfusa göre dağıttım. En kalabalık il 01, en az nüfuslu il 81."},{"id":"l3","start":7.739,"end":11.38,"text":"01, tabii ki İstanbul. Ama asıl sürpriz 06'da."},{"id":"l4","start":11.6,"end":14.573,"text":"Ankara 02'ye düşüyor. 06'yı alan il ise…"},{"id":"l5","start":15.193,"end":17.34,"text":"Konya! 42'den 06'ya."},{"id":"l6","start":17.56,"end":21.025,"text":"Peki Adana? 07. Yani Antalya'nın plakası."},{"id":"l7","start":21.245,"end":26.348,"text":"En büyük sıçrama Şanlıurfa'nın: 63'ten 08'e. Tam 55 basamak."},{"id":"l8","start":26.568,"end":31.251,"text":"08 kimin plakasıydı? Artvin'in. Artvin ise 76'ya düşüyor."},{"id":"l9","start":31.471,"end":35.927,"text":"Alfabe sırasıyla dağıttığımızda 4 il plakasını korumuştu. Nüfusla kaç il koruyor?"},{"id":"l10","start":36.597,"end":39.472,"text":"Hiçbiri. 81 ilin 81'i değişiyor."},{"id":"l11","start":39.692,"end":42.257,"text":"Senin plakan kaç oldu? Durdur, bul."}]}; /*VO:END*/
+const { C, SANS, MONO, W, H, SAFE, ctx, clamp, lerp, prog, win, ease, text, textTab, pin, statPill } = HYS;
+
+// ── veri ──
+const PN = PLAKA_NUFUS, BY = Object.fromEntries(PN.iller.map(i => [i.ad, i]));
+const IST = BY['İstanbul'], ANK = BY['Ankara'], KON = BY['Konya'], ADA = BY['Adana'], ANT = BY['Antalya'];
+const URF = BY[PN.enCokYukselen], ART = BY[PN.enCokDusen];               // Şanlıurfa, Artvin (hesaptan)
+const SON = PN.iller.find(i => i.yeni === 81), BIR = PN.iller.find(i => i.yeni === 1);
+const ALFA = [...PN.iller].sort((a, b) => a.ad.localeCompare(b.ad, 'tr'));
+const ESKI = [...PN.iller].sort((a, b) => a.plaka - b.plaka);
+const NMIN = Math.log(Math.min(...PN.iller.map(i => i.nufus))), NMAX = Math.log(Math.max(...PN.iller.map(i => i.nufus)));
+const f2 = n => String(n).padStart(2, '0');
+const bin = x => Math.round(x).toLocaleString('tr-TR');
+const milyon = x => (x / 1e6).toFixed(2).replace('.', ',');
+const BLUE = '#2B5BB8', INK = '#0F1C26', PAPER = '#F4F1EA';
+// sözü geçen yerde: altyazı metnindeki konumdan kelimenin zamanı (yaklaşık)
+const wt = (i, sub, off = 0) => { const l = VO.lines[i], k = Math.max(0, l.text.indexOf(sub)) / l.text.length; return l.start + (l.end - l.start) * k + off; };
+
+let T, FEATS = [], FBY = {}, MESH = null, TR = null;
+const P = ad => IKON.il(ad).nokta;
+
+// ── plaka ──
+// Plakanın rakamı yuvarlanır: k=0 'from' görünür, k=1 'code'. Yeni (gerçek hesap) rakam turuncu.
+function plate(cx, cy, w, code, { name = null, from = null, k = 1, alpha = 1, olcek = 1, codeColor = INK, fromColor = INK, ring = 0 } = {}) {
+  if (alpha <= .001 || olcek <= .001) return;
+  const h = w * .27, s = olcek;
+  ctx.save(); ctx.globalAlpha = alpha; ctx.translate(cx, cy); ctx.scale(s, s);
+  const x0 = -w / 2, y0 = -h / 2, r = h * .16;
+  if (ring > .001) { ctx.save(); ctx.globalAlpha = alpha * ring; ctx.strokeStyle = C.accent; ctx.lineWidth = 7; ctx.beginPath(); ctx.roundRect(x0 - 9, y0 - 9, w + 18, h + 18, r + 8); ctx.stroke(); ctx.restore(); }
+  ctx.fillStyle = PAPER; ctx.beginPath(); ctx.roundRect(x0, y0, w, h, r); ctx.fill();
+  ctx.save(); ctx.beginPath(); ctx.roundRect(x0, y0, w, h, r); ctx.clip();
+  ctx.fillStyle = BLUE; ctx.fillRect(x0, y0, h * .46, h);
+  ctx.restore();
+  ctx.strokeStyle = INK; ctx.lineWidth = Math.max(2, w * .012); ctx.beginPath(); ctx.roundRect(x0, y0, w, h, r); ctx.stroke();
+  text('TR', x0 + h * .23, y0 + h * .86, h * .24, { align: 'center', color: PAPER, alpha });
+  // rakam alanı (kırpılmış yuvarlanma)
+  const cx0 = x0 + h * .62, size = h * .74;
+  ctx.font = `500 ${size}px ${MONO}`; const cw = ctx.measureText('00').width;
+  ctx.save(); ctx.beginPath(); ctx.rect(cx0 - 4, y0 + 4, cw + 10, h - 8); ctx.clip();
+  const base = y0 + h * .5 + size * .36, kk = ease.inOutCubic(clamp(k));
+  if (from !== null && kk < 1) textTab(from, cx0, base - kk * h, size, { color: fromColor, alpha });
+  textTab(code, cx0, base + (from !== null ? (1 - kk) * h : 0), size, { color: codeColor, alpha });
+  ctx.restore();
+  if (name) text(name.toLocaleUpperCase('tr'), cx0 + cw + h * .26, y0 + h * .5 + h * .15, h * .42, { color: INK, alpha, maxW: x0 + w - (cx0 + cw + h * .26) - h * .18 });
+  ctx.restore();
+}
+// harita üstünde plaka: noktadan çıkan sap + plaka
+function mapPlate(pr, ad, t, w, code, o = {}) {
+  const a = o.alpha ?? 1; if (a <= .001) return;
+  const p = pr(P(ad)); if (!p) return;
+  const up = o.up ?? 95, pp = o.t0 !== undefined ? IKON.pop(t, o.t0, .45) : { olcek: 1, alpha: 1 };
+  ctx.save(); ctx.globalAlpha = a * pp.alpha; ctx.strokeStyle = INK; ctx.lineWidth = 4; ctx.beginPath(); ctx.moveTo(p[0], p[1]); ctx.lineTo(p[0], p[1] - up + w * .135); ctx.stroke(); ctx.restore();
+  pin(p, { color: o.pinColor || C.accent, r: 10, alpha: a * pp.alpha });
+  plate(p[0], p[1] - up, w, code, { ...o, alpha: a * pp.alpha, olcek: (o.olcek ?? 1) * pp.olcek });
+}
+// sayaç gibi yuvarlanan plaka (63 → 08): tam sayılar arasında kayar
+function counterPlate(pr, ad, t, w, a, b, t0, t1, o = {}) {
+  const e = ease.inOutCubic(prog(t, t0, t1)), v = lerp(a, b, e), n = Math.ceil(v - 1e-6), fr = n - v;
+  const done = e >= 1;
+  mapPlate(pr, ad, t, w, f2(done ? b : n - 1), { ...o, from: done ? null : f2(n), k: done ? 1 : fr, codeColor: e > 0 ? C.accent : INK, fromColor: e > 0 ? C.accent : INK });
+}
+
+// ── harita ──
+const clipTR = path => { ctx.beginPath(); path(TR); ctx.clip(); };
+const shade = i => (Math.log(i.nufus) - NMIN) / (NMAX - NMIN);
+
+// küçük plaka karosu: ince mavi şerit + iri rakam (ızgarada okunur)
+function tile(x, y, code, from, k, a, ring) {
+  if (a <= .001) return;
+  const w = 86, h = 58, x0 = x - w / 2, y0 = y - h / 2;
+  ctx.save(); ctx.globalAlpha = a;
+  if (ring > .001) { ctx.globalAlpha = a * ring; ctx.strokeStyle = C.accent; ctx.lineWidth = 6; ctx.beginPath(); ctx.roundRect(x0 - 7, y0 - 7, w + 14, h + 14, 13); ctx.stroke(); ctx.globalAlpha = a; }
+  ctx.fillStyle = PAPER; ctx.beginPath(); ctx.roundRect(x0, y0, w, h, 9); ctx.fill();
+  ctx.save(); ctx.clip(); ctx.fillStyle = BLUE; ctx.fillRect(x0, y0, 13, h);
+  const kk = ease.inOutCubic(clamp(k));
+  if (kk < 1) textTab(from, x + 6, y + 15 - kk * h, 40, { align: 'center', color: INK, alpha: a });
+  if (kk > 0) textTab(code, x + 6, y + 15 + (1 - kk) * h, 40, { align: 'center', color: C.accent, alpha: a });
+  ctx.restore();
+  ctx.strokeStyle = INK; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.roundRect(x0, y0, w, h, 9); ctx.stroke();
+  ctx.restore();
+}
+// ── 81 plaka ızgarası (eski plaka sırasıyla; yuvarlanınca yeni plaka) ──
+function grid(t, a) {
+  if (a <= .001) return;
+  ctx.save(); ctx.globalAlpha = a * .95; ctx.fillStyle = C.bg; ctx.fillRect(0, 600, W, 960); ctx.restore();
+  const cols = 9, cw = 94, ch = 76, x0 = (SAFE.x0 + SAFE.x1) / 2 - 4 * cw, y0 = 700;
+  const alfK = win(t, T.alf, T.hic - .1, .3);
+  ESKI.forEach((i, n) => {
+    const c = n % cols, r = Math.floor(n / cols), x = x0 + c * cw, y = y0 + r * ch;
+    const ia = a * prog(t, T.s9 + .05 + n * .006, T.s9 + .3 + n * .006);
+    const rt = T.hic + ((n * 37) % 81) / 81 * .55;                                   // aynı anda ama dalgalı
+    const k = prog(t, rt, rt + .35);
+    const kept = PN.alfaKoruyan.includes(i.ad);
+    tile(x, y, f2(i.yeni), f2(i.plaka), k, ia, kept ? alfK : 0);
+  });
+  if (alfK > .001) text('alfabe kuralında plakasını koruyan 4 il', x0 - cw / 2 + 6, y0 - 62, 30, { weight: 600, color: C.accent, alpha: a * alfK });
+  const zk = win(t, T.hic + .5, T.tab + .1, .3);
+  if (zk > .001) text('eski yerinde, yeni plakası', x0 - cw / 2 + 6, y0 - 62, 30, { weight: 600, color: C.mute, alpha: a * zk });
+}
+
+// ── durdur-bul: 81 il, alfabetik, eski → yeni ──
+function table(t, a) {
+  if (a <= .001) return;
+  const cols = 3, rows = 27, x0 = SAFE.x0 - 26, colW = (SAFE.x1 - SAFE.x0 + 52) / cols, y0 = 560, rowH = 33.5;
+  ctx.save(); ctx.globalAlpha = a; ctx.fillStyle = C.bg; ctx.fillRect(0, 470, W, H - 470); ctx.restore();
+  const push = 1 + .03 * ease.inOutCubic(prog(t, T.tab + .8, T.loop));
+  ctx.save(); ctx.translate(W / 2, 1000); ctx.scale(push, push); ctx.translate(-W / 2, -1000);
+  ALFA.forEach((i, n) => {
+    const c = Math.floor(n / rows), r = n % rows, x = x0 + c * colW, y = y0 + r * rowH;
+    const al = a * prog(t, T.tab + .05 + n * .007, T.tab + .25 + n * .007);
+    if (al <= .001) return;
+    const up = i.fark > 0, big = Math.abs(i.fark) >= 25;
+    if (big) { ctx.save(); ctx.globalAlpha = al * .14; ctx.fillStyle = up ? C.accent : C.land; ctx.beginPath(); ctx.roundRect(x - 4, y - 26, colW - 6, 34, 7); ctx.fill(); ctx.restore(); }
+    const right = x + colW - 12;
+    textTab(f2(i.plaka) + '→' + f2(i.yeni), right, y, 21, { alpha: al, color: up ? C.accent : C.mute, align: 'right' });
+    let size = 22; ctx.font = `600 ${size}px ${SANS}`; const room = colW - 12 - 100, need = ctx.measureText(i.ad).width;
+    if (need > room) size = Math.max(15, size * room / need);
+    text(i.ad, x + 4, y, size, { weight: up && big ? 800 : 600, color: up ? C.accent : C.text, alpha: al });
+  });
+  ctx.restore();
+  text('eski plaka → nüfus sırasıyla yeni plaka · turuncu: yükselen', SAFE.x0 - 20, y0 + rows * rowH + 6, 22, { weight: 600, color: C.mute, alpha: a, maxW: SAFE.x1 - SAFE.x0 + 40 });
+  text('Nüfus: TÜİK ADNKS 2025 · bugünkü plakalar 1960’larda il adlarının alfabe sırasıyla verildi', SAFE.x0 - 20, y0 + rows * rowH + 38, 18, { weight: 600, color: C.mute, alpha: a * .85, maxW: SAFE.x1 - SAFE.x0 + 40 });
+}
+
+HYS.run({
+  vo: VO, cover: 1.2, flat: true, seed: 16, captionStyle: 'kinetic', captionSkip: [10],
+  init(D) {
+    FEATS = IKON.ilSekilleri();
+    FEATS.forEach(f => { FBY[f.properties.ad] = f; });
+    MESH = topojson.mesh(ILLER.topo, ILLER.topo.objects.iller, (a, b) => a !== b);
+    TR = topojson.merge(ILLER.topo, ILLER.topo.objects.iller.geometries);
+  },
+  times(L, at, DUR) {
+    T = {
+      cut: .75, s2: at(1) - .1, wave0: wt(1, 'En kalabalık', -.1), wave1: at(1, 'end') + .3,
+      s3: at(2) - .1, ist: at(2) + .35, q06: wt(2, 'Ama', -.1),
+      s4: at(3) - .1, ank: wt(3, '02', -.2), kon: at(4) + .05,
+      s6: at(5) - .1, ada: wt(5, '07', -.2), ant: wt(5, 'Antalya', -.1),
+      s7: at(6) - .1, c0: wt(6, '63', -.1), c1: wt(6, 'Tam', -.15), c55: wt(6, '55', -.2),
+      s8: at(7) - .1, fly0: wt(7, 'Artvin', -.2), fly1: wt(7, 'Artvin', .75), art: wt(7, '76', -.25),
+      s9: at(8) - .1, alf: wt(8, '4 il', -.15), q: wt(8, 'Nüfusla', -.1),
+      hic: at(9) - .05, tab: at(10) - .1, loop: DUR - .8, DUR,
+    };
+    return T;
+  },
+  scenes: (T, at, DUR) => [
+    { name: 'kanca: Adana 01', start: 0, end: T.s2 }, { name: 'kural: nüfus dalgası', start: T.s2, end: T.s3 },
+    { name: 'İstanbul 01 · 06?', start: T.s3, end: T.s4 }, { name: 'Ankara 02 · KONYA 06', start: T.s4, end: T.s6 },
+    { name: 'Adana 07 · Antalya', start: T.s6, end: T.s7 }, { name: 'Urfa 63→08', start: T.s7, end: T.s8 },
+    { name: '08 uçar · Artvin 76', start: T.s8, end: T.s9 }, { name: 'ızgara: alfabe 4', start: T.s9, end: T.hic },
+    { name: 'HİÇBİRİ', start: T.hic, end: T.tab }, { name: 'durdur-bul', start: T.tab, end: T.loop },
+    { name: 'döngü', start: T.loop, end: DUR },
+  ],
+  keys: (T, at, DUR) => [
+    [0, 35.0, 37.55, 46], [T.s2 - .1, 35.1, 37.5, 50],
+    [T.s2 + .9, 35.3, 38.85, 20], [T.s3 - .1, 35.3, 38.9, 20.8],
+    [T.s3 + .8, 29.6, 40.75, 58], [T.s4 - .1, 29.6, 40.8, 62],
+    [T.s4 + .8, 32.75, 38.9, 44], [T.s6 - .1, 32.7, 38.85, 47],
+    [T.s6 + .8, 33.0, 37.25, 40], [T.s7 - .1, 33.0, 37.25, 42],
+    [T.s7 + .8, 38.9, 37.75, 52], [T.s8 - .1, 38.9, 37.8, 55],
+    [T.s8 + .9, 40.3, 39.95, 27], [T.s9 - .1, 40.3, 39.95, 28],
+    [T.s9 + .6, 35.4, 38.8, 19], [T.tab + .3, 35.4, 38.8, 19.5],
+    [T.tab + 1.2, 35.0, 37.55, 46], [DUR, 35.0, 37.55, 46],
+  ],
+  beats: (T, at, DUR) => [
+    { t: .3, ac: 'A', soru: 'Adana 01’i neden, kime kaybediyor? Kaç oluyor?' },
+    { t: T.cut + .1, odul: '01 çizilir, rakam “?” olur' },
+    { t: T.s2 + .2, ac: 'B', soru: 'Hangi kural? Benim plakam ne oluyor?' },
+    { t: T.s2 + 1.2, odul: 'iller nüfusa göre koyulaşır' },
+    { t: T.wave0 + 1.2, odul: '81 rakam nüfus sırasıyla döner' },
+    { t: T.wave1 - .4, odul: '01 İstanbul · 81 ' + SON.ad },
+    { t: T.s3, kapa: 'B' },
+    { t: T.ist + .5, odul: 'İstanbul 34 → 01' },
+    { t: T.s3 + .6, ac: 'E', soru: 'Kaç il plakasını koruyor? (köşedeki sayaç)' },
+    { t: T.q06, ac: 'C', soru: '06’yı kim alıyor?' },
+    { t: T.ank + .5, odul: 'Ankara 06 → 02' },
+    { t: T.kon + .4, kapa: 'C' }, { t: T.kon + .4, odul: 'KONYA 06 (ters köşe)' },
+    { t: T.ada + .4, kapa: 'A' }, { t: T.ada + .4, odul: 'Adana 07' },
+    { t: T.ant + .4, odul: '07 = Antalya’nın plakası, Antalya 05' },
+    { t: T.ant + 1.0, odul: 'Antalya 07 → 05' },
+    { t: T.s7 + .3, ac: 'D', soru: 'En çok kim yükseliyor? 08 kimin?' },
+    { t: T.s7 + .6, odul: URF.ad + ' plakası: 63' },
+    { t: T.c1, odul: URF.ad + ' 63 → 08 sayacı' },
+    { t: T.c55 + .3, odul: '+' + URF.fark + ' basamak' },
+    { t: T.fly1, kapa: 'D' }, { t: T.fly1, odul: '08 Artvin’den uçar' },
+    { t: T.art + .4, odul: ART.ad + ' 08 → ' + ART.yeni },
+    { t: T.alf + .4, odul: 'alfabe: 4 il (çerçeve)' },
+    { t: T.hic + .5, kapa: 'E' }, { t: T.hic + .5, odul: 'HİÇBİRİ: 81 plaka birden döner, 0' },
+    { t: T.tab + .1, ac: 'F', soru: 'Benim plakam kaç oldu?' },
+    { t: T.tab + 1.0, odul: '81 il tablosu' },
+    { t: T.loop, kapa: 'F' },
+    { t: T.loop + .2, odul: 'döngü: Adana 01 plakası' },
+  ],
+  draw(t, g) {
+    const { pr, path, DUR } = g;
+    const gridA = win(t, T.s9 + .05, T.tab + .1, .35), tabA = win(t, T.tab, T.loop + .15, .3);
+    const mapA = 1 - Math.max(tabA, gridA * .75);
+    if (mapA <= .001) return;
+    const loopK = prog(t, T.loop, DUR - .15);                                       // son kare = ilk kare
+    // kara + nüfus koyuluğu
+    const shA = prog(t, T.s2 + .3, T.s2 + 1.2) * (1 - loopK);
+    ctx.save(); ctx.globalAlpha = mapA; ctx.fillStyle = C.land; ctx.beginPath(); path(TR); ctx.fill();
+    if (shA > .001) for (const f of FEATS) {
+      const i = BY[f.properties.ad]; if (!i) continue;
+      ctx.globalAlpha = mapA * shA * .62 * shade(i); ctx.fillStyle = '#7E8C80'; ctx.beginPath(); path(f); ctx.fill();
+    }
+    // odak il dolguları
+    const focus = (ad, a) => { if (a <= .001) return; ctx.globalAlpha = mapA * a * .55; ctx.fillStyle = C.accent; ctx.beginPath(); path(FBY[ad]); ctx.fill(); };
+    const adaHook = Math.max(1 - prog(t, T.s2 + .1, T.s2 + .7), loopK);
+    focus('Adana', Math.max(adaHook, win(t, T.s6 + .1, T.s7 + .2, .4)));
+    focus('İstanbul', win(t, T.s3 + .2, T.s4 + .2, .4));
+    focus('Konya', win(t, T.kon - .05, T.s6 + .3, .3));
+    focus('Şanlıurfa', win(t, T.s7 + .2, T.s9, .4));
+    ctx.restore();
+    // sınırlar
+    ctx.save(); ctx.globalAlpha = mapA; ctx.strokeStyle = 'rgba(15,28,38,.55)'; ctx.lineWidth = 1.3; ctx.beginPath(); path(MESH); ctx.stroke();
+    ctx.strokeStyle = 'rgba(15,28,38,.9)'; ctx.lineWidth = 2.4; ctx.beginPath(); path(TR); ctx.stroke(); ctx.restore();
+
+    // kural: 81 il noktasında eski plaka → nüfus sırasıyla yeni plaka (dalga)
+    const numA = win(t, T.s2 + .5, T.s3 + .5, .35) * mapA;
+    if (numA > .001) for (const i of ESKI) {
+      const p = pr(P(i.ad)); if (!p) continue;
+      const rt = lerp(T.wave0, T.wave1 - .5, (i.yeni - 1) / 80), k = prog(t, rt, rt + .3);
+      const pop = k > 0 && k < 1 ? 1 + .3 * Math.sin(Math.PI * k) : 1, sz = 24 * pop;
+      if (k < .5) textTab(f2(i.plaka), p[0], p[1] + 8, sz, { align: 'center', color: INK, alpha: numA * (1 - 2 * k), stroke: C.land, strokeWidth: 5 });
+      else textTab(f2(i.yeni), p[0], p[1] + 8, sz, { align: 'center', color: C.accent, alpha: numA * (2 * k - 1), stroke: INK, strokeWidth: 6 });
+    }
+
+    // kanca + döngü: Adana 01 plakası, 01 çizilir → “?”
+    const hookA = (1 - prog(t, T.s2 - .1, T.s2 + .4)) * mapA;
+    if (hookA > .001) {
+      const k = prog(t, T.cut, T.cut + .45);
+      mapPlate(pr, 'Adana', t, 520, '?', { name: 'Adana', from: '01', k, alpha: hookA, codeColor: C.accent, up: 170, ring: prog(t, T.cut + .2, T.cut + .5) });
+    }
+    const loopA = loopK * mapA;
+    if (loopA > .001) mapPlate(pr, 'Adana', t, 520, '01', { name: 'Adana', alpha: loopA, up: 170 });
+
+    // İstanbul 34 → 01
+    const istA = win(t, T.s3 + .4, T.s4 + .1, .3) * mapA;
+    mapPlate(pr, 'İstanbul', t, 400, f2(IST.yeni), { name: 'İstanbul', from: f2(IST.plaka), k: prog(t, T.ist, T.ist + .5), alpha: istA, codeColor: C.accent, up: 130, t0: T.s3 + .4 });
+    // Ankara 06 → 02, Konya 42 → 06
+    const ankA = win(t, T.s4 + .3, T.s6 + .1, .3) * mapA;
+    mapPlate(pr, 'Ankara', t, 340, f2(ANK.yeni), { name: 'Ankara', from: f2(ANK.plaka), k: prog(t, T.ank, T.ank + .45), alpha: ankA, codeColor: C.accent, up: 110, t0: T.s4 + .3 });
+    const konA = win(t, T.s4 + .6, T.s6 + .1, .3) * mapA;
+    mapPlate(pr, 'Konya', t, 380, f2(KON.yeni), { name: 'Konya', from: f2(KON.plaka), k: prog(t, T.kon, T.kon + .4), alpha: konA, codeColor: C.accent, up: 120, t0: T.s4 + .6, ring: prog(t, T.kon + .2, T.kon + .5) });
+    // Adana ?? → 07, Antalya 07 → 05
+    const adA = win(t, T.s6 + .2, T.s7 + .1, .3) * mapA;
+    mapPlate(pr, 'Adana', t, 360, f2(ADA.yeni), { name: 'Adana', from: '?', k: prog(t, T.ada, T.ada + .45), alpha: adA, codeColor: C.accent, fromColor: C.accent, up: 120, t0: T.s6 + .2 });
+    const antA = win(t, T.ant - .3, T.s7 + .1, .3) * mapA;
+    mapPlate(pr, 'Antalya', t, 300, f2(ANT.yeni), { name: 'Antalya', from: f2(ANT.plaka), k: prog(t, T.ant + .5, T.ant + .9), alpha: antA, codeColor: C.accent, up: 100, t0: T.ant - .3, pinColor: C.land });
+    // Şanlıurfa 63 → 08 (sayaç)
+    const urA = win(t, T.s7 + .3, T.s9 + .1, .3) * mapA;
+    if (urA > .001) {
+      const landed = prog(t, T.fly1 - .05, T.fly1 + .1);
+      counterPlate(pr, URF.ad, t, 360, URF.plaka, URF.yeni, T.c0, T.c1, { name: URF.ad, alpha: urA, up: 120, t0: T.s7 + .3, ring: Math.max(prog(t, T.c1, T.c1 + .3) * (1 - prog(t, T.s8, T.s8 + .4)), landed * (1 - prog(t, T.art + .6, T.s9))) });
+      const pa = win(t, T.c55 - .1, T.s8 + .5, .3);
+      if (pa > .001) { const p = pr(P(URF.ad)); statPill(p[0] - 120, p[1] + 40, '+' + URF.fark + ' basamak', { color: C.accent, alpha: urA * pa }); }
+    }
+    // Artvin: 08 kopar, Urfa'ya uçar; Artvin 08 → 76
+    const arA = win(t, T.s8 + .4, T.s9 + .1, .3) * mapA;
+    if (arA > .001) {
+      const ka = prog(t, T.art, T.art + .45), gone = prog(t, T.fly0, T.fly0 + .15);
+      mapPlate(pr, ART.ad, t, 300, ka > 0 ? f2(ART.yeni) : '  ', { name: ART.ad, from: gone > 0 ? (ka > 0 ? '  ' : null) : f2(ART.plaka), k: ka > 0 ? ka : 1, alpha: arA, codeColor: ka > 0 ? C.mute : INK, up: 100, t0: T.s8 + .4, pinColor: C.land });
+      if (gone < 1 && ka <= 0) mapPlate(pr, ART.ad, t, 300, f2(ART.plaka), { name: ART.ad, alpha: arA * (1 - gone), up: 100 });
+      const fk = prog(t, T.fly0, T.fly1);
+      if (fk > 0 && fk < 1) {
+        const a0 = pr(P(ART.ad)), a1 = pr(P(URF.ad)), e = ease.inOutCubic(fk);
+        const s0 = [a0[0] - 300 * .135, a0[1] - 100], s1 = [a1[0] - 360 * .135, a1[1] - 120];
+        const cpx = (s0[0] + s1[0]) / 2 + 220, cpy = Math.min(s0[1], s1[1]) - 60;
+        const x = (1 - e) ** 2 * s0[0] + 2 * (1 - e) * e * cpx + e * e * s1[0], y = (1 - e) ** 2 * s0[1] + 2 * (1 - e) * e * cpy + e * e * s1[1];
+        ctx.save(); ctx.globalAlpha = arA * .45; ctx.strokeStyle = C.accent; ctx.lineWidth = 5; ctx.setLineDash([12, 10]); ctx.beginPath();
+        for (let q = 0; q <= 24; q++) { const u = q / 24 * e; const qx = (1 - u) ** 2 * s0[0] + 2 * (1 - u) * u * cpx + u * u * s1[0], qy = (1 - u) ** 2 * s0[1] + 2 * (1 - u) * u * cpy + u * u * s1[1]; q ? ctx.lineTo(qx, qy) : ctx.moveTo(qx, qy); }
+        ctx.stroke(); ctx.restore();
+        const tag = 1 + .12 * Math.sin(Math.PI * fk);
+        ctx.save(); ctx.globalAlpha = arA; ctx.fillStyle = PAPER; ctx.strokeStyle = C.accent; ctx.lineWidth = 6;
+        ctx.font = `500 ${72 * tag}px ${MONO}`; const tw = ctx.measureText('08').width;
+        ctx.beginPath(); ctx.roundRect(x - tw / 2 - 18, y - 52 * tag, tw + 36, 90 * tag, 14); ctx.fill(); ctx.stroke(); ctx.restore();
+        textTab(f2(URF.yeni), x, y + 22 * tag, 72 * tag, { align: 'center', color: C.accent, alpha: arA });
+      }
+      const pa = win(t, T.art + .3, T.s9 + .3, .3);
+      if (pa > .001) { const p = pr(P(ART.ad)); statPill(p[0] - 70, p[1] + 40, '−' + Math.abs(ART.fark) + ' basamak', { alpha: arA * pa }); }
+    }
+  },
+  header(t, g) {
+    const { DUR } = g;
+    grid(t, win(t, T.s9 + .05, T.tab + .1, .35));
+    table(t, win(t, T.tab, T.loop + .15, .3));
+    const Y1 = SAFE.y0 + 40 + 80, Y2 = Y1 + 92;
+    const h1 = Math.max(1 - prog(t, T.s2 - .2, T.s2 + .1), prog(t, T.loop + .15, DUR - .2));
+    text('Plakalar nüfusa göre olsaydı', SAFE.x0, Y1 - 6, 50, { weight: 600, color: C.mute, alpha: h1 });
+    text('ADANA 01’İ', SAFE.x0, Y2, 100, { alpha: h1 });
+    text('KAYBEDİYOR', SAFE.x0, Y2 + 104, 100, { color: C.accent, alpha: h1 });
+    const h2 = win(t, T.s2 + .05, T.s3 + .1, .3);
+    text('Kural: plaka = nüfus sırası', SAFE.x0, Y1, 60, { alpha: h2 });
+    const pa = h2 * prog(t, T.wave0 - .2, T.wave0 + .2), pb = h2 * prog(t, T.wave1 - .7, T.wave1 - .3);
+    statPill(SAFE.x0, Y2 + 10, '01 ' + BIR.ad, { sub: milyon(BIR.nufus) + ' milyon kişi', color: C.accent, alpha: pa, size: 50, subSize: 30 });
+    statPill(SAFE.x0 + 450, Y2 + 10, '81 ' + SON.ad, { sub: bin(SON.nufus) + ' kişi', alpha: pb, size: 50, subSize: 30 });
+    const h3 = win(t, T.s3 + .05, T.s4 + .1, .3);
+    text('İSTANBUL', SAFE.x0, Y1, 84, { alpha: h3 });
+    textTab(f2(IST.plaka) + ' → ' + f2(IST.yeni), SAFE.x1, Y1, 64, { alpha: h3, align: 'right', color: C.accent });
+    const qa = h3 * prog(t, T.q06, T.q06 + .3);
+    const qp = IKON.pop(t, T.q06 + .1, .4);
+    text('asıl sürpriz:', SAFE.x0, Y2 + 4, 52, { weight: 600, color: C.mute, alpha: qa });
+    textTab('06', SAFE.x0 + 330, Y2 + 10, 80 * qp.olcek, { color: C.accent, alpha: qa * qp.alpha });
+    text('kimin?', SAFE.x0 + 450, Y2 + 6, 60, { alpha: qa * qp.alpha });
+    const h4 = win(t, T.s4 + .05, T.s6 + .1, .3), konK = prog(t, T.kon, T.kon + .25), kp = IKON.pop(t, T.kon, .45);
+    text('06’yı alan il…', SAFE.x0, Y1, 66, { alpha: h4 * (1 - konK) });
+    textTab('ANKARA ' + f2(ANK.plaka) + ' → ' + f2(ANK.yeni), SAFE.x0, Y2, 52, { alpha: h4 * prog(t, T.ank, T.ank + .3) * (1 - konK), color: C.mute });
+    text('KONYA', SAFE.x0, Y1 + 10, 110 * kp.olcek, { color: C.accent, alpha: h4 * konK * kp.alpha });
+    textTab(f2(KON.plaka) + ' → ' + f2(KON.yeni), SAFE.x0, Y2 + 30, 64, { alpha: h4 * konK });
+    text('Ankara’nın plakası', SAFE.x0 + 330, Y2 + 26, 42, { weight: 600, color: C.mute, alpha: h4 * konK });
+    const h6 = win(t, T.s6 + .05, T.s7 + .1, .3), ak = prog(t, T.ada, T.ada + .3);
+    text('Peki Adana?', SAFE.x0, Y1, 70, { alpha: h6 * (1 - ak) });
+    text('ADANA', SAFE.x0, Y1, 84, { alpha: h6 * ak });
+    textTab(f2(ADA.plaka) + ' → ' + f2(ADA.yeni), SAFE.x1, Y1, 64, { alpha: h6 * ak, align: 'right', color: C.accent });
+    text(ADA.eskiSahibi + '’nın plakası', SAFE.x0, Y2 + 4, 56, { weight: 600, color: C.accent, alpha: h6 * prog(t, T.ant, T.ant + .3) });
+    const h7 = win(t, T.s7 + .05, T.s8 + .1, .3);
+    text('En büyük sıçrama', SAFE.x0, Y1, 60, { weight: 600, color: C.mute, alpha: h7 });
+    text(URF.ad.toLocaleUpperCase('tr'), SAFE.x0, Y2, 92, { color: C.accent, alpha: h7, maxW: SAFE.x1 - SAFE.x0 });
+    const h8 = win(t, T.s8 + .05, T.s9 + .1, .3), rk = prog(t, T.fly0 + .12, T.fly0 + .35);
+    text('08 kimin plakasıydı?', SAFE.x0, Y1, 68, { alpha: h8 * (1 - prog(t, T.fly0 - .1, T.fly0 + .1)) });
+    text(ART.ad.toLocaleUpperCase('tr') + '’İN', SAFE.x0, Y1, 84, { alpha: h8 * rk });
+    textTab(f2(ART.plaka) + ' → ' + f2(ART.yeni), SAFE.x1, Y1, 64, { alpha: h8 * prog(t, T.art, T.art + .3), align: 'right', color: C.mute });
+    text('en çok düşen il', SAFE.x0, Y2 + 4, 52, { weight: 600, color: C.mute, alpha: h8 * prog(t, T.art + .2, T.art + .5) });
+    const h9 = win(t, T.s9 + .05, T.hic + .05, .25);
+    text('Kaç il plakasını koruyor?', SAFE.x0, Y1, 64, { alpha: h9 });
+    statPill(SAFE.x0, Y2 + 10, 'alfabe: ' + PN.alfaKoruyan.length, { alpha: h9 * prog(t, T.alf, T.alf + .3) });
+    statPill(SAFE.x0 + 330, Y2 + 10, 'nüfus: ?', { color: C.accent, alpha: h9 * prog(t, T.q, T.q + .3) });
+    const h10 = win(t, T.hic, T.tab + .1, .25), zp = IKON.pop(t, T.hic, .5);
+    textTab(String(PN.koruyan.length), SAFE.x0, Y2 + 40, 230 * zp.olcek, { color: C.accent, alpha: h10 * zp.alpha });
+    text('HİÇBİRİ', SAFE.x0 + 200, Y1 + 20, 96, { alpha: h10 });
+    text('81 ilin 81’i değişiyor', SAFE.x0 + 204, Y2 + 16, 46, { weight: 600, color: C.mute, alpha: h10 * prog(t, T.hic + .5, T.hic + .8) });
+    const chA = win(t, T.s3 + .5, T.hic + .4, .3);
+    statPill(SAFE.x1, SAFE.y0 + 2, 'korunan plaka: ?', { align: 'right', size: 34, color: C.accent, alpha: chA, padY: 6, padX: 14 });
+    const h11 = win(t, T.tab + .1, T.loop, .3);
+    text('Senin plakan kaç oldu?', SAFE.x0, Y1 - 14, 60, { alpha: h11 });
+    text('Durdur, bul', SAFE.x0, Y2 - 26, 52, { weight: 600, color: C.accent, alpha: h11 });
+  },
+  sounds(T, at, DUR) {
+    const roll = (x, n = 6, g = .06, f = 1300) => Array.from({ length: n }, (_, i) => ({ t: x + i * .05, type: 'tick', gain: g, f: f + i * 40 }));
+    return [
+      { t: .05, type: 'whoosh', dur: .6, gain: .1 },
+      { t: T.cut - .25, type: 'rise', dur: .3, gain: .1, f0: 300, f1: 700 }, ...roll(T.cut), { t: T.cut + .3, type: 'sub', gain: .3 }, { t: T.cut + .32, type: 'ping', gain: .22, f: 659 },
+      { t: T.s2, type: 'whoosh', dur: .8, gain: .09 },
+      { t: T.wave0, type: 'rise', dur: T.wave1 - T.wave0, gain: .12, f0: 160, f1: 480 },
+      ...Array.from({ length: 27 }, (_, i) => ({ t: lerp(T.wave0, T.wave1 - .5, i / 26), type: 'tick', gain: .05, f: 900 + i * 25 })),
+      { t: T.wave1 - .3, type: 'chime', gain: .22 },
+      { t: T.s3, type: 'whoosh', dur: .9, gain: .09 }, ...roll(T.ist), { t: T.ist + .45, type: 'pop', gain: .14, f: 520 },
+      { t: T.q06 + .1, type: 'pop', gain: .12, f: 420 },
+      { t: T.s4, type: 'whoosh', dur: .9, gain: .09 }, ...roll(T.ank, 6, .05), { t: T.ank + .45, type: 'pop', gain: .1, f: 380 },
+      ...roll(T.kon, 6, .07), { t: T.kon + .35, type: 'sub', gain: .4 }, { t: T.kon + .37, type: 'ping2', gain: .34 },
+      { t: T.s6, type: 'whoosh', dur: .9, gain: .09 }, ...roll(T.ada), { t: T.ada + .45, type: 'pop', gain: .14, f: 520 },
+      ...roll(T.ant + .5, 5, .05), { t: T.ant + .2, type: 'chime', gain: .2 },
+      { t: T.s7, type: 'whoosh', dur: .9, gain: .09 },
+      { t: T.c0, type: 'rise', dur: T.c1 - T.c0, gain: .13, f0: 180, f1: 620 },
+      ...Array.from({ length: 22 }, (_, i) => ({ t: lerp(T.c0, T.c1, ease.inOutCubic(i / 21) * .98), type: 'tick', gain: .06, f: 1000 + i * 30 })),
+      { t: T.c1, type: 'pulse', gain: .28, f: 98 }, { t: T.c55, type: 'pop', gain: .12, f: 460 },
+      { t: T.s8, type: 'whoosh', dur: .9, gain: .08 },
+      { t: T.fly0, type: 'whoosh', dur: T.fly1 - T.fly0 + .2, gain: .12 }, { t: T.fly1, type: 'pop', gain: .16, f: 560 }, { t: T.fly1 + .05, type: 'chime', gain: .24 },
+      ...roll(T.art, 6, .05, 900), { t: T.art + .4, type: 'pulse', gain: .26, f: 82 },
+      { t: T.s9, type: 'whoosh', dur: .8, gain: .08 },
+      ...Array.from({ length: 16 }, (_, i) => ({ t: T.s9 + .1 + i * .03, type: 'tick', gain: .05, f: 1200 + i * 30 })),
+      { t: T.alf + .1, type: 'pop', gain: .12, f: 440 },
+      { t: T.hic - .02, type: 'sub', gain: .44 }, { t: T.hic, type: 'ping2', gain: .38 },
+      ...Array.from({ length: 18 }, (_, i) => ({ t: T.hic + i * .035, type: 'tick', gain: .06, f: 1100 + i * 35 })),
+      ...Array.from({ length: 12 }, (_, i) => ({ t: T.tab + .1 + i * .05, type: 'tick', gain: .07, f: 1300 + i * 30 })),
+      { t: T.loop, type: 'whoosh', dur: .7, gain: .08 },
+    ];
+  },
+});
+</script>
+</body>
+</html>
