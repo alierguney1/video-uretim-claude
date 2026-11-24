@@ -105,7 +105,7 @@ Harita ekranda: sahne 1–7, 11 → ~%70 (≥ %50 ✓). Haritaya ek görseller: 
 
 ## Yayın paketi
 
-- **Kapak** (3 varyant, `hys-16-plaka-nufus.kapak.json`): kayıp "ADANA *01*'İ KAYBETTİ" · sayı şoku "81 İL, *0* KORUYAN" ·
+- **Kapak** (seçilen: konya; 3 varyant, `hys-16-plaka-nufus.kapak.json`): kayıp "ADANA *01*'İ KAYBETTİ" · sayı şoku "81 İL, *0* KORUYAN" ·
   ters köşe "*06* ARTIK KONYA'NIN".
 - **Başlık:** Plakalar nüfusa göre verilseydi 😳 Adana 01'i kaybeder, Konya 06 olur #plaka #harita
 - **Açıklama:** kural + bulgular + dürüstlük notu + kaynak (TÜİK ADNKS 2025).

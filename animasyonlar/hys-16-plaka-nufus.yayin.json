@@ -2,31 +2,33 @@
   "ad": "hys-16-plaka-nufus",
   "onay": true,
   "zaman": null,
-  "kapak": "adana",
-  "not": "Ali onayı: 24 Kas ('1. fikri yap, direkt videoyu üret'). Veri: tools/hys-16-plaka-nufus.mjs (TÜİK ADNKS 2025, iki kopyayla karşılaştırıldı).",
+  "kapak": "konya",
+  "not": "Ali onayı: 24 Kas ('1. fikri yap, direkt videoyu üret'). Veri: tools/hys-16-plaka-nufus.mjs (TÜİK ADNKS 2025, iki kopyayla karşılaştırıldı). Kapak: konya (Ali, 24 Kas).",
   "youtube": {
-    "baslik": "Plakalar nüfusa göre verilseydi 😳 Adana 01'i kaybeder, Konya 06 olur #plaka #harita",
-    "aciklama": "Kural: plakaları nüfusa göre dağıttım. En kalabalık il 01, en az nüfuslu il 81.\nSonuç: 81 ilin hiçbiri plakasını koruyamıyor. İstanbul 34'ten 01'e, Ankara 06'dan 02'ye düşüyor; 06'yı Konya alıyor. Adana 01'i kaybedip 07 oluyor, yani Antalya'nın plakası (Antalya 05). En büyük sıçrama Şanlıurfa'nın: 63'ten 08'e, 55 basamak. 08 eskiden Artvin'indi; Artvin 76'ya düşüyor ve en çok kaybeden il oluyor. Son plaka 81 Bayburt'un.\nKarşılaştırma: plakaları bugünkü il adlarının alfabe sırasıyla dağıtınca 4 il (Adana, Adıyaman, Afyonkarahisar, Ağrı) plakasını koruyordu.\n\nNot: Bu bir düşünce deneyi. Bugünkü plakalar 1960'larda il adlarının alfabe sırasıyla verildi, sonradan kurulan iller sona eklendi. Nüfus sırası yıldan yıla değişebilir.\nKaynak: TÜİK Adrese Dayalı Nüfus Kayıt Sistemi (ADNKS) 2025 sonuçları.\n\n#plaka #harita #türkiye #nüfus #adana #konya #şanlıurfa #artvin",
+    "baslik": "06 artık Konya'nın 😳 Plakalar nüfusa göre verilseydi Ankara 02, Adana 07 olurdu #plaka",
+    "aciklama": "06 artık Ankara'nın değil, Konya'nın. 😳\nKural basit: plakaları nüfusa göre dağıttım. En kalabalık il 01, en az nüfuslu il 81.\n\nSonuç: 81 ilin hiçbiri plakasını koruyamıyor.\n• İstanbul 34 → 01\n• Ankara 06 → 02\n• Konya 42 → 06 (Ankara'nın eski plakası)\n• Adana 01 → 07 (Antalya'nın eski plakası; Antalya 05 oluyor)\n• Şanlıurfa 63 → 08: 55 basamak, en büyük sıçrama\n• Artvin 08 → 76: en çok düşen il, 08'ini Şanlıurfa alıyor\n• Son plaka 81: Bayburt\n\nKarşılaştırma: plakaları bugünkü il adlarının alfabe sırasıyla dağıtınca 4 il (Adana, Adıyaman, Afyonkarahisar, Ağrı) plakasını koruyordu. Nüfusla hiçbiri.\n\nSenin plakan kaç oldu? 40. saniyede durdur, 81 ilin eski → yeni plakası tabloda.\n\nNot: Bu bir düşünce deneyi. Bugünkü plakalar 1960'larda il adlarının alfabe sırasıyla verildi, sonradan kurulan iller sona eklendi. Nüfus sırası yıldan yıla değişebilir.\nKaynak: TÜİK Adrese Dayalı Nüfus Kayıt Sistemi (ADNKS) 2025 sonuçları.\n\n#plaka #harita #konya #ankara #adana #türkiye #nüfus",
     "etiketler": [
       "plaka",
+      "plaka kodları",
       "harita",
-      "türkiye",
-      "nüfus",
-      "adana",
       "konya",
+      "ankara",
+      "adana",
       "şanlıurfa",
-      "artvin"
+      "artvin",
+      "türkiye",
+      "nüfus"
     ],
     "gizlilik": "public",
     "kategori": 27,
-    "sabitYorum": "Senin plakan kaç oldu? Eski → yeni yaz 👇 (ör. 16 → 04)"
+    "sabitYorum": "Senin plakan kaç oldu? Eski → yeni yaz 👇 (Konya: 42 → 06)"
   },
   "instagram": {
-    "aciklama": "Plakalar nüfusa göre verilseydi 81 ilin hiçbiri plakasını koruyamazdı 😳\nİstanbul 01, Ankara 02… ve 06 artık Konya'nın. Adana 01'i kaybedip Antalya'nın 07'sini alıyor. Şanlıurfa 63'ten 08'e fırlıyor; 08 Artvin'indi, Artvin 76'ya düşüyor.\nSenin plakan kaç oldu? 40. saniyede durdur, bul ⏸ Eski → yeni yorumlara yaz, Adanalı arkadaşına gönder 👇\n.\nNot: düşünce deneyi; bugünkü plakalar il adlarının alfabe sırasıyla verildi. Kaynak: TÜİK ADNKS 2025.\n.\n#plaka #harita #adana #konya #şanlıurfa #artvin #memleket #türkiye #haritayalansoyler",
+    "aciklama": "06 artık Konya'nın 😳 Ankara 02'ye düştü.\nPlakaları nüfusa göre dağıttım: en kalabalık il 01, en az nüfuslu 81. Sonuç: 81 ilin hiçbiri plakasını koruyamıyor.\nİstanbul 01 oluyor. Adana 01'i kaybedip Antalya'nın 07'sini alıyor. Şanlıurfa 63'ten 08'e fırlıyor; 08 Artvin'indi, Artvin 76'ya düşüyor.\nSenin plakan kaç oldu? 40. saniyede durdur, bul ⏸ Eski → yeni yorumlara yaz 👇\nKonyalı ya da Ankaralı arkadaşına gönder: 06 kimin? 😄\n.\nNot: düşünce deneyi; bugünkü plakalar il adlarının alfabe sırasıyla verildi. Kaynak: TÜİK ADNKS 2025.\n.\n#plaka #konya #ankara #adana #şanlıurfa #artvin #harita #memleket #türkiye #haritayalansoyler",
     "aiEtiketi": true
   },
   "tiktok": {
-    "aciklama": "Plakalar nüfusa göre verilseydi 81 ilin hiçbiri plakasını koruyamazdı 😳\nİstanbul 01, Ankara 02… ve 06 artık Konya'nın. Adana 01'i kaybedip Antalya'nın 07'sini alıyor. Şanlıurfa 63'ten 08'e fırlıyor; 08 Artvin'indi, Artvin 76'ya düşüyor.\nSenin plakan kaç oldu? Durdur, bul ⏸ Eski → yeni yorumlara yaz, Adanalı arkadaşına gönder 👇\n.\nNot: düşünce deneyi; bugünkü plakalar il adlarının alfabe sırasıyla verildi. Kaynak: TÜİK ADNKS 2025.\n.\n#plaka #harita #adana #konya #şanlıurfa #artvin #memleket #türkiye #haritayalansoyler",
+    "aciklama": "06 artık Konya'nın 😳 Ankara 02'ye düştü.\nPlakaları nüfusa göre dağıttım: en kalabalık il 01, en az nüfuslu 81. Sonuç: 81 ilin hiçbiri plakasını koruyamıyor.\nİstanbul 01 oluyor. Adana 01'i kaybedip Antalya'nın 07'sini alıyor. Şanlıurfa 63'ten 08'e fırlıyor; 08 Artvin'indi, Artvin 76'ya düşüyor.\nSenin plakan kaç oldu? Sonda durdur, bul ⏸ Eski → yeni yorumlara yaz 👇\nKonyalı ya da Ankaralı arkadaşına gönder: 06 kimin? 😄\n.\nNot: düşünce deneyi; bugünkü plakalar il adlarının alfabe sırasıyla verildi. Kaynak: TÜİK ADNKS 2025.\n.\n#plaka #konya #ankara #adana #şanlıurfa #artvin #harita #memleket #türkiye #haritayalansoyler",
     "gizlilik": "PUBLIC_TO_EVERYONE",
     "yorum": true,
     "aiEtiketi": true,
