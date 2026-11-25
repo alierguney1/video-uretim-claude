@@ -33,5 +33,19 @@
     "yorum": true,
     "aiEtiketi": true,
     "muzikOnay": true
+  },
+  "yayinlandi": {
+    "youtube": {
+      "url": "https://youtube.com/shorts/GxjfKEyyir4",
+      "tarih": "2026-11-24"
+    },
+    "instagram": {
+      "url": "https://www.instagram.com/reel/DgIkioJsG_5/",
+      "tarih": "2026-11-24"
+    },
+    "tiktok": {
+      "url": "https://www.tiktok.com/@haritayalansoyler/video/7711804117764541703",
+      "tarih": "2026-11-24"
+    }
   }
 }
