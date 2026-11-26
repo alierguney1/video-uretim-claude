@@ -22,6 +22,17 @@ Son kancalar: 14 yanlış inanış, 15 ya…olursa, 16 kayıp → bu sefer kayı
 Yedek: nüfus yoğunluğu (İstanbul 01, Yalova 77→03, Konya 51, Tunceli 81, Erzincan↔Kilis takas, yalnız Diyarbakır 21 korur).
 Öneri sırası: 1 → (3 gün) 3 → 2. 1 ve 2 aynı "34" kancası, art arda değil.
 
+**Ali (26 Kas): "Çok tekrar olacak."** Bu beşi de aynı mekanik (yeniden sırala → eski → yeni). Bekletiliyor; plaka konusu
+**başka formatla** sürecek:
+
+| Fikir | Format | Kanca | Veri durumu |
+| --- | --- | --- | --- |
+| Plaka yoklaması | karakterli skeç: öğretmen 1963 alfabesiyle yoklama alır | "33… İçel? — Burada, ama adım artık Mersin." | Ad değişiklikleri (İçel→Mersin, Maraş→Kahramanmaraş, Urfa→Şanlıurfa) kaynakla doğrulanacak |
+| 81 plaka testi | artan zorlukta quiz, puan yorumda | "34'ü herkes bilir. 79'u bilen yok." | Veri hazır |
+| Plaka avı | çocukluk oyunu + olasılık hesabı | "Yolda 81 ilin plakasını da görmek için kaç araba saymalısın?" | TÜİK il bazında araç sayısı gerekli |
+| İlinden yaşlı mısın | doğum yılı zaman çizelgesi | "1989'dan önce doğduysan çocukluğunda 67'den büyük plaka yoktu." | İl kuruluş yılları kaynakla doğrulanacak |
+| Yorumdan video | hys-16'nın en çok sorulan yorumuna cevap | Yorum ekran görüntüsü + cevap | vidIQ ile yorum taraması |
+
 ## 00. Değerlendirme (24 Kas 2026): "yeniden dağıtım" formülü kanıtlandı
 
 Instagram (vidIQ owner insights, 24 Kas), 1000 izlenme başına:
