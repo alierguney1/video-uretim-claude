@@ -5,6 +5,19 @@ Bu dosya diğer ajanların aynı araştırmayı sıfırdan tekrarlamaması için
 > Temel kural ([MOTION_RULES.md](../MOTION_RULES.md) · [STYLE.md](../STYLE.md)):
 > Ekrandaki her sayı **kodda gerçek veriden** hesaplanır. Uydurma istatistik yok. Her video kendi kancası, ters köşesi, ara ödülleri ve döngüsüyle ayrışır.
 
+## 0000. İl gururu: "senin ilin dünyada neyde 1." (26 Kas 2026, Ali: plaka formatları beğenilmedi)
+
+Yön: illerin dünya/Türkiye birincilikleri, memleket gururu → o ilin insanına gönderme. **Her bilgi ekrana çıkmadan
+iki kaynakla doğrulanır** (oranlar FAO/TÜİK/ilgili kurum; aşağıdakiler henüz doğrulanmadı).
+
+| # | Fikir | Kanca | İçerik (doğrulanacak) |
+| :-: | --- | --- | --- |
+| 1 | Kahvaltı masası haritası | "Bu kahvaltı masasındaki 6 şeyde dünya birincisiyiz." | Fındık (Ordu/Giresun), kuru kayısı (Malatya), incir (Aydın), çekirdeksiz kuru üzüm (Manisa), çam balı (Muğla), kişi başı çay (Rize); her öge masadan iline uçar |
+| 2 | Dünyanın en eskileri | "Stonehenge'den 6.000 yıl önce: Şanlıurfa." | Göbeklitepe (en eski anıtsal tapınak), Çatalhöyük/Konya, Kırkpınar/Edirne (en eski süren spor turnuvası), "Hristiyan" adı ilk Antakya'da |
+| 3 | 7 harikanın 2'si | "Dünyanın 7 harikasından 2'si Türkiye'deydi. İkisi de yok." | Artemis (Selçuk, İzmir), Mausoleion (Bodrum, Muğla); yerlerinde bugün ne var |
+| 4 | Tek balıklı göl | "Türkiye'nin en büyük gölünde tek bir balık türü yaşayabiliyor." | Van Gölü dünyanın en büyük sodalı gölü, inci kefali, akıntıya karşı göç |
+| 5 | Dünyada tek yer | "Bu taş dünyada neredeyse sadece bir ilden çıkıyor." | Lületaşı (Eskişehir); seri: bor (Eskişehir/Balıkesir/Kütahya), gül yağı (Isparta) |
+
 ## 000. Plaka serisi 3. bölüm için 5 fikir (26 Kas 2026)
 
 hys-16 (nüfus) tuttu → aynı formül, **farklı kural**. Hepsi `tools/plaka-kurallar.py` ile 81 ilde hesaplandı
