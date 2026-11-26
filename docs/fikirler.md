@@ -5,6 +5,23 @@ Bu dosya diğer ajanların aynı araştırmayı sıfırdan tekrarlamaması için
 > Temel kural ([MOTION_RULES.md](../MOTION_RULES.md) · [STYLE.md](../STYLE.md)):
 > Ekrandaki her sayı **kodda gerçek veriden** hesaplanır. Uydurma istatistik yok. Her video kendi kancası, ters köşesi, ara ödülleri ve döngüsüyle ayrışır.
 
+## 000. Plaka serisi 3. bölüm için 5 fikir (26 Kas 2026)
+
+hys-16 (nüfus) tuttu → aynı formül, **farklı kural**. Hepsi `tools/plaka-kurallar.py` ile 81 ilde hesaplandı
+(TÜİK ADNKS 2025, HGM alan, il merkezi GeoNames + Wikidata; kuşuçuşu). Konum kurallarında iki koordinat kaynağı aynı sonucu veriyor.
+Son kancalar: 14 yanlış inanış, 15 ya…olursa, 16 kayıp → bu sefer kayıp açılışından kaçın.
+
+| Sıra | Kural | Kanca (ilk 2 sn) | Kanca türü | Gerçek bulgular | Kime gönderilir |
+| :-: | --- | --- | --- | --- | --- |
+| 1 | Ankara'ya uzaklık | "Plakaları Ankara'ya uzaklığa göre baştan dağıttım. İstanbul yine **34** çıktı." | imkânsız tesadüf | Ankara 01, Kırıkkale 71→**02**, Karabük 06, Hakkari 81. Plakasını **4 il** korur: İstanbul 34, Şanlıurfa 63, Muğla 48, Ardahan 75. Ağrı 04→76. **Dikkat:** İstanbul 349 km, 35. Sivas 357 km (8 km fark) → dipnot şart | Kırıkkaleli, Urfalı ("63 kader"), Ağrılı |
+| 2 | Yüzölçümü (büyük 01) | Ekranda imkânsız plaka: **34 MARDİN**. "34 artık Mardin'in." | görsel paradoks | Konya 01, Sivas 02, Ankara 03; İstanbul 34→**64** (Uşak'ın), İzmir 23, Yalova 81. Koruyan yalnız **Erzincan 24** | Mardinli ↔ İstanbullu, Uşaklı, Erzincanlı |
+| 3 | Batıdan doğuya (boylam) | "Bursa ile Bilecik plakalarını **takas** etti." | rekabet / takas | Çanakkale 01, Edirne 02, İzmir 03, İstanbul 10, Iğdır 81. Tam takas: **Bursa 16↔11 Bilecik**, **Manisa 45↔05 Amasya**. Koruyan yalnız Tunceli 62 | Bursalı ↔ Bilecikli, Manisalı ↔ Amasyalı |
+| 4 | Ters nüfus (en az nüfuslu 01) | "**İstanbul ile Düzce** plakalarını değiştirdi." | ters köşe + geri çağırma (hys-16'nın aynası) | Bayburt 01, Tunceli 02; **İstanbul 34↔81 Düzce** tam takas; Ankara 80. Koruyan yalnız Bilecik 11 | Düzceli ("34 Düzce"), İstanbullu |
+| 5 | Kuzeyden güneye (enlem) | "Adana bu hafta ikinci kez kaybediyor: **01'den 77'ye**." | running gag + sayı şoku | Sinop 01, Kırklareli 02, Hatay 81; Adana 77, Antalya 78, Bartın 74→04. **0 il** korur (hys-16 ile aynı final: farklı ödül seç) | Adanalı, Sinoplu, Bartınlı |
+
+Yedek: nüfus yoğunluğu (İstanbul 01, Yalova 77→03, Konya 51, Tunceli 81, Erzincan↔Kilis takas, yalnız Diyarbakır 21 korur).
+Öneri sırası: 1 → (3 gün) 3 → 2. 1 ve 2 aynı "34" kancası, art arda değil.
+
 ## 00. Değerlendirme (24 Kas 2026): "yeniden dağıtım" formülü kanıtlandı
 
 Instagram (vidIQ owner insights, 24 Kas), 1000 izlenme başına:
