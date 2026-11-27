@@ -5,6 +5,18 @@ Bu dosya diğer ajanların aynı araştırmayı sıfırdan tekrarlamaması için
 > Temel kural ([MOTION_RULES.md](../MOTION_RULES.md) · [STYLE.md](../STYLE.md)):
 > Ekrandaki her sayı **kodda gerçek veriden** hesaplanır. Uydurma istatistik yok. Her video kendi kancası, ters köşesi, ara ödülleri ve döngüsüyle ayrışır.
 
+## 00000. Memleket + "harita yalan söyler" (27 Kas 2026)
+
+Ali: 7 harika (`hys-17-yedi-harika` brifi) kanaldan fazla koptu → **beklemede**. Ölçüt: memleket ilgisi + harita/ölçek/saat/mesafe yanılgısı.
+
+| # | Fikir | Kanca | Veri |
+| :-: | --- | --- | --- |
+| 1 | hys-09-gunes (21 Aralık) | "Aynı saatte uyanıyoruz ama Edirneli güneşi Hakkarili'den 81 dakika geç görüyor." | Hazır: Hakkari 07:16, Edirne 08:37 (NOAA, il merkezi) |
+| 2 | Google Haritalar ilini şişiriyor (Mercator) | "Google Haritalar'da Kastamonu Adana'dan büyük görünür. Değil." | Taslak (HGM alan + il merkezi enlemi): Sinop Hatay'a göre ~%18 şişik; Kastamonu > Adana, Ardahan > Hatay, Edirne > Gaziantep ters görünür; 63 il çifti. Poligon üzerinde d3 ile kesinleştirilecek |
+| 3 | İlin hangi ülke kadar | "Konya Belçika'dan büyük. Senin ilin hangi ülke kadar?" | HGM alan hazır; ülke alanları world-atlas ile kodda |
+| 4 | Denizden en uzak il | "Türkiye'de denizden en uzak nokta İç Anadolu'da değil." | Hesaplanacak; ters köşe çıkmazsa ele |
+| 5 | İlçe ↔ komşu il (Fikir D) | "Bu ilçe kendi il merkezinden çok komşu ilin merkezine yakın." | İlçe merkezleri gerekli (ağır) |
+
 ## 0000. İl gururu: "senin ilin dünyada neyde 1." (26 Kas 2026, Ali: plaka formatları beğenilmedi)
 
 Yön: illerin dünya/Türkiye birincilikleri, memleket gururu → o ilin insanına gönderme. **Her bilgi ekrana çıkmadan

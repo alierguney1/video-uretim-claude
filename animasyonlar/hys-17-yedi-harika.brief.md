@@ -1,4 +1,4 @@
-# hys-17-yedi-harika — brif (taslak, sahne listesi onay bekliyor)
+# hys-17-yedi-harika — brif (BEKLEMEDE: Ali 27 Kas, kanaldan fazla koptu)
 
 Seri: Harita Yalan Söyler · Bölüm 17 · Fikir havuzu (docs/fikirler.md §0000, sıra 3).
 Ali (26 Kas): "3'ü yapalım, güzel bir hook ve viral video olsun."
