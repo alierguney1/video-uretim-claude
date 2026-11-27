@@ -8,12 +8,12 @@
   "lines": [
     {
       "id": "l1",
-      "text": "Yirmi bir Aralık. Yılın EN UZUN gecesi.",
-      "caption": "21 Aralık. Yılın en uzun gecesi."
+      "text": "Yirmi bir Aralık: yılın EN UZUN gecesi. Peki Türkiye'de en uzun hangi ilde?",
+      "caption": "21 Aralık: yılın en uzun gecesi. Peki Türkiye'de en uzun hangi ilde?"
     },
     {
       "id": "l2",
-      "text": "Peki en uzun gece hangi ilde? Kars mı? Erzurum mu?"
+      "text": "Kars mı? Erzurum mu?"
     },
     {
       "id": "l3",
@@ -52,8 +52,8 @@
     },
     {
       "id": "l10",
-      "text": "Asıl tuzak şu: en uzun gece bitince sabahlar aydınlanmıyor. En geç doğuş, OCAK başında.",
-      "caption": "Asıl tuzak şu: en uzun gece bitince sabahlar aydınlanmıyor. En geç doğuş Ocak başında.",
+      "text": "Asıl tuzak şu: en uzun gece bitince sabahlar aydınlanmıyor. En geç doğuş, OCAK'ın ilk haftasında.",
+      "caption": "Asıl tuzak şu: en uzun gece bitince sabahlar aydınlanmıyor. En geç doğuş Ocak'ın ilk haftasında.",
       "pauseBefore": 0.2
     },
     {
