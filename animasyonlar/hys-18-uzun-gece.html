@@ -1,0 +1,360 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Yılın en uzun gecesi</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@600;800&family=IBM+Plex+Mono:wght@500&display=block" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/d3-array@3.2.4/dist/d3-array.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/d3-geo@3.1.1/dist/d3-geo.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/topojson-client@3.1.0/dist/topojson-client.min.js"></script>
+<style>
+  html, body { margin: 0; height: 100%; background: #0b141b; }
+  body { display: grid; place-items: center; overflow: hidden; }
+  canvas { display: block; }
+  #hud { position: fixed; left: 12px; bottom: 10px; font: 12px/1.4 ui-monospace, monospace;
+         color: #bbb; background: rgba(0,0,0,.55); padding: 4px 8px; border-radius: 4px; user-select: none; }
+  body.render #hud { display: none; }
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div id="hud">yükleniyor…</div>
+<audio id="vo" src="../ses/hys-18-uzun-gece/voice.wav" preload="auto"></audio>
+<script src="../lib/ikonlar.js"></script>
+<script src="../lib/ikon-seti.js"></script>
+<script src="../lib/iller.js"></script>
+<script src="../lib/ikon-katmani.js"></script>
+<script src="../veri/hys-18/uzun-gece.js"></script>
+<script src="../lib/harita-motoru.js"></script>
+<script>
+'use strict';
+// Harita Yalan Söyler · Bölüm 18 — "21 Aralık: yılın en uzun gecesi"
+// Brif: hys-18-uzun-gece.brief.md. Veri: tools/hys-18-uzun-gece.mjs → veri/hys-18/uzun-gece.js
+// (NOAA güneş denklemleri, il merkezi, deniz seviyesi, TSİ). Ekrandaki her saat ve süre UG verisinden.
+
+/*VO:BEGIN*/ const VO = {"duration":46.72,"lines":[{"id":"l1","start":0.15,"end":2.588,"text":"21 Aralık. Yılın en uzun gecesi."},{"id":"l2","start":2.808,"end":5.933,"text":"Peki en uzun gece hangi ilde? Kars mı? Erzurum mu?"},{"id":"l3","start":6.503,"end":9.316,"text":"Hayır. Sinop. 14 saat 54 dakika."},{"id":"l4","start":9.536,"end":12.349,"text":"En kısası Hatay'da: tam 35 dakika kısa."},{"id":"l5","start":12.569,"end":15.069,"text":"Çünkü geceyi doğu değil, kuzey uzatıyor."},{"id":"l6","start":15.289,"end":19.789,"text":"Doğu ise saati belirliyor: güneş ilk Hakkari'de doğuyor, 07:16'da."},{"id":"l7","start":20.009,"end":23.072,"text":"Sonra batıya kayıyor, iller tek tek aydınlanıyor."},{"id":"l8","start":24.192,"end":28.63,"text":"Edirne'ye ancak 08:37'de varıyor. Tam 81 dakika sonra."},{"id":"l9","start":28.85,"end":34.163,"text":"Akşam tersi: Iğdır'da güneş 16:42'de batıyor, İzmir'de 17:54'te."},{"id":"l10","start":34.583,"end":40.021,"text":"Asıl tuzak şu: en uzun gece bitince sabahlar aydınlanmıyor. En geç doğuş Ocak başında."},{"id":"l11","start":40.241,"end":43.116,"text":"Senin ilinde güneş kaçta doğuyor? Durdur, bak."}]}; /*VO:END*/
+const { C, SANS, MONO, W, H, SAFE, ctx, clamp, lerp, prog, win, ease, text, textTab, label, pin, statPill, arrow } = HYS;
+
+// ── veri ──
+const UG = UZUN_GECE, BY = Object.fromEntries(UG.iller.map(i => [i.il, i]));
+const ILK = BY[UG.ilkDogan], SON = BY[UG.sonDogan], IB = BY[UG.ilkBatan], SB = BY[UG.sonBatan];
+const UZ = BY[UG.enUzunGece], KI = BY[UG.enKisaGece], KARS = BY['Kars'], ERZ = BY['Erzurum'];
+const ALFA = [...UG.iller].sort((a, b) => a.il.localeCompare(b.il, 'tr'));
+const GMIN = Math.min(...UG.iller.map(i => i.geceDk)), GMAX = Math.max(...UG.iller.map(i => i.geceDk));
+const hm = m => { const r = Math.round(m); return String(Math.floor(r / 60)).padStart(2, '0') + ':' + String(r % 60).padStart(2, '0'); };
+const AYLAR = ['Ocak', 'Şubat', 'Mart', 'Nisan', 'Mayıs', 'Haziran', 'Temmuz', 'Ağustos', 'Eylül', 'Ekim', 'Kasım', 'Aralık'];
+const tarih = s => { const [y, m, d] = s.split('-').map(Number); return d + ' ' + AYLAR[m - 1]; };
+const SERI = UG.istSeri, GEC = SERI.reduce((a, b) => b.d > a.d ? b : a), GUN = SERI.find(s => s.dt === UG.tarih);
+// Güneş konumu (aracın denklemiyle aynı): gece-gündüz çizgisi her karede saatten hesaplanır
+const RADN = Math.PI / 180;
+const SOL = (() => { const d = new Date(UG.tarih + 'T00:00:00Z'), y = d.getUTCFullYear(), doy = Math.round((d - Date.UTC(y, 0, 1)) / 864e5) + 1;
+  const g = 2 * Math.PI / (y % 4 === 0 ? 366 : 365) * (doy - 1);
+  return { eqt: 229.18 * (0.000075 + 0.001868 * Math.cos(g) - 0.032077 * Math.sin(g) - 0.014615 * Math.cos(2 * g) - 0.040849 * Math.sin(2 * g)),
+    decl: 0.006918 - 0.399912 * Math.cos(g) + 0.070257 * Math.sin(g) - 0.006758 * Math.cos(2 * g) + 0.000907 * Math.sin(2 * g) - 0.002697 * Math.cos(3 * g) + 0.00148 * Math.sin(3 * g) }; })();
+const haDeg = lat => Math.acos(Math.cos(90.833 * RADN) / (Math.cos(lat * RADN) * Math.cos(SOL.decl)) - Math.tan(lat * RADN) * Math.tan(SOL.decl)) / RADN;
+const termLon = (lat, m, rise) => (900 - SOL.eqt + (rise ? -4 : 4) * haDeg(lat) - m) / 4;
+const wt = (i, sub, off = 0) => { const l = VO.lines[i], k = Math.max(0, l.text.indexOf(sub)) / l.text.length; return l.start + (l.end - l.start) * k + off; };
+const rgb = h => Array.isArray(h) ? h : [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16));
+const mixA = (a, b, k) => { const A = rgb(a), B = rgb(b); return A.map((v, i) => lerp(v, B[i], clamp(k))); };
+const css = A => 'rgb(' + A.map(Math.round).join(',') + ')';
+const NIGHT = '#34434E', LONG = '#1F2A33', SHORT = '#5E6E76';
+
+let T, FEATS = [], FBY = {}, MESH = null, TR = null;
+const P = ad => IKON.il(ad).nokta;
+
+// Saat: sabah taraması (Hakkari → Edirne) ve akşam taraması (Iğdır → İzmir) VO'ya bağlı
+function clock(t) {
+  if (t >= T.s6 && t < T.s9) {
+    if (t < T.hak) return { m: lerp(ILK.dogusDk - 14, ILK.dogusDk, ease.outCubic(prog(t, T.s6 + .2, T.hak))), rise: true };
+    return { m: lerp(ILK.dogusDk, SON.dogusDk + .6, ease.inOutSine(prog(t, T.hak, T.edi))), rise: true };
+  }
+  if (t >= T.s9 && t < T.s10) {
+    if (t < T.ig) return { m: lerp(IB.batisDk - 6, IB.batisDk, ease.outCubic(prog(t, T.s9 + .2, T.ig))), rise: false };
+    return { m: lerp(IB.batisDk, SB.batisDk + .6, ease.inOutSine(prog(t, T.ig, T.izm))), rise: false };
+  }
+  return null;
+}
+// il başına aydınlık (0 gece, 1 gündüz)
+function light(i, t) {
+  const c = clock(t); if (!c) return 0;
+  return c.rise ? prog(c.m, i.dogusDk - 1.2, i.dogusDk + 1.2) : 1 - prog(c.m, i.batisDk - 1.2, i.batisDk + 1.2);
+}
+const litCount = t => { const c = clock(t); if (!c) return 0; return UG.iller.filter(i => c.rise ? c.m >= i.dogusDk : c.m < i.batisDk).length; };
+
+// ── tuzak grafiği: İstanbul'da doğuş saati, 1 Aralık – 31 Ocak ──
+function chart(t, a) {
+  if (a <= .001) return;
+  const x0 = SAFE.x0 + 70, x1 = SAFE.x1 + 20, y0 = 760, y1 = 1260;
+  const dMin = Math.floor(Math.min(...SERI.map(s => s.d)) / 5) * 5 - 2, dMax = Math.ceil(Math.max(...SERI.map(s => s.d)) / 5) * 5 + 2;
+  const X = n => lerp(x0, x1, n / (SERI.length - 1)), Y = m => lerp(y0, y1, (m - dMin) / (dMax - dMin));   // geç doğuş = aşağı (karanlık)
+  ctx.save(); ctx.globalAlpha = a * .94; ctx.fillStyle = C.bg; ctx.fillRect(0, 640, W, 760); ctx.restore();
+  for (let m = Math.ceil(dMin / 10) * 10; m <= dMax; m += 10) {
+    ctx.save(); ctx.globalAlpha = a * .5; ctx.strokeStyle = C.grid; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(x0, Y(m)); ctx.lineTo(x1, Y(m)); ctx.stroke(); ctx.restore();
+    textTab(hm(m), x0 - 14, Y(m) + 8, 24, { align: 'right', color: C.mute, alpha: a });
+  }
+  [['2026-12-01', '1 Ara'], [UG.tarih, '21 Ara'], [GEC.dt, tarih(GEC.dt).replace('Ocak', 'Oca')], ['2027-01-31', '31 Oca']].forEach(([dt, s]) => {
+    const n = SERI.findIndex(q => q.dt === dt); if (n < 0) return;
+    text(s, X(n), y1 + 52, 26, { weight: 600, color: C.mute, alpha: a, align: 'center' });
+  });
+  const k = ease.inOutCubic(prog(t, T.s10 + .3, T.ocak + .2)), nEnd = k * (SERI.length - 1);
+  // 21 Aralık dikey çizgisi
+  const n21 = SERI.indexOf(GUN), la = a * prog(t, T.tuz - .1, T.tuz + .3);
+  ctx.save(); ctx.globalAlpha = la * .8; ctx.strokeStyle = C.text; ctx.setLineDash([10, 10]); ctx.lineWidth = 3;
+  ctx.beginPath(); ctx.moveTo(X(n21), y0 - 40); ctx.lineTo(X(n21), y1 + 18); ctx.stroke(); ctx.restore();
+  text('en uzun gece', X(n21) - 12, y0 - 52, 28, { weight: 600, align: 'right', alpha: la });
+  // eğri
+  ctx.save(); ctx.globalAlpha = a; ctx.strokeStyle = C.accent; ctx.lineWidth = 8; ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.beginPath();
+  for (let n = 0; n <= Math.floor(nEnd); n++) n ? ctx.lineTo(X(n), Y(SERI[n].d)) : ctx.moveTo(X(n), Y(SERI[n].d));
+  if (nEnd % 1 > 0 && Math.floor(nEnd) + 1 < SERI.length) { const n = Math.floor(nEnd), f = nEnd - n; ctx.lineTo(lerp(X(n), X(n + 1), f), lerp(Y(SERI[n].d), Y(SERI[n + 1].d), f)); }
+  ctx.stroke(); ctx.restore();
+  if (nEnd >= n21) { pin([X(n21), Y(GUN.d)], { color: C.text, r: 10, alpha: la }); textTab(hm(GUN.d), X(n21) - 20, Y(GUN.d) + 52, 30, { align: 'right', alpha: la }); }
+  const nG = SERI.indexOf(GEC), ga = a * prog(t, T.ocak, T.ocak + .3);
+  if (nEnd >= nG) { pin([X(nG), Y(GEC.d)], { color: C.accent, r: 13, alpha: ga, pulse: prog(t, T.ocak, T.ocak + .8) });
+    textTab(hm(GEC.d), X(nG) + 4, Y(GEC.d) + 60, 34, { align: 'center', color: C.accent, alpha: ga }); }
+  text('İstanbul’da güneşin doğuş saati', x0 - 70, y0 - 110, 32, { weight: 600, color: C.mute, alpha: a });
+}
+
+// ── durdur-bul: 81 il, alfabetik ──
+function table(t, a) {
+  if (a <= .001) return;
+  const cols = 3, rows = 27, x0 = SAFE.x0 - 26, colW = (SAFE.x1 - SAFE.x0 + 52) / cols, y0 = 600, rowH = 32.5;
+  ctx.save(); ctx.globalAlpha = a; ctx.fillStyle = C.bg; ctx.fillRect(0, 470, W, H - 470); ctx.restore();
+  const push = 1 + .03 * ease.inOutCubic(prog(t, T.tab + .8, T.loop));
+  ctx.save(); ctx.translate(W / 2, 1000); ctx.scale(push, push); ctx.translate(-W / 2, -1000);
+  const uc = new Set([ILK.il, SON.il, IB.il, SB.il, UZ.il, KI.il]);
+  text('il', x0 + 4, y0 - 42, 20, { weight: 600, color: C.mute, alpha: a });
+  for (let c = 0; c < cols; c++) textTab('doğuş batış', x0 + c * colW + colW - 12, y0 - 42, 18, { color: C.mute, alpha: a, align: 'right' });
+  ALFA.forEach((i, n) => {
+    const c = Math.floor(n / rows), r = n % rows, x = x0 + c * colW, y = y0 + r * rowH;
+    const al = a * prog(t, T.tab + .05 + n * .007, T.tab + .25 + n * .007);
+    if (al <= .001) return;
+    const hot = uc.has(i.il);
+    if (hot) { ctx.save(); ctx.globalAlpha = al * .16; ctx.fillStyle = C.accent; ctx.beginPath(); ctx.roundRect(x - 4, y - 25, colW - 6, 33, 7); ctx.fill(); ctx.restore(); }
+    textTab(i.dogus + ' ' + i.batis, x + colW - 12, y, 20, { alpha: al, color: hot ? C.accent : C.text, align: 'right' });
+    let size = 21; ctx.font = `600 ${size}px ${SANS}`; const room = colW - 12 - 132, need = ctx.measureText(i.il).width;
+    if (need > room) size = Math.max(14, size * room / need);
+    text(i.il, x + 4, y, size, { weight: hot ? 800 : 600, color: hot ? C.accent : C.text, alpha: al });
+  });
+  ctx.restore();
+  text(tarih(UG.tarih) + ' 2026 · TSİ · il merkezi, deniz seviyesi (±2 dk)', SAFE.x0 - 20, y0 + rows * rowH + 8, 22, { weight: 600, color: C.mute, alpha: a, maxW: SAFE.x1 - SAFE.x0 + 40 });
+  text('Hesap: NOAA güneş denklemleri · turuncu: en erken / en geç', SAFE.x0 - 20, y0 + rows * rowH + 40, 18, { weight: 600, color: C.mute, alpha: a * .85, maxW: SAFE.x1 - SAFE.x0 + 40 });
+}
+
+HYS.run({
+  vo: VO, cover: 1.0, flat: true, seed: 18, captionStyle: 'kinetic', captionSkip: [10],
+  init() {
+    FEATS = IKON.ilSekilleri();
+    FEATS.forEach(f => { FBY[f.properties.ad] = f; });
+    MESH = topojson.mesh(ILLER.topo, ILLER.topo.objects.iller, (a, b) => a !== b);
+    TR = topojson.merge(ILLER.topo, ILLER.topo.objects.iller.geometries);
+  },
+  times(L, at, DUR) {
+    T = {
+      s2: at(1) - .1, kars: wt(1, 'Kars', -.1), erz: wt(1, 'Erzurum', -.1),
+      s3: at(2) - .2, sin: wt(2, 'Sinop', -.15), sinS: wt(2, '14', -.1),
+      s4: at(3) - .1, hat: wt(3, 'Hatay', -.15), f35: wt(3, '35', -.15),
+      s5: at(4) - .1, kuz: wt(4, 'kuzey', -.15),
+      s6: at(5) - .1, hak: wt(5, '07:16', -.25),
+      s7: at(6) - .1, edi: wt(7, '08:37', -.1), s8: at(7) - .1, f81: wt(7, '81', -.15),
+      s9: at(8) - .1, ig: wt(8, '16:42', -.2), izm: wt(8, '17:54', -.05),
+      s10: at(9) - .25, tuz: wt(9, 'en uzun', -.1), ocak: wt(9, 'Ocak', -.2),
+      tab: at(10) - .1, loop: DUR - .8, DUR,
+    };
+    return T;
+  },
+  scenes: (T, at, DUR) => [
+    { name: 'kanca: en uzun gece', start: 0, end: T.s2 }, { name: 'tahmin: Kars? Erzurum?', start: T.s2, end: T.s3 },
+    { name: 'SİNOP', start: T.s3, end: T.s4 }, { name: 'Hatay en kısa', start: T.s4, end: T.s5 },
+    { name: 'kuzey uzatıyor', start: T.s5, end: T.s6 }, { name: 'Hakkari 07:16', start: T.s6, end: T.s7 },
+    { name: 'tarama', start: T.s7, end: T.s8 }, { name: 'Edirne 08:37 · 81 dk', start: T.s8, end: T.s9 },
+    { name: 'akşam: Iğdır → İzmir', start: T.s9, end: T.s10 }, { name: 'tuzak: Ocak', start: T.s10, end: T.tab },
+    { name: 'durdur-bul', start: T.tab, end: T.loop }, { name: 'döngü', start: T.loop, end: DUR },
+  ],
+  keys: (T, at, DUR) => [
+    [0, 35.70, 38.90, 17.1], [T.s2 - .1, 35.70, 38.95, 16.7],
+    [T.s3 + .7, 35.50, 39.40, 18.0], [T.s4 - .1, 35.55, 39.35, 18.2],
+    [T.s4 + .7, 36.00, 38.70, 17.9], [T.s5 - .1, 36.00, 38.70, 17.7],
+    [T.s5 + .8, 35.70, 38.90, 16.4], [T.s6 - .1, 35.70, 38.90, 16.5],
+    [T.s6 + .8, 36.80, 38.80, 16.9], [T.hak + .3, 36.80, 38.80, 17.0],
+    [T.edi - .6, 35.40, 38.90, 16.3], [T.s9 - .1, 35.10, 38.95, 16.6],
+    [T.s9 + .7, 35.70, 38.90, 16.3], [T.s10, 35.70, 38.90, 16.4],
+    [T.tab, 35.70, 38.90, 16.6], [DUR, 35.70, 38.90, 17.1],
+  ],
+  beats: (T, at, DUR) => [
+    { t: .3, ac: 'A', soru: 'Yılın en uzun gecesi Türkiye’de en uzun nerede?' },
+    { t: .6, odul: 'karanlık Türkiye, “21 Aralık”' },
+    { t: T.s2 + .2, ac: 'B', soru: 'Kars mı, Erzurum mu? (tahmin)' },
+    { t: T.kars + .2, odul: 'Kars ikonu' }, { t: T.erz + .2, odul: 'Erzurum ikonu' },
+    { t: T.sin + .3, kapa: 'A' }, { t: T.sin + .3, kapa: 'B' }, { t: T.sin + .3, odul: 'SİNOP (ters köşe)' },
+    { t: T.sin + .4, ac: 'C', soru: 'Neden Sinop? Kars’la arası ne?' },
+    { t: T.sinS + .3, odul: '14 sa 54 dk · Kars/Erzurum değerleri' },
+    { t: T.hat + .3, odul: 'Hatay en kısa' }, { t: T.f35 + .3, odul: '35 dk fark' },
+    { t: T.kuz + .3, kapa: 'C' }, { t: T.kuz + .3, odul: 'enlem çizgileri: kuzey = uzun gece' },
+    { t: T.s6 + .2, ac: 'D', soru: 'Güneş ilk nerede doğuyor, Edirne’ye ne zaman varıyor?' },
+    { t: T.hak + .3, odul: 'Hakkari 07:16 ilk ışık' },
+    { t: T.hak + .5, ac: 'H', soru: 'Benim ilim kaçta aydınlanıyor, kaçta kararıyor? (sayaç)' },
+    { t: T.hak + 2.0, odul: 'gece-gündüz çizgisi batıya kayıyor, sayaç' },
+    { t: T.edi + .3, kapa: 'D' }, { t: T.edi + .3, odul: 'Edirne 08:37' }, { t: T.f81 + .3, odul: '81 dk' },
+    { t: T.s9 + .2, ac: 'E', soru: 'Akşam güneş ilk nerede batıyor?' },
+    { t: T.ig + .3, kapa: 'E' }, { t: T.ig + .3, odul: 'Iğdır 16:42' }, { t: T.izm + .3, odul: 'İzmir 17:54' },
+    { t: T.s10 + .3, ac: 'F', soru: 'En uzun geceden sonra sabahlar neden aydınlanmıyor? Ne zaman?' },
+    { t: T.tuz + .4, odul: '21 Aralık çizgisi, eğri hâlâ aşağı iniyor' },
+    { t: T.ocak + .3, kapa: 'F' }, { t: T.ocak + .3, odul: tarih(GEC.dt) + ' ' + hm(GEC.d) },
+    { t: T.tab + .1, ac: 'G', soru: 'Benim ilimde kaçta?' },
+    { t: T.tab + 1.0, odul: '81 il tablosu' }, { t: T.tab + 1.0, kapa: 'H' },
+    { t: T.loop, kapa: 'G' }, { t: T.loop + .2, odul: 'döngü: en uzun gece' },
+  ],
+  draw(t, g) {
+    const { pr, path, DUR } = g;
+    const chA = win(t, T.s10, T.tab + .1, .35), tabA = win(t, T.tab, T.loop + .15, .3);
+    const mapA = 1 - Math.max(tabA, chA * .82);
+    if (mapA <= .001) return;
+    const loopK = prog(t, T.loop, DUR - .15);
+    const shA = prog(t, T.s3 + .2, T.s3 + .9) * (1 - prog(t, T.s6, T.s6 + .6));
+    // iller: gece, gece-süresi tonu ya da gün ışığı
+    ctx.save(); ctx.globalAlpha = mapA;
+    for (const f of FEATS) {
+      const i = BY[f.properties.ad]; if (!i) continue;
+      const g0 = (i.geceDk - GMIN) / (GMAX - GMIN);
+      let col = mixA(NIGHT, mixA(SHORT, LONG, g0), shA);
+      const l = light(i, t);
+      if (l > 0) col = mixA(NIGHT, C.land, l);
+      ctx.fillStyle = css(col); ctx.beginPath(); path(f); ctx.fill();
+    }
+    const focus = (ad, a) => { if (a <= .001) return; ctx.globalAlpha = mapA * a * .62; ctx.fillStyle = C.accent; ctx.beginPath(); path(FBY[ad]); ctx.fill(); };
+    focus(UZ.il, win(t, T.sin - .05, T.s6, .3));
+    focus(KI.il, win(t, T.hat - .05, T.s6, .3));
+    focus(ILK.il, win(t, T.hak - .1, T.hak + 1.4, .3));
+    focus(SON.il, win(t, T.edi - .05, T.s9 + .1, .3));
+    focus(IB.il, win(t, T.ig - .05, T.izm + .3, .3));
+    focus(SB.il, win(t, T.izm - .05, T.s10 + .2, .3));
+    ctx.restore();
+    ctx.save(); ctx.globalAlpha = mapA; ctx.strokeStyle = 'rgba(11,20,27,.55)'; ctx.lineWidth = 1.3; ctx.beginPath(); path(MESH); ctx.stroke();
+    ctx.strokeStyle = 'rgba(232,226,212,.55)'; ctx.lineWidth = 2.2; ctx.beginPath(); path(TR); ctx.stroke(); ctx.restore();
+
+    // ay (kanca + döngü): gece imzası
+    const moonA = Math.max(1 - prog(t, T.s2 - .2, T.s2 + .2), loopK) * mapA;
+    if (moonA > .001) {
+      const mx = 820, my = 700 + 6 * Math.sin(t * 1.4), r = 58;
+      ctx.save(); ctx.globalAlpha = moonA; ctx.fillStyle = C.land; ctx.beginPath(); ctx.arc(mx, my, r, 0, 2 * Math.PI); ctx.fill();
+      ctx.fillStyle = C.bg; ctx.beginPath(); ctx.arc(mx + 26, my - 14, r * .9, 0, 2 * Math.PI); ctx.fill(); ctx.restore();
+    }
+    // enlem çizgileri: kuzey = uzun gece
+    const latA = win(t, T.kuz - .2, T.s6 + .2, .35) * mapA;
+    if (latA > .001) [36, 38, 40, 42].forEach((la, n) => {
+      const k = ease.outCubic(prog(t, T.kuz - .2 + n * .08, T.kuz + .4 + n * .08));
+      if (k <= 0) return;
+      const a0 = pr([25.4, la]), a1 = pr([lerp(25.4, 45.2, k), la]);
+      ctx.save(); ctx.globalAlpha = latA * .7; ctx.strokeStyle = C.text; ctx.setLineDash([8, 10]); ctx.lineWidth = 2.5;
+      ctx.beginPath(); ctx.moveTo(a0[0], a0[1]); ctx.lineTo(a1[0], a1[1]); ctx.stroke(); ctx.restore();
+      textTab(la + '°K', Math.max(SAFE.x0 - 40, a0[0] + 4), a0[1] - 10, 22, { color: C.mute, alpha: latA * k });
+    });
+
+    // gece-gündüz çizgisi (gerçek güneş konumundan)
+    const c = clock(t);
+    if (c && mapA > .001) {
+      const ta = c.rise ? win(t, T.s6 + .2, T.s9 + .05, .3) : win(t, T.s9 + .2, T.s10 + .1, .3);
+      const pts = []; for (let la = 35.4; la <= 42.4; la += .2) pts.push(pr([termLon(la, c.m, c.rise), la]));
+      ctx.save(); ctx.globalAlpha = mapA * ta; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+      ctx.strokeStyle = 'rgba(255,107,44,.22)'; ctx.lineWidth = 26; ctx.beginPath(); pts.forEach((p, n) => n ? ctx.lineTo(p[0], p[1]) : ctx.moveTo(p[0], p[1])); ctx.stroke();
+      ctx.strokeStyle = C.accent; ctx.lineWidth = 5; ctx.stroke(); ctx.restore();
+    }
+
+    // ikonlar + etiketler
+    const ico = (ad, t0, a, sz = 66) => IKON.ilIkonu(ctx, ad, pr, sz, { t, t0, alpha: a * mapA });
+    const lbl = (ad, s, a, o = {}) => { const p = pr(P(ad)); label(s, p[0], p[1], { size: 34, alpha: a * mapA, ...o }); };
+    const kA = win(t, T.kars - .1, T.s4 + .1, .3), eA = win(t, T.erz - .1, T.s4 + .1, .3);
+    ico('Kars', T.kars - .1, kA); ico('Erzurum', T.erz - .1, eA);
+    const qv = prog(t, T.sinS, T.sinS + .3);
+    lbl('Kars', qv > 0 ? KARS.gece : 'Kars?', kA, { color: qv > 0 ? C.mute : C.text, dy: -40 });
+    lbl('Erzurum', qv > 0 ? ERZ.gece : 'Erzurum?', eA, { color: qv > 0 ? C.mute : C.text, dy: 52 });
+    const sA = win(t, T.sin - .1, T.s6 + .1, .3);
+    ico(UZ.il, T.sin - .1, sA, 78); lbl(UZ.il, UZ.gece, sA * prog(t, T.sinS, T.sinS + .3), { color: C.accent, dy: -46 });
+    const hA = win(t, T.hat - .1, T.s6 + .1, .3);
+    ico(KI.il, T.hat - .1, hA, 70); lbl(KI.il, KI.gece, hA, { color: C.accent, dy: 60 });
+    const hkA = win(t, T.hak - .1, T.edi + .2, .3);
+    ico(ILK.il, T.hak - .1, hkA, 70); lbl(ILK.il, ILK.dogus + ' ilk ışık', hkA, { color: C.accent, dy: 62 });
+    const edA = win(t, T.edi - .1, T.s9 + .1, .3);
+    ico(SON.il, T.edi - .1, edA, 70); lbl(SON.il, SON.dogus, edA, { color: C.accent, dy: 62, dx: 40 });
+    const igA = win(t, T.ig - .1, T.s10 + .1, .3);
+    ico(IB.il, T.ig - .1, igA, 66); lbl(IB.il, IB.batis + ' ilk karanlık', igA, { color: C.accent, dy: -44 });
+    const izA = win(t, T.izm - .1, T.s10 + .1, .3);
+    ico(SB.il, T.izm - .1, izA, 66); lbl(SB.il, SB.batis, izA, { color: C.accent, dy: 60 });
+    // kuzey oku
+    const arA = latA * prog(t, T.kuz + .2, T.kuz + .6);
+    if (arA > .001) { const a0 = pr([44.6, 36.6]), a1 = pr([44.6, 42.0]); arrow(a0[0] + 20, a0[1], a1[0] + 20, a1[1], { alpha: arA, color: C.accent, width: 6 }); }
+  },
+  header(t, g) {
+    const { DUR } = g;
+    chart(t, win(t, T.s10, T.tab + .1, .35));
+    table(t, win(t, T.tab, T.loop + .15, .3));
+    const Y1 = SAFE.y0 + 40 + 80, Y2 = Y1 + 104;
+    const h1 = Math.max(1 - prog(t, T.s2 - .2, T.s2 + .1), prog(t, T.loop + .15, DUR - .2));
+    text('21 Aralık', SAFE.x0, Y1 - 6, 56, { weight: 600, color: C.mute, alpha: h1 });
+    text('YILIN EN UZUN', SAFE.x0, Y2, 100, { alpha: h1 });
+    text('GECESİ', SAFE.x0, Y2 + 106, 100, { color: C.accent, alpha: h1 });
+    const h2 = win(t, T.s2 + .05, T.s3 + .1, .25);
+    text('En uzun gece', SAFE.x0, Y1, 70, { alpha: h2 });
+    text('hangi ilde?', SAFE.x0, Y2 - 4, 70, { color: C.accent, alpha: h2 });
+    const h3 = win(t, T.s3 + .05, T.s4 + .1, .25), sp = IKON.pop(t, T.sin, .45), sk = prog(t, T.sin - .05, T.sin + .15);
+    text('Hayır…', SAFE.x0, Y1, 70, { color: C.mute, alpha: h3 * (1 - sk) });
+    text('EN UZUN GECE', SAFE.x0, Y1 - 6, 52, { weight: 600, color: C.mute, alpha: h3 * sk });
+    text(UZ.il.toLocaleUpperCase('tr'), SAFE.x0, Y2 + 10, 120 * sp.olcek, { color: C.accent, alpha: h3 * sk * sp.alpha });
+    textTab(UZ.gece, SAFE.x1, Y2 + 4, 52, { align: 'right', alpha: h3 * prog(t, T.sinS, T.sinS + .3) });
+    const h4 = win(t, T.s4 + .05, T.s5 + .1, .25);
+    text('EN KISA GECE', SAFE.x0, Y1 - 6, 52, { weight: 600, color: C.mute, alpha: h4 });
+    text(KI.il.toLocaleUpperCase('tr'), SAFE.x0, Y2 + 10, 120, { color: C.accent, alpha: h4 * prog(t, T.hat - .05, T.hat + .15) });
+    statPill(SAFE.x1, Y2 - 70, UG.geceFark + ' dk daha kısa', { align: 'right', color: C.accent, size: 40, alpha: h4 * prog(t, T.f35, T.f35 + .3) });
+    const h5 = win(t, T.s5 + .05, T.s6 + .1, .25);
+    text('Geceyi uzatan:', SAFE.x0, Y1, 66, { weight: 600, color: C.mute, alpha: h5 });
+    text('KUZEY', SAFE.x0, Y2 + 10, 120, { color: C.accent, alpha: h5 * prog(t, T.kuz - .05, T.kuz + .15) });
+    text('doğu değil', SAFE.x0 + 470, Y2 - 4, 50, { weight: 600, color: C.mute, alpha: h5 * prog(t, T.kuz + .1, T.kuz + .4) });
+    // saat
+    const c = clock(t), cA = Math.max(win(t, T.s6 + .05, T.s8 + .1, .25), win(t, T.s9 + .05, T.s10 + .1, .25));
+    if (c && cA > .001) {
+      text(c.rise ? 'Güneş doğuyor' : 'Güneş batıyor', SAFE.x0, Y1 - 6, 52, { weight: 600, color: C.mute, alpha: cA });
+      textTab(hm(c.m), SAFE.x0, Y2 + 40, 170, { color: C.accent, alpha: cA });
+      statPill(SAFE.x1, Y1 - 50, (c.rise ? 'aydınlanan il ' : 'güneşi olan il ') + String(litCount(t)).padStart(2, '0') + '/81', { align: 'right', size: 32, alpha: cA, tabular: true });
+    }
+    const h8 = win(t, T.s8 + .05, T.s9 + .1, .25), fp = IKON.pop(t, T.f81, .45);
+    textTab(String(UG.dogusFark), SAFE.x0, Y2 + 40, 170 * fp.olcek, { color: C.accent, alpha: h8 * prog(t, T.f81 - .05, T.f81 + .1) * fp.alpha });
+    text('dakika', SAFE.x0 + 230, Y2 + 2, 70, { alpha: h8 * prog(t, T.f81, T.f81 + .3) });
+    text(ILK.il + ' → ' + SON.il, SAFE.x0, Y1 - 6, 52, { weight: 600, color: C.mute, alpha: h8 });
+    const h10 = win(t, T.s10 + .05, T.tab + .1, .25), ok = prog(t, T.ocak - .05, T.ocak + .2);
+    text('En uzun geceden sonra', SAFE.x0, Y1 - 6, 52, { weight: 600, color: C.mute, alpha: h10 });
+    text('sabahlar hâlâ', SAFE.x0, Y2 - 10, 76, { alpha: h10 * (1 - ok) });
+    text('KARARIYOR', SAFE.x0, Y2 + 74, 76, { color: C.accent, alpha: h10 * (1 - ok) });
+    text('en geç doğuş', SAFE.x0, Y2 - 10, 60, { weight: 600, alpha: h10 * ok });
+    text(tarih(GEC.dt).toLocaleUpperCase('tr'), SAFE.x0, Y2 + 84, 110, { color: C.accent, alpha: h10 * ok });
+    const h11 = win(t, T.tab + .1, T.loop, .3);
+    text('Senin ilinde kaçta?', SAFE.x0, Y1 - 14, 60, { alpha: h11 });
+    text('Durdur, bak', SAFE.x0, Y2 - 36, 52, { weight: 600, color: C.accent, alpha: h11 });
+  },
+  sounds(T, at, DUR) {
+    const roll = (x, n = 6, g = .06, f = 1300) => Array.from({ length: n }, (_, i) => ({ t: x + i * .05, type: 'tick', gain: g, f: f + i * 40 }));
+    const sweepTicks = (a, b, n, f0) => Array.from({ length: n }, (_, i) => ({ t: lerp(a, b, ease.inOutSine(i / (n - 1))), type: 'tick', gain: .045, f: f0 + i * 12 }));
+    return [
+      { t: .05, type: 'sub', gain: .32 }, { t: .1, type: 'whoosh', dur: .8, gain: .09 }, { t: .5, type: 'ping', gain: .18, f: 523 },
+      { t: T.s2, type: 'whoosh', dur: .7, gain: .08 }, { t: T.kars, type: 'pop', gain: .12, f: 440 }, { t: T.erz, type: 'pop', gain: .12, f: 480 },
+      { t: T.sin - .35, type: 'rise', dur: .35, gain: .12, f0: 280, f1: 760 }, { t: T.sin, type: 'sub', gain: .42 }, { t: T.sin + .02, type: 'ping2', gain: .36 },
+      ...roll(T.sinS, 6, .05),
+      { t: T.s4, type: 'whoosh', dur: .8, gain: .08 }, { t: T.hat, type: 'pop', gain: .14, f: 520 }, { t: T.f35, type: 'chime', gain: .2 },
+      { t: T.s5, type: 'whoosh', dur: .8, gain: .08 }, ...[0, 1, 2, 3].map(n => ({ t: T.kuz - .2 + n * .08, type: 'tick', gain: .06, f: 900 + n * 120 })), { t: T.kuz + .4, type: 'pulse', gain: .24, f: 98 },
+      { t: T.s6, type: 'whoosh', dur: .9, gain: .08 }, { t: T.hak, type: 'sub', gain: .3 }, { t: T.hak + .02, type: 'ping', gain: .26, f: 659 },
+      { t: T.hak + .1, type: 'rise', dur: T.edi - T.hak, gain: .11, f0: 160, f1: 520 }, ...sweepTicks(T.hak + .1, T.edi - .1, 30, 900),
+      { t: T.edi, type: 'chime', gain: .24 }, { t: T.f81 - .02, type: 'sub', gain: .4 }, { t: T.f81, type: 'ping2', gain: .34 },
+      { t: T.s9, type: 'whoosh', dur: .9, gain: .08 }, { t: T.ig, type: 'pop', gain: .14, f: 420 },
+      { t: T.ig + .1, type: 'rise', dur: T.izm - T.ig, gain: .09, f0: 520, f1: 200 }, ...sweepTicks(T.ig + .1, T.izm - .1, 22, 1100), { t: T.izm, type: 'pop', gain: .14, f: 360 },
+      { t: T.s10, type: 'whoosh', dur: .9, gain: .09 }, { t: T.tuz, type: 'tick', gain: .07, f: 1500 },
+      { t: T.ocak - .4, type: 'rise', dur: .4, gain: .12, f0: 300, f1: 820 }, { t: T.ocak, type: 'sub', gain: .42 }, { t: T.ocak + .02, type: 'ping2', gain: .36 },
+      ...Array.from({ length: 12 }, (_, i) => ({ t: T.tab + .1 + i * .05, type: 'tick', gain: .07, f: 1300 + i * 30 })),
+      { t: T.loop, type: 'whoosh', dur: .7, gain: .08 },
+    ];
+  },
+});
+</script>
+</body>
+</html>

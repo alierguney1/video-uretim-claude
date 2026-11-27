@@ -1,0 +1,64 @@
+{
+  "voice": "Charon",
+  "style": "enerjik ve merak uyandıran, hızlı tempolu, önemli kelimeleri vurgulayan, izleyiciye meydan okur gibi; cevaptan önce kısa bir gerilim duraklaması, cevapta güçlü vurgu.",
+  "tempo": 1.12,
+  "lead": 0.15,
+  "gap": 0.22,
+  "tail": 3.6,
+  "lines": [
+    {
+      "id": "l1",
+      "text": "Yirmi bir Aralık. Yılın EN UZUN gecesi.",
+      "caption": "21 Aralık. Yılın en uzun gecesi."
+    },
+    {
+      "id": "l2",
+      "text": "Peki en uzun gece hangi ilde? Kars mı? Erzurum mu?"
+    },
+    {
+      "id": "l3",
+      "text": "Hayır. SİNOP. On dört saat, elli dört dakika.",
+      "caption": "Hayır. Sinop. 14 saat 54 dakika.",
+      "pauseBefore": 0.35
+    },
+    {
+      "id": "l4",
+      "text": "En kısası Hatay'da: tam otuz beş dakika kısa.",
+      "caption": "En kısası Hatay'da: tam 35 dakika kısa."
+    },
+    {
+      "id": "l5",
+      "text": "Çünkü geceyi doğu değil, KUZEY uzatıyor."
+    },
+    {
+      "id": "l6",
+      "text": "Doğu ise saati belirliyor: güneş ilk Hakkari'de doğuyor, yedi on altıda.",
+      "caption": "Doğu ise saati belirliyor: güneş ilk Hakkari'de doğuyor, 07:16'da."
+    },
+    {
+      "id": "l7",
+      "text": "Sonra batıya kayıyor, iller tek tek aydınlanıyor.",
+      "holdAfter": 0.9
+    },
+    {
+      "id": "l8",
+      "text": "Edirne'ye ancak sekiz otuz yedide varıyor. Tam SEKSEN BİR dakika sonra.",
+      "caption": "Edirne'ye ancak 08:37'de varıyor. Tam 81 dakika sonra."
+    },
+    {
+      "id": "l9",
+      "text": "Akşam tersi: Iğdır'da güneş on altı kırk ikide batıyor, İzmir'de on yedi elli dörtte.",
+      "caption": "Akşam tersi: Iğdır'da güneş 16:42'de batıyor, İzmir'de 17:54'te."
+    },
+    {
+      "id": "l10",
+      "text": "Asıl tuzak şu: en uzun gece bitince sabahlar aydınlanmıyor. En geç doğuş, OCAK başında.",
+      "caption": "Asıl tuzak şu: en uzun gece bitince sabahlar aydınlanmıyor. En geç doğuş Ocak başında.",
+      "pauseBefore": 0.2
+    },
+    {
+      "id": "l11",
+      "text": "Senin ilinde güneş kaçta doğuyor? Durdur, bak."
+    }
+  ]
+}
