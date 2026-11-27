@@ -35,7 +35,7 @@
 // Brif: hys-18-uzun-gece.brief.md. Veri: tools/hys-18-uzun-gece.mjs → veri/hys-18/uzun-gece.js
 // (NOAA güneş denklemleri, il merkezi, deniz seviyesi, TSİ). Ekrandaki her saat ve süre UG verisinden.
 
-/*VO:BEGIN*/ const VO = {"duration":48.17,"lines":[{"id":"l1","start":0.15,"end":5.504,"text":"21 Aralık: yılın en uzun gecesi. Peki Türkiye'de en uzun hangi ilde?"},{"id":"l2","start":5.724,"end":7.387,"text":"Kars mı? Erzurum mu?"},{"id":"l3","start":7.957,"end":11.333,"text":"Hayır. Sinop. 14 saat 54 dakika."},{"id":"l4","start":11.553,"end":14.61,"text":"En kısası Hatay'da: tam 35 dakika kısa."},{"id":"l5","start":14.83,"end":17.504,"text":"Çünkü geceyi doğu değil, KUZEY uzatıyor."},{"id":"l6","start":17.724,"end":21.871,"text":"Doğu ise saati belirliyor: güneş ilk Hakkari'de doğuyor, 07:16'da."},{"id":"l7","start":22.091,"end":25.312,"text":"Sonra batıya kayıyor, iller tek tek aydınlanıyor."},{"id":"l8","start":26.432,"end":30.556,"text":"Edirne'ye ancak 08:37'de varıyor. Tam 81 dakika sonra."},{"id":"l9","start":30.776,"end":35.605,"text":"Akşam tersi: Iğdır'da güneş 16:42'de batıyor, İzmir'de 17:54'te."},{"id":"l10","start":36.025,"end":41.926,"text":"Asıl tuzak şu: en uzun gece bitince sabahlar aydınlanmıyor. En geç doğuş Ocak'ın ilk haftasında."},{"id":"l11","start":42.146,"end":44.573,"text":"Senin ilinde güneş kaçta doğuyor? Durdur, bak."}]}; /*VO:END*/
+/*VO:BEGIN*/ const VO = {"duration":48.17,"lines":[{"id":"l1","start":0.15,"end":5.504,"text":"21 Aralık: yılın en uzun gecesi. Peki Türkiye'de en uzun hangi ilde?"},{"id":"l2","start":5.724,"end":7.387,"text":"Kars mı? Erzurum mu?"},{"id":"l3","start":7.957,"end":11.333,"text":"Hayır. Sinop. 14 saat 54 dakika."},{"id":"l4","start":11.553,"end":14.61,"text":"En kısası Hatay'da: tam 35 dakika kısa."},{"id":"l5","start":14.83,"end":17.504,"text":"Çünkü geceyi doğu değil, kuzey uzatıyor."},{"id":"l6","start":17.724,"end":21.871,"text":"Doğu ise saati belirliyor: güneş ilk Hakkari'de doğuyor, 07:16'da."},{"id":"l7","start":22.091,"end":25.312,"text":"Sonra batıya kayıyor, iller tek tek aydınlanıyor."},{"id":"l8","start":26.432,"end":30.556,"text":"Edirne'ye ancak 08:37'de varıyor. Tam 81 dakika sonra."},{"id":"l9","start":30.776,"end":35.605,"text":"Akşam tersi: Iğdır'da güneş 16:42'de batıyor, İzmir'de 17:54'te."},{"id":"l10","start":36.025,"end":41.926,"text":"Asıl tuzak şu: en uzun gece bitince sabahlar aydınlanmıyor. En geç doğuş Ocak'ın ilk haftasında."},{"id":"l11","start":42.146,"end":44.573,"text":"Senin ilinde güneş kaçta doğuyor? Durdur, bak."}]}; /*VO:END*/
 const { C, SANS, MONO, W, H, SAFE, ctx, clamp, lerp, prog, win, ease, text, textTab, label, pin, statPill, arrow } = HYS;
 
 // ── veri ──
@@ -187,6 +187,7 @@ HYS.run({
     { t: .3, ac: 'A', soru: 'Yılın en uzun gecesi Türkiye’de en uzun nerede?' },
     { t: .6, odul: 'karanlık Türkiye, “21 Aralık”' },
     { t: T.s2 + .2, ac: 'B', soru: 'Kars mı, Erzurum mu? (tahmin)' },
+    { t: T.s2 + .6, odul: '81 ilde “?” dalgası' },
     { t: T.kars + .2, odul: 'Kars ikonu' }, { t: T.erz + .2, odul: 'Erzurum ikonu' },
     { t: T.sin + .3, kapa: 'A' }, { t: T.sin + .3, kapa: 'B' }, { t: T.sin + .3, odul: 'SİNOP (ters köşe)' },
     { t: T.sin + .4, ac: 'C', soru: 'Neden Sinop? Kars’la arası ne?' },
@@ -239,8 +240,16 @@ HYS.run({
     const moonA = Math.max(1 - prog(t, T.s2 - .2, T.s2 + .2), loopK) * mapA;
     if (moonA > .001) {
       const mx = 820, my = 700 + 6 * Math.sin(t * 1.4), r = 58;
-      ctx.save(); ctx.globalAlpha = moonA; ctx.fillStyle = C.land; ctx.beginPath(); ctx.arc(mx, my, r, 0, 2 * Math.PI); ctx.fill();
-      ctx.fillStyle = C.bg; ctx.beginPath(); ctx.arc(mx + 26, my - 14, r * .9, 0, 2 * Math.PI); ctx.fill(); ctx.restore();
+      ctx.save(); ctx.beginPath(); ctx.rect(0, 0, W, H); ctx.arc(mx + 26, my - 14, r * .9, 0, 2 * Math.PI, true); ctx.clip('evenodd');
+      ctx.globalAlpha = moonA; ctx.fillStyle = C.land; ctx.beginPath(); ctx.arc(mx, my, r, 0, 2 * Math.PI); ctx.fill(); ctx.restore();
+    }
+    // soru dalgası: 81 il merkezinde "?" (batıdan doğuya), Sinop cevabıyla söner
+    const qA = win(t, T.s2, T.sin + .1, .25) * mapA;
+    if (qA > .001) for (const i of UG.iller) {
+      const p = pr(P(i.il)); if (!p) continue;
+      const t0 = T.s2 + .1 + (i.lon - 26) / 19 * 1.2, pp = IKON.pop(t, t0, .35);
+      if (t < t0) continue;
+      text('?', p[0], p[1] + 10, 30 * pp.olcek, { align: 'center', color: C.accent, alpha: qA * pp.alpha * .85 });
     }
     // enlem çizgileri: kuzey = uzun gece
     const latA = win(t, T.kuz - .2, T.s6 + .2, .35) * mapA;
@@ -299,8 +308,8 @@ HYS.run({
     const h2 = win(t, T.s2 + .05, T.s3 + .1, .25);
     text('En uzun gece', SAFE.x0, Y1, 70, { alpha: h2 });
     text('hangi ilde?', SAFE.x0, Y2 - 4, 70, { color: C.accent, alpha: h2 });
-    const h3 = win(t, T.s3 + .05, T.s4 + .1, .25), sp = IKON.pop(t, T.sin, .45), sk = prog(t, T.sin - .05, T.sin + .15);
-    text('Hayır…', SAFE.x0, Y1, 70, { color: C.mute, alpha: h3 * (1 - sk) });
+    const h3 = win(t, T.s3 + .05, T.s4 + .1, .25), sp = IKON.pop(t, T.sin, .45), sk = prog(t, T.sin - .08, T.sin + .12);
+    text('Hayır…', SAFE.x0, Y1, 70, { color: C.mute, alpha: h3 * (1 - prog(t, T.sin - .3, T.sin - .1)) });
     text('EN UZUN GECE', SAFE.x0, Y1 - 6, 52, { weight: 600, color: C.mute, alpha: h3 * sk });
     text(UZ.il.toLocaleUpperCase('tr'), SAFE.x0, Y2 + 10, 120 * sp.olcek, { color: C.accent, alpha: h3 * sk * sp.alpha });
     textTab(UZ.gece, SAFE.x1, Y2 + 4, 52, { align: 'right', alpha: h3 * prog(t, T.sinS, T.sinS + .3) });
@@ -327,8 +336,8 @@ HYS.run({
     text('En uzun geceden sonra', SAFE.x0, Y1 - 6, 52, { weight: 600, color: C.mute, alpha: h10 });
     text('sabahlar hâlâ', SAFE.x0, Y2 - 10, 76, { alpha: h10 * (1 - ok) });
     text('KARARIYOR', SAFE.x0, Y2 + 74, 76, { color: C.accent, alpha: h10 * (1 - ok) });
-    text('en geç doğuş', SAFE.x0, Y2 - 10, 60, { weight: 600, alpha: h10 * ok });
-    text(tarih(GEC.dt).toLocaleUpperCase('tr'), SAFE.x0, Y2 + 84, 110, { color: C.accent, alpha: h10 * ok });
+    text('İstanbul’da en geç doğuş', SAFE.x0, Y2 - 10, 60, { weight: 600, alpha: h10 * ok });
+    text(tarih(GEC.dt).toLocaleUpperCase('tr'), SAFE.x0, Y2 + 100, 110, { color: C.accent, alpha: h10 * ok });
     const h11 = win(t, T.tab + .1, T.loop, .3);
     text('Senin ilinde kaçta?', SAFE.x0, Y1 - 14, 60, { alpha: h11 });
     text('Durdur, bak', SAFE.x0, Y2 - 36, 52, { weight: 600, color: C.accent, alpha: h11 });

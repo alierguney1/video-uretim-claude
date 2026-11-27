@@ -1,0 +1,74 @@
+{
+  "kaynak": "hys-18-uzun-gece.html",
+  "varyantlar": [
+    {
+      "ad": "sinop",
+      "tur": "yanlış inanış",
+      "t": 10.6,
+      "karart": 0.1,
+      "baslik": [
+        "EN UZUN GECE",
+        "*SİNOP*'TA"
+      ],
+      "baslikY": 260,
+      "boyut": 140,
+      "alt": "Kars değil, *Erzurum* değil",
+      "altY": 1540,
+      "emoji": [
+        {
+          "ad": "crescent-moon",
+          "x": 880,
+          "y": 1360,
+          "boyut": 170,
+          "aci": -8
+        }
+      ]
+    },
+    {
+      "ad": "ocak",
+      "tur": "ters köşe",
+      "t": 24.2,
+      "karart": 0.1,
+      "baslik": [
+        "SABAHLAR HÂLÂ",
+        "*KARARIYOR*"
+      ],
+      "baslikY": 260,
+      "boyut": 130,
+      "alt": "En geç doğuş *21 Aralık* değil",
+      "altY": 1560,
+      "emoji": [
+        {
+          "ad": "alarm-clock",
+          "x": 880,
+          "y": 1380,
+          "boyut": 170,
+          "aci": 8
+        }
+      ]
+    },
+    {
+      "ad": "dakika",
+      "tur": "sayı şoku",
+      "t": 30.4,
+      "karart": 0.08,
+      "baslik": [
+        "AYNI SAAT",
+        "*81 DK* FARK"
+      ],
+      "baslikY": 260,
+      "boyut": 140,
+      "alt": "Senin ilinde *kaçta*?",
+      "altY": 1560,
+      "emoji": [
+        {
+          "ad": "sunrise-over-mountains",
+          "x": 880,
+          "y": 1380,
+          "boyut": 170,
+          "aci": -6
+        }
+      ]
+    }
+  ]
+}
